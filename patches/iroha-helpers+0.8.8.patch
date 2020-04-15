@@ -1,0 +1,13 @@
+diff --git a/node_modules/iroha-helpers/lib/validation/checks.js b/node_modules/iroha-helpers/lib/validation/checks.js
+index 87be40e..c69d362 100644
+--- a/node_modules/iroha-helpers/lib/validation/checks.js
++++ b/node_modules/iroha-helpers/lib/validation/checks.js
+@@ -5,7 +5,7 @@ var accountIdDelimiter = '@';
+ var accountDetailsKeyPattern = /^[A-Za-z0-9_]{1,64}$/;
+ var accountDetailsValueLenght = 4096;
+ var accountPattern = /^[a-z_0-9]{1,32}$/;
+-var domainPattern = /^[a-z_0-9]{1,9}$/;
++var domainPattern = /^([a-zA-Z]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$/;
+ var roleNamePattern = /^[a-z_0-9]{1,32}$/;
+ var assetNamePattern = /^[a-z_0-9]{1,32}$/;
+ function checkAmount(amount) {

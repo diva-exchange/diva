@@ -1,0 +1,55 @@
+include mixin-section-title
+
+doctype html
+html(data-culture-lang=Culture.uiLanguage lang=Culture.uiLanguage)
+  include head.pug
+
+  script Ui.load('/js/diva-user.js', () => { UiUser.auth() })
+
+  body
+    section(class='section' id='app')
+      div(class='container')
+        div(class='columns is-centered')
+          div(class='column is-half')
+            div(class='is-pulled-right')
+              include ui-language
+            div(class='is-clearfix')
+
+      div(class='container')
+        div(class='columns is-centered')
+          div(class='column is-half')
+            div(class='tabs is-large is-size-5-mobile')
+              ul
+                li(class='is-active')
+                  a(data-culture-text='Login')= Culture.t('Login')
+                li
+                  a(href='/newuser'
+                    data-culture-text='SignUp')= Culture.t('SignUp')
+
+            form(id='auth' method='post' action='/login')
+              - isHidden = arrayUser.length > 1 ? '' : ' is-hidden'
+              div(class='field' + isHidden)
+                div(class='control')
+                  div(class='select')
+                    select(id='account' name='account')
+                      each record in arrayUser
+                        option(selected=(account === record.account_ident)
+                          value=record.account_ident) #{record.account_ident}
+
+              div(class='field')
+                div(class='control has-icons-left')
+                  input(class='input'
+                    id='password'
+                    name='password'
+                    type='password'
+                    pattern='.{10,32}'
+                    autofocus
+                    required
+                    data-culture-placeholder='Password'
+                    placeholder=Culture.t('Password'))
+                  span(class='icon is-small is-left')
+                    i(class='fas fa-lock')
+
+              div(class='field')
+                div(class='control')
+                  button(id='login' class='button is-info' type='submit' data-culture-text='Login')= Culture.t('Login')

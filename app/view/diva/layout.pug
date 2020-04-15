@@ -1,0 +1,22 @@
+doctype html
+html(class='has-navbar-fixed-top has-navbar-fixed-bottom' data-culture-lang=Culture.uiLanguage lang=Culture.uiLanguage)
+  include head.pug
+
+  body
+    div(id='modal-notification' class='modal')
+      div(class='modal-background')
+      div(class='modal-content')
+        article(class='message is-danger')
+          div(class='message-header')
+            p Ouch!
+            button(class='delete')
+          div(class='message-body')
+            p Sorry, but something went wrong!
+
+    include navigation.pug
+
+    section(class='section' id='app')
+      div(class='container')
+        block content
+
+    include footer.pug

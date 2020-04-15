@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+/*!
+ * utp-proxy
+ * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * GPL3 Licensed
+ */
+
+'use strict'
+
+import { UtpProxy } from '../src/p2p/utp-proxy'
+
+UtpProxy.make()

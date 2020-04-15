@@ -1,0 +1,16 @@
+mixin sectionTitle(ident, idContainer, hasHide)
+
+    -
+      if (!idContainer) {
+        hasHide = false
+      } else if (hasHide === undefined) {
+        hasHide = true
+      }
+
+    div(class='title' data-culture-text=ident)= Culture.t(ident)
+
+      if hasHide
+        div(class='is-pulled-right')
+          button(class='button' data-culture-title='Hide' title=Culture.t('Hide') data-container=idContainer)
+            span(class='icon')
+              i(class='fas fa-window-minimize')

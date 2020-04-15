@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+/*!
+ * diva HTTP Server
+ * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * GPL3 Licensed
+ */
+
+'use strict'
+
+import fs from 'fs'
+import path from 'path'
+
+import { Db } from '../src/db'
+
+try {
+  fs.unlinkSync(path.normalize(path.join(__dirname, '/../data/diva.sqlite')))
+} catch (error) {}
+
+Db.create('diva')

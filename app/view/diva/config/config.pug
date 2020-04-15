@@ -1,0 +1,61 @@
+extends ../layout
+
+include ../mixin-section-title
+include ../mixin-section-add-search
+
+block content
+  article
+    +sectionTitle('Localization and Customization')
+    p Language
+    p Date/Time Format and Timezone
+    p Colors
+    hr
+
+  article
+    +sectionTitle('Security')
+    p 2FA Authentication
+    p Backup to USB Stick
+    hr
+
+  article
+    +sectionTitle('Services')
+    p(class='buttons')
+      a(class='button is-large is-outlined is-success')
+        span Auctioning
+        span(class='icon is-medium is-success')
+          i(class='fas fa-toggle-on')
+
+      a(class='button is-large is-outlined is-danger')
+        span API
+        span(class='icon is-medium is-danger')
+          i(class='fas fa-toggle-off')
+    hr
+
+  article
+    +sectionTitle('I2P Availability and Connectivity')
+    script.
+      divaUI.onReady(function() {
+        divaUI.fetchLocal('/config/has-i2p-webconsole?port=' + u('#config-i2p-webconsole-port input').data('port'))
+          .then( function (response) {
+              u('#config-i2p-webconsole-port i.fas')
+                .removeClass('fa-circle-notch fa-spin')
+                .addClass('fa-check');
+          })
+          .catch( function (error) {
+            u('#config-i2p-webconsole-port i.fas')
+              .removeClass('fa-circle-notch fa-spin')
+              .addClass('fa-exclamation-triangle');
+          });
+      });
+    div(class='field')
+      label(class='label') I2P Webconsole Port
+      #config-i2p-webconsole-port(class='control has-icons-right')
+        input(class='input', type='number', placeholder='Port', value='7070', data-port='7070')
+        span(class='icon is-small is-right')
+          i(class='fas fas fa-circle-notch fa-spin')
+    hr
+
+  article
+    +sectionTitle('Blockchain Availability and Connectivity')
+    p.
+      Some data...

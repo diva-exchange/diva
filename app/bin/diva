@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+/*!
+ * diva HTTP Server
+ * Copyright(c) 2019-2020 Konrad Baechler, https://diva.exchange
+ * GPL3 Licensed
+ */
+
+'use strict'
+
+import { HttpServer } from '../src/http-server'
+import { SessionGarbage } from '../src/session-garbage'
+
+(() => {
+  const bind = process.env.BIND_IP || '127.0.0.1'
+  const port = process.env.PORT || 3911
+
+  const s = HttpServer.make('diva', port, bind).getServer()
+  process.on('SIGINT', () => {
+    s.close(() => { process.exit(0) })
+  })
+
+  SessionGarbage.collect()
+})()

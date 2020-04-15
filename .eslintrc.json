@@ -1,0 +1,16 @@
+{
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 10,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-multi-str": "off"
+    }
+}

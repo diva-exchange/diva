@@ -1,0 +1,45 @@
+
+mixin cardOpenOrder(id, title, type, amount, price, volume, modified, validuntil, hasEdit, hasDelete)
+
+  -
+    hasEdit = hasEdit === undefined ? true : hasEdit;
+    hasDelete = hasDelete === undefined ? true : hasDelete;
+
+    // buy or sell (b or s)
+    color = type === 'b' ? 'is-success' : 'is-danger';
+
+  // div(class='column is-half-tablet is-one-third-desktop is-one-quarter-widescreen is-3-fullhd')
+  div(class='column is-narrow')
+    div(class='card', id=id)
+      header(class='card-header')
+        p(class='card-header-title')
+          span(class='tag is-medium ' + color)= type === 'b' ? 'Buy' : 'Sell'
+          span(class='tag is-medium')= title
+        if ( hasEdit || hasDelete )
+          div(class='card-header-icon')
+            if ( hasEdit )
+              a(class='button is-small', title='Edit', aria-label='Edit')
+                span(class='icon is-small', aria-hidden='true')
+                  i(class='fas fa-pencil-alt')
+            if ( hasDelete )
+              a(class='button is-small', title='Delete', aria-label='Edit')
+                span(class='icon is-small', aria-hidden='true')
+                  i(class='fas fa-trash-alt')
+      div(class='card-content' data)
+        table(id=id + '-data', class='table')
+          tr
+            td Amount
+            td= amount
+          tr
+            td Price
+            td= price
+          tr
+            td Volume
+            td= volume
+          tr
+            td Modified
+            td= modified
+          tr
+            td Valid until
+            td= validuntil
+

@@ -1,0 +1,178 @@
+extends ../layout
+
+block content
+  script Ui.load('/js/diva-trade.js')
+
+  article(class='article')
+    div(class='columns')
+      div(class='column')
+        div(class='field')
+          div(class='control')
+            div(class='select')
+              select(id='contract')
+                each array in arrayContract
+                  option(selected=(identContract === array[0])
+                    title=array[0]
+                    data-culture-text=array[0]
+                    value=array[0])= array[1]
+
+    div(class='columns')
+      div(class='column is-two-thirds')
+        article(class='panel')
+          p(class='panel-heading' data-culture-text='MyOrders')= Culture.t('MyOrders')
+          div(class='panel-block')
+            div(id='order' class='container' data-type='B')
+              div(class='tabs is-fullwidth')
+                ul
+                  li(class='is-active' data-type='B')
+                    a(data-culture-text='Buy')= Culture.t('Buy')
+                  li(data-type='A')
+                    a(data-culture-text='Sell')= Culture.t('Sell')
+              div(class='order-form')
+                div(class='field has-addons')
+                  p(class='control')
+                    button(class='button is-static' data-culture-text='Amount')= Culture.t('Amount')
+                  div(class='control')
+                    input(id='amount'
+                      class='input'
+                      type='text'
+                      placeholder=Culture.t('Amount')
+                      data-culture-placeholder='Amount'
+                      required)
+
+                div(class='field has-addons')
+                  p(class='control')
+                    button(class='button is-static' data-culture-text='Price')= Culture.t('Price')
+                  div(class='control')
+                    input(id='price'
+                      class='input'
+                      type='text'
+                      placeholder=Culture.t('Price')
+                      data-culture-placeholder='Price'
+                      required)
+
+                div(class='field')
+                  div(class='control')
+                    button(id='place-order'
+                      class='button'
+                      title=Culture.t('place')
+                      data-culture-title=Culture.t('place'))
+
+          div(class='panel-block is-relative')
+            div(class='is-overlay data-loader orderbook fadein')
+              progress(class='progress' max=100)
+            table(id='orderbook' class='table is-fullwidth orderbook')
+              thead
+                tr
+                  th
+                    button(class='button is-small'
+                      name='delete-all'
+                      data-type='B'
+                      title=Culture.t('delete-all')
+                      data-culture-title=Culture.t('delete-all'))
+                      span(class='icon')
+                        i(class='fas fa-trash')
+                  th(class='has-text-right' data-culture-text='Amount')= Culture.t('Amount')
+                  th(class='has-text-success has-text-right' data-culture-text='Price')= Culture.t('Price')
+                  th(class='has-text-danger' data-culture-text='Price')= Culture.t('Price')
+                  th(data-culture-text='Amount')= Culture.t('Amount')
+                  th
+                    button(class='button is-small'
+                      name='delete-all'
+                      data-type='A'
+                      title=Culture.t('delete-all')
+                      data-culture-title=Culture.t('delete-all'))
+                      span(class='icon')
+                        i(class='fas fa-trash')
+              tbody
+                tr
+                  td
+                  td
+                  td
+                  td
+                  td
+                  td
+
+      div(class='column')
+        article(class='panel')
+          p(class='panel-heading' data-culture-text='MyTrades')= Culture.t('MyTrades')
+          div(class='panel-block')
+            table(class='table is-striped is-fullwidth')
+              thead
+                tr
+                  th Price
+                  th Amount
+                  th Date/Time
+              tbody
+                tr
+                  td 7.99999
+                  td 12.4534354
+                  td 12:39:17
+                tr
+                  td 8.010156
+                  td 0.781234
+                  td 12:37:57
+                tr
+                  td 7.896
+                  td 11.234354
+                  td 11:19:34
+                tr
+                  td 7.796
+                  td 111.4234354
+                  td 11:14:34
+                tr
+                  td 7.543596
+                  td 11.234354
+                  td 10:12:45
+
+    article(class='panel')
+      p(class='panel-heading' data-culture-text='Market')= Culture.t('Market')
+      div(class='panel-block')
+        div(class='columns')
+          div(class='column is-two-thirds is-relative')
+            div(class='is-overlay data-loader market fadein')
+              progress(class='progress' max=100)
+            table(class='table is-fullwidth market')
+              thead
+                tr
+                  th(class='has-text-right' data-culture-text='Amount')= Culture.t('Amount')
+                  th(class='has-text-right has-text-success' data-culture-text='Price')= Culture.t('Price')
+                  th(class='has-text-danger' data-culture-text='Price')= Culture.t('Price')
+                  th(data-culture-text='Amount')= Culture.t('Amount')
+              tbody(id='market')
+                tr
+                  td
+                  td
+                  td
+                  td
+
+          div(class='column')
+            table(class='table is-striped is-fullwidth')
+              thead
+                tr
+                  th(colspan=3 data-culture-text='PaidPrices')= Culture.t('PaidPrices')
+                tr
+                  th Price
+                  th Amount
+                  th Date/Time
+              tbody
+                tr
+                  td 7.99999
+                  td 12.4534354
+                  td 12:39:17
+                tr
+                  td 8.010156
+                  td 0.781234
+                  td 12:37:57
+                tr
+                  td 7.896
+                  td 11.234354
+                  td 11:19:34
+                tr
+                  td 7.796
+                  td 111.4234354
+                  td 11:14:34
+                tr
+                  td 7.543596
+                  td 11.234354
+                  td 10:12:45

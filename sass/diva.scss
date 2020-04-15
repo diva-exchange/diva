@@ -1,0 +1,102 @@
+@charset "utf-8";
+
+@keyframes fadein {
+    from { opacity: 0; visibility: visible; }
+    to   { opacity: 1; visibility: visible; }
+}
+
+@keyframes fadeout {
+    from { opacity: 1; visibility: visible; }
+    to   { opacity: 0; visibility: hidden; }
+}
+
+.fadein {
+  animation: fadein 1s linear forwards;
+}
+
+.fadeout {
+  animation: fadeout 1s linear forwards;
+}
+
+div.data-loader {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 40px calc(50% - 200px);
+  visibility: hidden;
+  z-index: 20;
+}
+div.data-loader .progress:indeterminate {
+  background-image: linear-gradient(to right, orange 30%, #ededed 30%)
+}
+
+#order .tabs {
+  margin-bottom: 0;
+  border-width: 0;
+}
+#order .tabs a {
+  color: white;
+  font-weight: bold;
+  border-width: 0;
+}
+
+#order .tabs li[data-type="B"] a {
+  background-color: green !important;
+}
+#order[data-type="B"] div.order-form {
+  padding: 1em 1em 1em 1em;
+  border: 3px solid green;
+  background-color: lightgreen;
+}
+
+#order .tabs li[data-type="A"] a {
+  background-color: deeppink !important;
+}
+#order[data-type="A"] div.order-form {
+  padding: 1em 1em 1em 1em;
+  border: 3px solid deeppink;
+  background-color: lightpink;
+}
+
+#orderbook button[name="delete-all"] .icon {
+  color: red;
+}
+
+button.is-loading .icon {
+  visibility: hidden;
+}
+
+#orderbook th,
+#orderbook td {
+  overflow: hidden;
+}
+
+#orderbook th:nth-of-type(1),
+#orderbook th:nth-of-type(6),
+#orderbook td:nth-of-type(1),
+#orderbook td:nth-of-type(6) {
+  width: 38px;
+}
+
+#orderbook td,
+table.market td {
+  border: 0;
+  padding-bottom: 0;
+}
+
+#orderbook tr.timestamp td,
+table.market tr.timestamp td {
+  border-bottom: 1px solid #dbdbdb;
+  color: #7a7a7a;
+  font-size: 0.9em;
+  padding-top: 0;
+  padding-bottom: 0.5rem;
+}
+
+section.section {
+  padding: 1em 0 1.5em;
+}
+
+article.article {
+  padding: 0 0.5em;
+}
+
+@import "../node_modules/bulma/bulma.sass";

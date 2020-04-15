@@ -1,0 +1,28 @@
+- var date = new Date(Date.now());
+
+nav(class='navbar container is-fixed-bottom is-light is-hidden-touch')
+  div(class='navbar-start')
+    div(class='navbar-item')
+      span(class='is-large' data-culture-text='Account')= Culture.t('Account')
+      span(class='is-large') :&nbsp;
+        span(id='account' class='has-text-weight-bold')=session.account
+    div(class='navbar-item')
+      span(class='is-large' data-culture-text='Role')= Culture.t('Role')
+      span(class='is-large') :&nbsp;
+        span(id='role' class='has-text-weight-bold') Auctioneer
+    div(class='navbar-item')
+      span(class='is-large' data-culture-text='Karma')= Culture.t('Karma')
+      span(class='is-large') :&nbsp;
+        span(id='karma' class='has-text-weight-bold') 176
+    div(class='navbar-item')
+      span(class='is-large' data-culture-text='BlockHeight')= Culture.t('BlockHeight')
+      span(class='is-large') :&nbsp;
+        span(id='blockheight' class='has-text-weight-bold') 0
+    div(class='navbar-item')
+      span(class='is-large' data-culture-text='BlockTime')= Culture.t('BlockTime')
+      span(class='is-large') :&nbsp;
+        span(id='blocktime' class='has-text-weight-bold') 0
+
+  div(class='navbar-end')
+    div(class='navbar-item')
+      include ui-language

@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+/*!
+ * diva API HTTP Server
+ * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * GPL3 Licensed
+ */
+
+'use strict'
+
+import { HttpServer } from '../src/http-server'
+import { Iroha } from '../src/api/iroha'
+import { Logger } from 'diva-logger'
+
+(() => {
+  let countConnectionError = 0
+
+  async function waitForIroha () {
+    await Iroha.make()
+  }
+
+  function init () {
+    waitForIroha()
+      .then(() => {
+        const bind = process.env.BIND_IP || '127.0.0.1'
+        const port = process.env.PORT || 3912
+        const s = HttpServer.make('api', port, bind).getServer()
+        process.on('SIGINT', () => {
+          s.close(() => { process.exit(0) })
+        })
+      })
+      .catch(() => {
+        countConnectionError === 10 || countConnectionError++
+        Logger.warn('Iroha not available')
+        setTimeout(init, Math.pow(countConnectionError, 2) * 1000)
+      })
+  }
+
+  init()
+})()

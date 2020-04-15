@@ -1,0 +1,11 @@
+head
+  title(data-culture-text=(title || 'diva'))= Culture.t(title || 'diva')
+  link(type='text/css' rel='stylesheet', href='/css/fontawesome.min.css')
+  link(type='text/css' rel='stylesheet', href='/css/solid.min.css')
+  link(type='text/css' rel='stylesheet', href='/css/diva.min.css')
+  link(type='image/png' rel='shortcut icon' href='/media/favicon.png')
+  script(src='/js/umbrella.min.js')
+  script(src='/js/diva-ui.js')
+  script(src='/js/diva-culture.js')
+  script Ui.setIdentAccount('#{session.account}')
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')

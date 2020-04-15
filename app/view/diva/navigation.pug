@@ -1,0 +1,45 @@
+nav(class='navbar container is-fixed-top is-transparent is-dark' role='navigation' aria-label='main navigation')
+  div(class='navbar-brand')
+
+    a(class='navbar-burger burger' role='button' data-target='navigation-main' aria-label='menu' aria-expanded='false')
+      span(aria-hidden='true')
+      span(aria-hidden='true')
+      span(aria-hidden='true')
+
+  div(class='navbar-menu' id='navigation-main')
+    div(class='navbar-start')
+      a(class='navbar-item' href='/')
+        span(class='icon')
+          i(class='fas fa-expand')
+        span(data-culture-text='Dashboard')= Culture.t('Dashboard')
+
+      a(class='navbar-item' href='/trade')
+        span(class='icon')
+          i(class='fas fa-chart-line')
+        span(data-culture-text='Trade')= Culture.t('Trade')
+
+      a(class='navbar-item' href='/social')
+        span(class='icon')
+          i(class='fas fa-theater-masks')
+        span(data-culture-text='Social')= Culture.t('Social')
+
+      a(class='navbar-item' href='/network')
+        span(class='icon')
+          i(class='fas fa-seedling')
+        span(data-culture-text='Network')= Culture.t('Network')
+
+      a(class='navbar-item' href='/about')
+        span(class='icon')
+          i(class='fas fa-plus-square')
+        span(data-culture-text='About')= Culture.t('About')
+
+    div(class='navbar-end')
+
+      a(class='navbar-item' href='/config')
+        span(class='icon')
+          i(class='fas fa-cogs')
+        span(data-culture-text='Config')= Culture.t('Config')
+      a(class='navbar-item' href='/logout')
+        span(class='icon')
+          i(class='fas fa-power-off')
+        span(data-culture-text='Logout')= Culture.t('Logout')

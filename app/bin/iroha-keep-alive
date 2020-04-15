@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+/*!
+ * iroha
+ * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * GPL3 Licensed
+ */
+
+'use strict'
+
+import { Logger } from 'diva-logger'
+import { Iroha } from '../src/api/iroha'
+
+const INTERVAL_KEEP_ALIVE_SECS = 180 // 3 minutes
+
+const _iroha = Iroha.make()
+
+_keepAlive()
+
+// keep alive
+function _keepAlive () {
+  try {
+    _iroha.keepAlive()
+  } catch (error) {
+    Logger.error(error)
+  }
+
+  setTimeout(_keepAlive, INTERVAL_KEEP_ALIVE_SECS * 1000)
+}

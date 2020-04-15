@@ -1,0 +1,23 @@
+mixin sectionAddSearch(hasAdd, hasSearch)
+
+  -
+    hasAdd = hasAdd === undefined ? true : hasAdd;
+    hasSearch = hasSearch === undefined ? true : hasSearch;
+
+  if ( hasAdd || hasSearch )
+    div(class='columns is-mobile')
+      if ( hasAdd )
+        div(class='column is-narrow')
+          a(class='button is-info' title='Add')
+            span(class='icon')
+              i(class='fas fa-plus')
+
+      if ( hasSearch )
+        div(class='column')
+          div(class='field has-addons')
+            div(class='control')
+              input(class='input', type='text', placeholder='Search')
+            div(class='control')
+              a(class='button')
+                span(class='icon')
+                  i(class='fas fa-search')

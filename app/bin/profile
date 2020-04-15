@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+/*!
+ * Profile HTTP Server
+ * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * GPL3 Licensed
+ */
+
+'use strict'
+
+import { HttpServer } from '../src/http-server'
+
+const bind = process.env.BIND_IP || '127.0.0.1'
+const port = process.env.PORT || 3910
+console.log(__filename, 'listening on ' + bind + ':' + port)
+
+HttpServer.make('profile', port, bind)
