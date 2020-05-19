@@ -1,5 +1,5 @@
 {
-  "name": "diva",
+  "name": "@diva.exchange/diva",
   "version": "0.1.0",
   "description": "diva - Distributed value exchange upholding security, reliability and privacy",
   "keywords": [
@@ -19,8 +19,7 @@
     "css-build": "node_modules/node-sass/bin/node-sass --omit-source-map-url --output-style compressed sass/diva.scss app/static/css/diva.min.css",
     "install": "node -r esm app/bin/install-db",
     "start": "pm2 kill && pm2 start ecosystem.config.js",
-    "test": "node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha",
-    "postinstall": "patch-package"
+    "test": "node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha"
   },
   "dependencies": {
     "better-sqlite3": "^7.0.1",
@@ -36,7 +35,6 @@
     "http-errors": "~1.7.3",
     "iroha-helpers": "^0.8.9",
     "nanoid": "^3.1.9",
-    "patch-package": "^6.2.2",
     "pg": "^8.2.1",
     "pug": "^2.0.4",
     "request": "^2.88.2",
