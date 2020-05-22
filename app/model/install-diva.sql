@@ -24,12 +24,12 @@ INSERT INTO config(key, value) VALUES
     ('hangout.bootstrap.url.development', '["http://localhost/development-bootstrap.json"]'),
     ('hangout.bootstrap.url', '["http://docker.host.local/bootstrap.json", "https://diva.exchange/bootstrap.json"]'),
 
-    ('diva.websocket.development.old', '["localhost:3912"]'),
-    ('diva.websocket.development', '["rv4bokgbumu752r4pl7gkiwykaszrhbtiqvihagzmkwckxqd7eba.b32.i2p:3902", "svbpbgdnlvpgbrnlwt6ybn23fdgqoqkkpqyerb747sk6voqdadeq.b32.i2p:3902", "iuywm2f2ftql27tgsnsc6kbx5clsfd4hh2ivgmgvlul26z33suuq.b32.i2p:3902"]'),
+    ('diva.websocket.development', '["localhost:3912"]'),
+    ('diva.websocket.development.old', '["rv4bokgbumu752r4pl7gkiwykaszrhbtiqvihagzmkwckxqd7eba.b32.i2p:3902", "svbpbgdnlvpgbrnlwt6ybn23fdgqoqkkpqyerb747sk6voqdadeq.b32.i2p:3902", "iuywm2f2ftql27tgsnsc6kbx5clsfd4hh2ivgmgvlul26z33suuq.b32.i2p:3902"]'),
     ('diva.websocket', '["exmtzchyabihsojgtwcmztfgkse5tby4lg7jopu2om5kya6cehmq.b32.i2p:3902", "cdg2b753gtkkqods4mu6t3dewt7fkerdja4a5y443uysgwcd6hca.b32.i2p:3902", "6rm2mv6h647rozau22bqxwkxnnqelpynwj6jiclnkrcc3ljqfc2a.b32.i2p:3902"]'),
 
-    ('diva.api.uri.development.old', '["localhost:3912"]'),
-    ('diva.api.uri.development', '["rv4bokgbumu752r4pl7gkiwykaszrhbtiqvihagzmkwckxqd7eba.b32.i2p:3902", "svbpbgdnlvpgbrnlwt6ybn23fdgqoqkkpqyerb747sk6voqdadeq.b32.i2p:3902", "iuywm2f2ftql27tgsnsc6kbx5clsfd4hh2ivgmgvlul26z33suuq.b32.i2p:3902"]'),
+    ('diva.api.uri.development', '["localhost:3912"]'),
+    ('diva.api.uri.development.old', '["rv4bokgbumu752r4pl7gkiwykaszrhbtiqvihagzmkwckxqd7eba.b32.i2p:3902", "svbpbgdnlvpgbrnlwt6ybn23fdgqoqkkpqyerb747sk6voqdadeq.b32.i2p:3902", "iuywm2f2ftql27tgsnsc6kbx5clsfd4hh2ivgmgvlul26z33suuq.b32.i2p:3902"]'),
     ('diva.api.uri', '["exmtzchyabihsojgtwcmztfgkse5tby4lg7jopu2om5kya6cehmq.b32.i2p:3902", "cdg2b753gtkkqods4mu6t3dewt7fkerdja4a5y443uysgwcd6hca.b32.i2p:3902", "6rm2mv6h647rozau22bqxwkxnnqelpynwj6jiclnkrcc3ljqfc2a.b32.i2p:3902"]'),
 
     ('iroha.creator', 'diva@holodeck'),
@@ -44,9 +44,9 @@ INSERT INTO config(key, value) VALUES
 
     ('postgres.iroha.host.development', 'localhost'),
     ('postgres.iroha.host', 'postgres.local'),
-    ('postgres.iroha.port.development', '25430'),
+    ('postgres.iroha.port.development', '25432'),
     ('postgres.iroha.port', '5432'),
-    ('postgres.iroha.database', 'iroha_data'),
+    ('postgres.iroha.database', 'iroha_data0'),
     ('postgres.iroha.user', 'postgres'),
     ('postgres.iroha.password', 'iroha');
 
