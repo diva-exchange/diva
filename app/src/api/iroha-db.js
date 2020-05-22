@@ -7,7 +7,7 @@
 'use strict'
 
 import { Client } from 'pg'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 import util from 'util'
 import zlib from 'zlib'
 

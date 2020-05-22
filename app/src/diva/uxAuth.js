@@ -6,7 +6,7 @@
 
 'use strict'
 
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 import { Culture } from '../culture'
 import { User } from './config/user'

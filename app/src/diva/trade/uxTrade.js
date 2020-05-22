@@ -10,7 +10,7 @@ import { Db } from '../../db'
 import { UXMain } from '../uxMain'
 import { Culture } from '../../culture'
 import { Order } from './order'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 export class UXTrade extends UXMain {
   /**

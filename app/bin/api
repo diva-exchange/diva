@@ -9,7 +9,7 @@
 
 import { HttpServer } from '../src/http-server'
 import { Iroha } from '../src/api/iroha'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 (() => {
   let countConnectionError = 0

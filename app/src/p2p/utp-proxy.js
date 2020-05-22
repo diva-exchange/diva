@@ -6,7 +6,7 @@
 
 'use strict'
 
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 import dgram from 'dgram'
 import net from 'net'

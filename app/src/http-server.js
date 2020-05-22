@@ -7,7 +7,7 @@
 'use strict'
 
 import http from 'http'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 import { Routes as ApiRoutes } from './api/routes'
 import { Routes as DivaRoutes } from './diva/routes'

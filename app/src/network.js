@@ -11,7 +11,7 @@ import WebSocket from 'ws'
 
 import { Config } from './config'
 import { shuffleArray } from './utils'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 const WEBSOCKET_CLIENT_OPTIONS = { followRedirects: false, perMessageDeflate: false }
 

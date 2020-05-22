@@ -7,13 +7,13 @@
 'use strict'
 
 import BigNumber from 'bignumber.js'
-import nanoid from 'nanoid/generate'
+import { customAlphabet } from 'nanoid'
 import path from 'path'
 
 import { Db } from '../db'
 import { Job, JOB_INTERFACE_API } from '../job'
 import { Iroha } from './iroha'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 import { WebsocketServer } from '../websocket-server'
 import { Environment } from '../environment'
 
@@ -495,7 +495,7 @@ export class Api {
     }
 
     // create a new username, length: between 16 and 32 bytes
-    const username = nanoid(API_ALPHABET_USERNAME, Math.floor(Math.random() * 16 + 16))
+    const username = customAlphabet(API_ALPHABET_USERNAME, Math.floor(Math.random() * 16 + 16))()
 
     // create the user on the blockchain
     return Job.add(

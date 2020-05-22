@@ -6,7 +6,7 @@
 'use strict'
 
 import { Db } from '../../db'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 import { hash } from '../../utils'
 import { Network } from '../../network'
 

@@ -13,7 +13,7 @@ import { Config } from '../../config'
 import { Db } from '../../db'
 import { JOB_STATUS_OK } from '../../job'
 import { KeyStore } from '../../key-store'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 import { shuffleArray } from '../../utils'
 
 export class Order {

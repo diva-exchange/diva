@@ -7,7 +7,7 @@
 'use strict'
 
 import WebSocket from 'ws'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 export class WebsocketServer {
   /**

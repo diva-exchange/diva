@@ -8,7 +8,7 @@
 
 import nanoid from 'nanoid'
 
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 import { Iroha } from '../api/iroha'
 
 const SIZE_ID = 32

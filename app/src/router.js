@@ -13,7 +13,7 @@ import path from 'path'
 import session from 'express-session'
 
 import { Culture } from './culture'
-import { Logger } from 'diva-logger'
+import { Logger } from '@diva.exchange/diva-logger'
 
 // @TODO ES6 import
 const SessionStore = require('./session-store')(session)
