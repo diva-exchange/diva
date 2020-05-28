@@ -100,19 +100,26 @@ article.article {
 }
 
 .chat_messages_div {
-  height: 250px;
-  overflow-y: auto;
-  background-color: #bfbebe;
-  margin-bottom: 20px;
+  background-color: #fff;
   border-radius: 4px;
+  height: 250px;
+  margin-bottom: 20px;
+  overflow-y: auto;
   padding: 10px 10px 10px 10px;
+  position: relative;
 }
-
-.chat_messages_div div:after {
-  content: '';
+.chat_messages_div:after {
+  background-image: url("../media/diva-exchange-600x315.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  content: " ";
   display: block;
-  background-image: url("../media/masked_people.jpeg");
-  opacity: 0.4;
+  height: 100%;
+  left: 0;
+  opacity: 0.1;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .chat_accounts_ul {
