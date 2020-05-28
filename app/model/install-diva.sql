@@ -262,4 +262,15 @@ INSERT INTO asset (asset_ident) VALUES
     ('XMR'),
     ('ETH');
 
+DROP TABLE IF EXISTS diva_chat;
+
+CREATE TABLE diva_chat (
+    account_ident TEXT NOT NULL,
+    message TEXT NOT NULL,
+    timestamp_ms INTEGER NOT NULL,
+    sent_received TINYINT NOT NULL,
+
+    PRIMARY KEY (timestamp_ms)
+) WITHOUT ROWID;
+
 PRAGMA foreign_keys = on

@@ -60,7 +60,7 @@ export class Routes extends Router {
 
         '/login': controllerUXAuth,
         '/register': controllerUXAuth,
-
+        '/social/*': controllerUXSocial,
         '/trade/*': controllerUXTrade
       }
     })
