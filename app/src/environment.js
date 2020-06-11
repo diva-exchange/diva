@@ -52,7 +52,7 @@ export class Environment {
    * @returns {Promise<void>}
    * @private
    */
-  static async _isAvailableNetworkService (host) {
+  static _isAvailableNetworkService (host) {
     return new Promise((resolve, reject) => {
       const [hostname, port] = host.split(':', 2)
       const socket = net.connect({ port: port, host: hostname }, () => {
