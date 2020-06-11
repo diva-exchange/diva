@@ -29,7 +29,7 @@ This project is unstable and highly experimental. Feedback and pull requests are
 
 To get _diva_ up and running simply achieve this:
 1. Install Docker and Docker Compose
-2. Pull the _diva_ repositories from gitlab
+2. Pull the _diva_ repositories from codeberg
 3. Build the Docker images within your local environment
 4. Start the Docker containers
 
@@ -71,10 +71,10 @@ Now download the necessary code repositories to your local device. We assume tha
 
 Now, we assume you **create a folder called "diva.exchange" within your User folder** and you download and unpack four repositories into this newly created folder:
 
-1. https://gitlab.com/diva.exchange/diva/-/archive/master/diva-master.zip
-2. https://gitlab.com/diva.exchange/i2pd/-/archive/master/i2pd-master.zip
-3. https://gitlab.com/diva.exchange/iroha/-/archive/master/iroha-master.zip
-4. https://gitlab.com/diva.exchange/hangout/-/archive/master/hangout-master.zip
+1. https://codeberg.org/diva.exchange/diva/-/archive/master/diva-master.zip
+2. https://codeberg.org/diva.exchange/i2pd/-/archive/master/i2pd-master.zip
+3. https://codeberg.org/diva.exchange/iroha/-/archive/master/iroha-master.zip
+4. https://codeberg.org/diva.exchange/hangout/-/archive/master/hangout-master.zip
 
 Unpack the four archives into your diva.exchange folder. Rename the three folders by removing the "-master" postfix. After unpacking and renaming, your folder structure will look like this on **Windows**:
 * C:\Users\YourUsername\diva.exchange\diva\
