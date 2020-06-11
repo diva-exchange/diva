@@ -6,8 +6,10 @@
 
 'use strict'
 
-import { Db } from '../../db'
 import { UXMain } from '../uxMain'
+import WebSocket from 'ws'
+import { Chat } from './chat'
+import { ChatSignal } from './chatSignal'
 
 export class UXSocial extends UXMain {
   /**
@@ -27,7 +29,19 @@ export class UXSocial extends UXMain {
    */
   constructor (server) {
     super(server)
-    this._db = Db.connect()
+
+    this.chat = Chat.make()
+    this.chatSignal = ChatSignal.make()
+
+    const webSocketChat = new WebSocket.Server({ port: 45315 })
+
+    webSocketChat.on('connection', function connection (ws, request, client) {
+      ws.on('message', function incoming (message) {
+        const ip = request.socket.remoteAddress
+        console.log(`Received message ${message} from address ${ip} from user ${client}`)
+        // this.chat.addMessage(JSON.parse(message).chatName, JSON.parse(message).chatMessage, 2)
+      })
+    })
   }
 
   /**
@@ -43,46 +57,42 @@ export class UXSocial extends UXMain {
     }
 
     switch (rq.path) {
-
       case '/social/newMessage':
-        session.chatIdent = rq.body.chatName;
-        if (rq.body.chatMessage && rq.body.chatMessage != null && rq.body.chatMessage != '') {
-            this.addMessage(rq.body.chatName, rq.body.chatMessage)
-      }
+        session.chatIdent = rq.body.chatName
+        if (rq.body.chatMessage && rq.body.chatMessage !== null && rq.body.chatMessage !== '') {
+          this.chat.addMessage(rq.body.chatName, rq.body.chatMessage, 1)
+          this.sendMessage(rq.body.chatName, rq.body.chatMessage)
+        }
+
       case '/social':
         rs.render('diva/social/social', {
-            title: 'Social',
-            arrayMessage: this.getMessagesForUser(session.chatIdent),
-            arrayChatFriends: this.getChatFriends(),
-            activeAccountIdent: session.chatIdent
+          title: 'Social',
+          arrayMessage: this.chat.getMessagesForUser(session.chatIdent),
+          arrayChatFriends: this.chat.getChatFriends(),
+          activeAccountIdent: session.chatIdent
         })
         break
       default:
         n()
     }
+    this.chatSignal.signalServerOpen(session.account)
   }
 
-  addMessage (name, message) {
-    this._db.insert(`INSERT INTO diva_chat (account_ident, message, timestamp_ms, sent_received)
-            VALUES (@a, @m, @ts, @sr)`, {
-        a: name,
-        m: message,
-        ts: +new Date,
-        sr: 1
-        })
-  }
+  sendMessage (name, message) {
+    const webSocketChatFriend = new WebSocket('ws://localhost:45315')
 
-  getMessagesForUser (accountIdent) {
-    return this._db.allAsArray('SELECT message, timestamp_ms, sent_received FROM diva_chat WHERE account_ident = @account_ident',
-    {
-        account_ident: accountIdent
+    webSocketChatFriend.on('error', function error (err) {
+      console.log('Chat Socket Error : ' + err)
+    })
+
+    webSocketChatFriend.on('open', function open () {
+      webSocketChatFriend.send(JSON.stringify({
+        chatName: name,
+        chatMessage: message
+      })
+      )
     })
   }
-
-  getChatFriends () {
-    return this._db.allAsArray('SELECT DISTINCT account_ident FROM diva_chat')
-  }
-
 }
 
 module.exports = { UXSocial }
