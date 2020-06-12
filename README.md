@@ -63,7 +63,7 @@ Docker Compose: https://docs.docker.com/compose/install/
 
 Have you installed Docker? If not, please do so first (see above).
 
-Now download the necessary code repositories to your local device. We assume that you store downloaded repositories within your User folder, which is usually located here:
+Now download the code repository to your local device. We assume that you store the downloaded repository within your User folder, which is usually located here:
 
 * **Windows**: C:\Users\YourUsername\
 * **MacOS**: /Users/YourUsername/
@@ -71,22 +71,24 @@ Now download the necessary code repositories to your local device. We assume tha
 
 Now, we assume you **create a folder called "diva.exchange" within your User folder** and you download and unpack the DIVA repository into this newly created folder:
 
-1. DIVA repository: https://codeberg.org/diva.exchange/diva/archive/master.zip
-2. Pull the Docker Image for I2P: `docker pull divax/i2p:latest`
-3. Pull the Docker Image for Iroha: `docker pull divax/iroha`
+https://codeberg.org/diva.exchange/diva/archive/master.zip
+
+Then pull the required Docker images:
+2. I2P: `docker pull divax/i2p:latest`
+3. Iroha: `docker pull divax/iroha`
 
 Start the docker container for I2P:
-1. As priviledged user: `docker run -p 7070:7070 -p 4444:4444 -p 4445:4445 -d --name i2pd divax/i2p:latest`
-2. Test it: `sudo docker ps -a` should show a running i2pd container. Also test it with your browser: http://localhost:7070 - you should see the I2Pd webconsole. I2P is up and running.
+1. As privileged user: `docker run -p 7070:7070 -p 4444:4444 -p 4445:4445 -d --name i2pd divax/i2p:latest`
+2. Test it, as privileged user: `docker ps -a` should show a running i2pd container. Also test it with your browser: http://localhost:7070 - you should see the I2Pd webconsole. I2P is up and running.
 
 Start the docker container for Iroha (needs a persistant storage):
-1. Create the volume, as priviledged user: `docker volume create iroha`
-2. Start the container, as priviledged user: `docker run -d -p 25432:5432 -p 50151:50051 --name=iroha --mount type=volume,src=iroha,dst=/opt/iroha/data/ divax/iroha:latest`
-3. Test it, as priviledged user: `docker ps -a` should show a running iroha container.
+1. Create the volume, as privileged user: `docker volume create iroha`
+2. Start the container, as privileged user: `docker run -d -p 25432:5432 -p 50151:50051 --name=iroha -v iroha:/opt/iroha/data divax/iroha:latest`
+3. Test it, as privileged user: `docker ps -a` should show a running iroha container.
 
 Start diva:
 1. Navigate to your diva folder, like /home/YourUsername/diva.exchange/ or /Users/YourUsername/diva.exchange/
-2. PM2 process manager is required: `npm install -g pm2`
+2. PM2 process manager is required, run as privileged user (due to global, -g): `npm install -g pm2`
 3. Install the diva database: `npm run install`
 4. Start diva: `npm start`
 4. You have now two services available locally: the application DIVA and the API. The application on http://localhost:3911 (this is DIVA - all you do happens locally - no data transferred over the network). The API is boring but super important. You can access it using your browser, http://localhost:3912.
