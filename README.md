@@ -89,7 +89,7 @@ Start diva:
 2. PM2 process manager is required: `npm install -g pm2`
 3. Install the diva database: `npm run install`
 4. Start diva: `npm start`
-4. You have now two services available locally: the application DIVA and the API. The application on http://localhost:3901 (this is DIVA - all you do happens locally - no data transferred over the network). The API is boring but super important. You can access it using your browser, http://localhost:3902.
+4. You have now two services available locally: the application DIVA and the API. The application on http://localhost:3911 (this is DIVA - all you do happens locally - no data transferred over the network). The API is boring but super important. You can access it using your browser, http://localhost:3912.
 5. Please note: your using a development branch. There might be dragons.
 
 ### How to Stop and Clean Up
