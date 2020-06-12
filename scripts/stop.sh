@@ -4,7 +4,6 @@
 # Stop
 ###############################################################################
 
-# include my library helpers for colorized echo and require_brew, etc
 CUR_DIR=$(pwd)
 source "$CUR_DIR/scripts/echos.sh"
 source "$CUR_DIR/scripts/helpers.sh"
