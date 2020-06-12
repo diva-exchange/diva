@@ -69,9 +69,9 @@ Now download the necessary code repositories to your local device. We assume tha
 * **MacOS**: /Users/YourUsername/
 * **Linux/Ubuntu flavour**: /home/YourUsername/
 
-Now, we assume you **create a folder called "diva.exchange" within your User folder** and you download and unpack four repositories into this newly created folder:
+Now, we assume you **create a folder called "diva.exchange" within your User folder** and you download and unpack the DIVA repository into this newly created folder:
 
-1. https://codeberg.org/diva.exchange/diva/archive/master.zip
+1. DIVA repository: https://codeberg.org/diva.exchange/diva/archive/master.zip
 2. Pull the Docker Image for I2P: `docker pull divax/i2p:latest`
 3. Pull the Docker Image for Iroha: `docker pull divax/iroha`
 
