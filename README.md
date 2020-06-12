@@ -84,10 +84,13 @@ Start the docker container for Iroha (needs a persistant storage):
 2. Start the container, as priviledged user: `docker run -d -p 25432:5432 -p 50151:50051 --name=iroha --mount type=volume,src=iroha,dst=/opt/iroha/data/ divax/iroha:latest`
 3. Test it, as priviledged user: `docker ps -a` should show a running iroha container.
 
-Now start diva:
+Start diva:
 1. Navigate to your diva folder, like /home/YourUsername/diva.exchange/ or /Users/YourUsername/diva.exchange/
 2. PM2 process manager is required: `npm install -g pm2`
-3. Start diva: `npm start`
+3. Install the diva database: `npm run install`
+4. Start diva: `npm start`
+4. You have now two services available locally: the application DIVA and the API. The application on http://localhost:3901 (this is DIVA - all you do happens locally - no data transferred over the network). The API is boring but super important. You can access it using your browser, http://localhost:3902.
+5. Please note: your using a development branch. There might be dragons.
 
 ### How to Stop and Clean Up
 Stop and completely remove the docker container. All data within the containers (like the blockchain) will be lost - that's fine if you want to have a fresh start.

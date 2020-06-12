@@ -1,6 +1,5 @@
 /*!
  * diva uxSocial
- * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
  * GPL3 Licensed
  */
 
@@ -10,7 +9,7 @@ import WebSocket from 'ws'
 
 const SIGNALING_SERVER = 'http://localhost:3903/'
 
-const webSocketSignal = new WebSocket(SIGNALING_SERVER)
+//const webSocketSignal = new WebSocket(SIGNALING_SERVER)
 
 export class ChatSignal {
   static make () {
