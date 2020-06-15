@@ -8,6 +8,8 @@
 
 import SocksProxyAgent from 'socks-proxy-agent'
 import WebSocket from 'ws'
+import Peer from 'simple-peer'
+import wrtc from 'wrtc'
 
 import { Config } from './config'
 import { shuffleArray } from './utils'
@@ -116,6 +118,80 @@ export class Network {
     Logger.trace('Network.getWebsocket(): ' + peer)
     return new WebSocket('ws://' + peer, '', options)
   }
+
+  initiateChat(fromPeerB32, toPeerB32) {
+
+      console.log(fromPeerB32 + " to => " + toPeerB32)
+
+      const websocket = new WebSocket('wss://signal.diva.exchange', {
+        perMessageDeflate: false
+      })
+
+      websocket.on('open', () => {
+          websocket.send(JSON.stringify({
+            type: 'register',
+            from: fromPeerB32,
+            to: toPeerB32
+          }))
+      })
+
+      const peers = {}
+
+      websocket.on('message', (message) => {
+        let obj = {}
+        try {
+          obj = JSON.parse(message)
+        } catch (error) {
+          return
+        }
+
+          const _id = obj.from + ':' + obj.to
+          console.log(_id)
+        switch (obj.type) {
+            case 'init':
+            case 'rcpt':
+              peers[_id] = new Peer({
+                config: { iceServers: [{ urls: 'stun:kopanyo.com:3478' }] },
+                initiator: obj.type === 'init',
+                wrtc: wrtc
+              })
+              peers[_id].on('error', (error) => {
+                console.log('ERROR', error)
+                peers[_id] = false
+              })
+              // this is incoming from STUN/TURN
+              peers[_id].on('signal', (data) => {
+                const json = JSON.stringify({
+                  type: 'signal',
+                  signal: data,
+                  from: ident,
+                  to: obj.to
+                })
+                console.log('SIGNAL', json)
+                websocket.send(json)
+              })
+              peers[_id].on('connect', () => {
+                // wait for 'connect' event before using the data channel
+                peers[_id].send('hey ' + obj.to + ', how is it going? Greetings, ' + obj.from)
+              })
+              peers[_id].on('data', (data) => {
+                // got a data channel message
+                console.log('got data: ' + data)
+              })
+              break
+            case 'signal':
+              if (peers[_id]) {
+                peers[_id].signal(obj.data)
+              }
+              break
+            default:
+              break
+          }
+
+      })
+    }
+
+
 }
 
 module.exports = { Network }

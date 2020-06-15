@@ -9,7 +9,7 @@
 import { UXMain } from '../uxMain'
 import WebSocket from 'ws'
 import { Chat } from './chat'
-import { ChatSignal } from './chatSignal'
+//import { ChatSignal } from './chatSignal'
 
 export class UXSocial extends UXMain {
   /**
@@ -31,7 +31,7 @@ export class UXSocial extends UXMain {
     super(server)
 
     this.chat = Chat.make()
-    this.chatSignal = ChatSignal.make()
+//    this.chatSignal = ChatSignal.make()
 
     const webSocketChat = new WebSocket.Server({ port: 45315 })
 
@@ -75,7 +75,7 @@ export class UXSocial extends UXMain {
       default:
         n()
     }
-    this.chatSignal.signalServerOpen(session.account)
+    //this.chatSignal.signalServerOpen(session.account)
   }
 
   sendMessage (name, message) {
