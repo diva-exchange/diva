@@ -215,6 +215,9 @@ export class Api {
           version: API_VERSION
         })
         break
+      case '/chat/initiate':
+        // call the network function here
+        break
       case '/alive-hosts':
       case '/hosts':
       case '/alive-hosts.txt':
