@@ -16,6 +16,7 @@ import { Iroha } from './iroha'
 import { Logger } from '@diva.exchange/diva-logger'
 import { WebsocketServer } from '../websocket-server'
 import { Environment } from '../environment'
+import { Network } from '../network'
 
 const API_NAME = 'diva'
 const API_VERSION = '0.1.0'
@@ -222,6 +223,7 @@ export class Api {
         break
       case '/chat/initiate':
         // call the network function here
+        Network.make().initiateChat('uipla7zohesqe6aktmyz37kyuzgn6dvx4frtzyatmuayqxv4w4fa.b32.i2p:3912', 'aopdz3rjfahejo5ipikjheblstl7tpjgqxxelfmyzxvvidmma22a.b32.i2p:3912')
         break
       case '/alive-hosts':
       case '/hosts':
