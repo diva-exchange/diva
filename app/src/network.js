@@ -116,6 +116,18 @@ export class Network {
     Logger.trace('Network.getWebsocket(): ' + peer)
     return new WebSocket('ws://' + peer, '', options)
   }
+
+  /**
+   * @param b32 {String}
+   * @returns {WebSocket}
+   */
+  getWebsocketToB32 (b32) {
+    const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
+    Logger.trace('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
+    options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
+    Logger.trace('Network.getWebsocket(): ' + b32)
+    return new WebSocket('ws://' + b32, '', options)
+  }
 }
 
 module.exports = { Network }

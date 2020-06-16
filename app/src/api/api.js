@@ -34,6 +34,8 @@ const API_WEBSOCKET_COMMAND_VERSION = 'version'
 const API_WEBSOCKET_COMMAND_SUBSCRIBE = 'subscribe'
 const API_WEBSOCKET_COMMAND_UNSUBSCRIBE = 'unsubscribe'
 
+const API_WEBSOCKET_COMMAND_CHAT = 'chat'
+
 const API_WEBSOCKET_RESOURCE_BLOCK = 'block'
 const API_WEBSOCKET_RESOURCE_ORDERBOOK = 'orderbook'
 
@@ -130,6 +132,9 @@ export class Api {
           name: API_NAME,
           version: API_VERSION
         }), API_WEBSOCKET_SEND_OPTIONS, () => {})
+        break
+      case API_WEBSOCKET_COMMAND_CHAT:
+        Logger.info('Incoming Chat Message: ' + (data.message || ''))
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:
         if (!this.hasBlockchain) {

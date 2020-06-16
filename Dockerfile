@@ -1,4 +1,4 @@
-FROM node:lts-slim
+FROM node:lts-alpine
 
 LABEL author="Konrad Baechler <konrad@diva.exchange>" \
   maintainer="Konrad Baechler <konrad@diva.exchange>" \
@@ -8,7 +8,6 @@ LABEL author="Konrad Baechler <konrad@diva.exchange>" \
 
 COPY package.json /home/node/package.json
 COPY ecosystem.config.js /home/node/ecosystem.config.js
-COPY network/* /
 
 # Applications
 COPY app /home/node/app
@@ -19,37 +18,32 @@ COPY entrypoint.sh /
 ENV NPM_CONFIG_LOGLEVEL warn
 
 RUN rm -R /home/node/app/test \
-  && apt-get update \
-  && apt-get -y install \
-    g++ \
-    gcc \
-    python \
+  && apk --no-cache --virtual build-dependendencies add \
     make \
+    gcc \
+    g++ \
+    libtool \
+    binutils \
+    build-base \
+    autoconf \
     automake \
-    sqlite \
-    dnsmasq \
-    nano \
-    procps \
-    iputils-ping \
+    python3 \
   && cd /home/node/ \
   && npm install node-gyp -g \
   && npm install pm2 -g \
+  && apk --no-cache add \
+    sqlite \
+# install the application
   && npm install --production \
   && chown -R node:node "/home/node" \
   && npm uninstall node-gyp -g \
-  && apt-get -y purge \
-    g++ \
-    gcc \
-    make \
-    automake \
-    python \
-  && apt-get -y autoremove \
+  && apk --no-cache --purge del build-dependendencies \
   && chmod +x /entrypoint.sh
 
 # Create the volume to keep the nodeJS Data
 VOLUME [ "/home/node/" ]
 
-# 3900 diva.profile app, 3902 diva.api, 10001 iroha utp-proxy
-EXPOSE 3900 3902 10001
+# 3901 divaapp, 3902 diva.api
+EXPOSE 3901 3902
 
 ENTRYPOINT ["/entrypoint.sh"]

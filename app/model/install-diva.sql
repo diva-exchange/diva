@@ -21,11 +21,7 @@ CREATE TABLE config (
 ) WITHOUT ROWID;
 
 INSERT INTO config(key, value) VALUES
-    ('hangout.bootstrap.url.development', '["http://localhost/development-bootstrap.json"]'),
-    ('hangout.bootstrap.url', '["http://docker.host.local/bootstrap.json", "https://diva.exchange/bootstrap.json"]'),
-
     ('diva.websocket.development', '["localhost:3912"]'),
-    ('diva.websocket.development.old', '["rv4bokgbumu752r4pl7gkiwykaszrhbtiqvihagzmkwckxqd7eba.b32.i2p:3902", "svbpbgdnlvpgbrnlwt6ybn23fdgqoqkkpqyerb747sk6voqdadeq.b32.i2p:3902", "iuywm2f2ftql27tgsnsc6kbx5clsfd4hh2ivgmgvlul26z33suuq.b32.i2p:3902"]'),
     ('diva.websocket', '["exmtzchyabihsojgtwcmztfgkse5tby4lg7jopu2om5kya6cehmq.b32.i2p:3902", "cdg2b753gtkkqods4mu6t3dewt7fkerdja4a5y443uysgwcd6hca.b32.i2p:3902", "6rm2mv6h647rozau22bqxwkxnnqelpynwj6jiclnkrcc3ljqfc2a.b32.i2p:3902"]'),
 
     ('diva.api.uri.development', '["localhost:3912"]'),
@@ -37,10 +33,10 @@ INSERT INTO config(key, value) VALUES
     ('iroha.torii', 'iroha.local:50051'),
 
     ('i2p.webconsole.scraper.url', 'http://localhost:7070/?page=i2p_tunnels'),
-    ('i2p.http.proxy.development', 'localhost:4440'),
-    ('i2p.http.proxy', 'i2pd.local:4440'),
-    ('i2p.socks.proxy.development', 'localhost:4450'),
-    ('i2p.socks.proxy', 'i2pd.local:4450'),
+    ('i2p.http.proxy.development', 'localhost:4444'),
+    ('i2p.http.proxy', 'i2pd.local:4444'),
+    ('i2p.socks.proxy.development', 'localhost:4445'),
+    ('i2p.socks.proxy', 'i2pd.local:4445'),
 
     ('postgres.iroha.host.development', 'localhost'),
     ('postgres.iroha.host', 'postgres.local'),
