@@ -119,79 +119,75 @@ export class Network {
     return new WebSocket('ws://' + peer, '', options)
   }
 
-  initiateChat(fromPeerB32, toPeerB32) {
+  initiateChat (fromPeerB32, toPeerB32) {
+    console.log(fromPeerB32 + ' to => ' + toPeerB32)
 
-      console.log(fromPeerB32 + " to => " + toPeerB32)
+    const websocket = new WebSocket('wss://signal.diva.exchange', {
+      perMessageDeflate: false
+    })
 
-      const websocket = new WebSocket('wss://signal.diva.exchange', {
-        perMessageDeflate: false
-      })
+    websocket.on('open', () => {
+      websocket.send(JSON.stringify({
+        type: 'register',
+        from: fromPeerB32,
+        to: toPeerB32
+      }))
+    })
 
-      websocket.on('open', () => {
-          websocket.send(JSON.stringify({
-            type: 'register',
-            from: fromPeerB32,
-            to: toPeerB32
-          }))
-      })
+    const peers = {}
 
-      const peers = {}
+    websocket.on('message', (message) => {
+      let obj = {}
+      try {
+        obj = JSON.parse(message)
+      } catch (error) {
+        return
+      }
 
-      websocket.on('message', (message) => {
-        let obj = {}
-        try {
-          obj = JSON.parse(message)
-        } catch (error) {
-          return
-        }
-
-          const _id = obj.from + ':' + obj.to
-          console.log(_id)
-        switch (obj.type) {
-            case 'init':
-            case 'rcpt':
-              peers[_id] = new Peer({
-                config: { iceServers: [{ urls: 'stun:kopanyo.com:3478' }] },
-                initiator: obj.type === 'init',
-                wrtc: wrtc
-              })
-              peers[_id].on('error', (error) => {
-                console.log('ERROR', error)
-                peers[_id] = false
-              })
-              // this is incoming from STUN/TURN
-              peers[_id].on('signal', (data) => {
-                const json = JSON.stringify({
-                  type: 'signal',
-                  signal: data,
-                  from: ident,
-                  to: obj.to
-                })
-                console.log('SIGNAL', json)
-                websocket.send(json)
-              })
-              peers[_id].on('connect', () => {
-                // wait for 'connect' event before using the data channel
-                peers[_id].send('hey ' + obj.to + ', how is it going? Greetings, ' + obj.from)
-              })
-              peers[_id].on('data', (data) => {
-                // got a data channel message
-                console.log('got data: ' + data)
-              })
-              break
-            case 'signal':
-              if (peers[_id]) {
-                peers[_id].signal(obj.data)
-              }
-              break
-            default:
-              break
+      const _id = obj.from + ':' + obj.to
+      console.log(_id)
+      switch (obj.type) {
+        case 'init':
+        case 'rcpt':
+          peers[_id] = new Peer({
+            config: { iceServers: [{ urls: 'stun:kopanyo.com:3478' }] },
+            initiator: obj.type === 'init',
+            wrtc: wrtc
+          })
+          peers[_id].on('error', (error) => {
+            console.log('ERROR', error)
+            peers[_id] = false
+          })
+          // this is incoming from STUN/TURN
+          peers[_id].on('signal', (data) => {
+            const json = JSON.stringify({
+              type: 'signal',
+              signal: data,
+              from: fromPeerB32,
+              to: obj.to
+            })
+            console.log('SIGNAL', json)
+            websocket.send(json)
+          })
+          peers[_id].on('connect', () => {
+            // wait for 'connect' event before using the data channel
+            peers[_id].send('hey ' + obj.to + ', how is it going? Greetings, ' + obj.from)
+          })
+          peers[_id].on('data', (data) => {
+            // got a data channel message
+            console.log('got data: ' + data)
+          })
+          break
+        case 'signal':
+          if (peers[_id]) {
+            peers[_id].signal(obj.data)
           }
-
-      })
-    }
-
-
+          break
+        default:
+          break
+      }
+    })
+  }
 }
 
 module.exports = { Network }
