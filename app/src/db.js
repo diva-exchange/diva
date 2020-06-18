@@ -6,7 +6,7 @@
 
 'use strict'
 
-import fs from 'fs'
+import fs from 'fs-extra'
 import path from 'path'
 
 import Sqlite3Database from 'better-sqlite3'

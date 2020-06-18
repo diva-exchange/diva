@@ -51,14 +51,6 @@ export class Config {
       return this._data[key]
     }
   }
-
-  /**
-   * @returns {number}
-   * @public
-   */
-  getLength () {
-    return this._data.length
-  }
 }
 
 module.exports = { Config }

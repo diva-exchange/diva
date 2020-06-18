@@ -20,7 +20,7 @@
     "css-build": "node-sass --omit-source-map-url --output-style compressed app/static/sass/diva.scss app/static/css/diva.min.css",
     "install": "node -r esm app/bin/install-db",
     "start": "pm2 kill && pm2 start ecosystem.config.js",
-    "test": "rm -rf app/test/data/session ; nyc mocha"
+    "test": "rm -rf app/test/data/session ; nyc mocha ; exit 0"
   },
   "dependencies": {
     "@diva.exchange/diva-logger": "^0.2.5",
@@ -68,7 +68,7 @@
     "require": [
       "esm"
     ],
-    "spec": "app/test/*.spec.js"
+    "spec": "app/test/**/*.spec.js"
   },
   "nyc": {
     "reporter": [

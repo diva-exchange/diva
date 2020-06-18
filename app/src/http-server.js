@@ -11,7 +11,6 @@ import { Logger } from '@diva.exchange/diva-logger'
 
 import { Routes as ApiRoutes } from './api/routes'
 import { Routes as DivaRoutes } from './diva/routes'
-import { Routes as ProfileRoutes } from './profile/routes'
 
 export class HttpServer {
   /**
@@ -41,9 +40,6 @@ export class HttpServer {
         break
       case 'diva':
         this.router = new DivaRoutes(this)
-        break
-      case 'profile':
-        this.router = new ProfileRoutes()
         break
       default:
         throw new Error('Unknown Application')

@@ -16,7 +16,6 @@ import { Iroha } from './iroha'
 import { Logger } from '@diva.exchange/diva-logger'
 import { WebsocketServer } from '../websocket-server'
 import { Environment } from '../environment'
-import { Network } from '../network'
 
 const API_NAME = 'diva'
 const API_VERSION = '0.1.0'
@@ -158,8 +157,8 @@ export class Api {
 
               const objData = this._getMarket(data.contract, account, group ? 0 : limit)
               if (group) {
-                objData.bid = this._group(objData.bid, limit, this.mapContract.get(data.contract).precision)
-                objData.ask = this._group(objData.ask, limit, this.mapContract.get(data.contract).precision)
+                objData.bid = Api._group(objData.bid, limit, this.mapContract.get(data.contract).precision)
+                objData.ask = Api._group(objData.ask, limit, this.mapContract.get(data.contract).precision)
               }
               ws.send(JSON.stringify(objData), API_WEBSOCKET_SEND_OPTIONS)
             }
@@ -221,10 +220,6 @@ export class Api {
           version: API_VERSION
         })
         break
-      case '/chat/initiate':
-        // call the network function here
-        Network.make().initiateChat('uipla7zohesqe6aktmyz37kyuzgn6dvx4frtzyatmuayqxv4w4fa.b32.i2p:3912', 'aopdz3rjfahejo5ipikjheblstl7tpjgqxxelfmyzxvvidmma22a.b32.i2p:3912')
-        break
       case '/alive-hosts':
       case '/hosts':
       case '/alive-hosts.txt':
@@ -240,17 +235,17 @@ export class Api {
       case '/user/create':
         this._getCreateUser(rq)
           .then((idJob) => { rs.json({ idJob: idJob }) })
-          .catch((error) => { rs.status(500).json(error) })
+          .catch((e) => { rs.status(500).json(e) })
         break
       case '/job':
-        this._getJobAsArray(rq)
+        Api._getJobAsArray(rq)
           .then((arrayJob) => { rs.json(arrayJob) })
-          .catch((error) => { rs.status(500).json(error) })
+          .catch((e) => { rs.status(500).json(e) })
         break
       case '/order/set':
         this._postSetOrder(rq)
           .then((idJob) => { rs.json({ idJob: idJob }) })
-          .catch((error) => { rs.status(500).json(error) })
+          .catch((e) => { rs.status(500).json(e) })
         break
       case '/market':
         if (!rq.query.identContract || !this.mapContract.has(rq.query.identContract)) {
@@ -269,8 +264,8 @@ export class Api {
           const objMarket = this._getMarket(identContract, identAccount, doGroup ? 0 : limit)
           if (doGroup) {
             const precision = this.mapContract.get(identContract).precision
-            objMarket.bid = this._group(objMarket.bid, limit, precision)
-            objMarket.ask = this._group(objMarket.ask, limit, precision)
+            objMarket.bid = Api._group(objMarket.bid, limit, precision)
+            objMarket.ask = Api._group(objMarket.ask, limit, precision)
           }
           rs.json(objMarket)
         } catch (error) {
@@ -290,7 +285,7 @@ export class Api {
    * @returns {Array}
    * @private
    */
-  _group (array, limit, precision) {
+  static _group (array, limit, precision) {
     if (!array.length) {
       return []
     }
@@ -343,8 +338,8 @@ export class Api {
               if (!o.account || o.account === identAccount) {
                 const objData = this._getMarket(identContract, o.account, o.group ? 0 : o.limit)
                 if (o.group) {
-                  objData.bid = this._group(objData.bid, o.limit, this.mapContract.get(identContract).precision)
-                  objData.ask = this._group(objData.ask, o.limit, this.mapContract.get(identContract).precision)
+                  objData.bid = Api._group(objData.bid, o.limit, this.mapContract.get(identContract).precision)
+                  objData.ask = Api._group(objData.ask, o.limit, this.mapContract.get(identContract).precision)
                 }
                 o.ws.send(JSON.stringify(objData), API_WEBSOCKET_SEND_OPTIONS, () => {})
               }
@@ -460,7 +455,7 @@ export class Api {
    * @return {Promise<Array>}
    * @private
    */
-  async _getJobAsArray (rq) {
+  static async _getJobAsArray (rq) {
     return Job.getJobByIdAsArray(rq.query.idJob)
   }
 

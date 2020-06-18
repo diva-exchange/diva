@@ -35,17 +35,6 @@ export class Environment {
   }
 
   /**
-   * @returns {Promise<string|boolean>}
-   */
-  static async getI2PProfileAddress () {
-    const response = await request({
-      url: Config.make().getValueByKey('i2p.webconsole.scraper.url')
-    })
-    // Base32 alphabet, [a-z2-7]+
-    return response.match(/local-profile.+?([a-z2-7]+\.b32\.i2p:[\d]+)/)[1] || false
-  }
-
-  /**
    * Check whether a service on the network is listening
    *
    * @param host {string} hostname:port, like localhost:443

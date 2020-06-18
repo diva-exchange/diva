@@ -1,6 +1,6 @@
 /*!
- * Diva Culture Test suite
- * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
+ * Diva Utils Test suite
+ * Copyright(c) 2020 Konrad Baechler, https://diva.exchange
  * GPL3 Licensed
  */
 'use strict'
