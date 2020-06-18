@@ -16,17 +16,18 @@
     "url": "https://codeberg.org/diva.exchange/diva.git"
   },
   "scripts": {
+    "lint": "node_modules/.bin/eslint --fix app/src ; exit 0",
     "css-build": "node_modules/node-sass/bin/node-sass --omit-source-map-url --output-style compressed sass/diva.scss app/static/css/diva.min.css",
     "install": "node -r esm app/bin/install-db",
     "start": "pm2 kill && pm2 start ecosystem.config.js",
-    "test": "node_modules/nyc/bin/nyc.js node_modules/mocha/bin/mocha"
+    "test": "nyc mocha"
   },
   "dependencies": {
+    "@diva.exchange/diva-logger": "^0.2.5",
     "better-sqlite3": "^7.1.0",
     "bignumber.js": "^9.0.0",
     "compression": "^1.7.4",
     "dateformat": "^3.0.3",
-    "@diva.exchange/diva-logger": "^0.2.5",
     "esm": "^3.2.25",
     "express": "~4.17.1",
     "express-session": "^1.17.1",
@@ -35,12 +36,12 @@
     "http-errors": "~1.7.3",
     "iroha-helpers": "^0.8.9",
     "nanoid": "^3.1.10",
+    "npm-check-updates": "^7.0.1",
     "pg": "^8.2.1",
     "pug": "^3.0.0",
     "request-promise-native": "^1.0.8",
     "socks-proxy-agent": "^5.0.0",
-    "sodium-native": "^3.1.1",
-    "utp-punch": "^1.0.1",
+    "sodium-native": "^3.2.0",
     "ws": "^7.3.0"
   },
   "devDependencies": {
@@ -67,22 +68,15 @@
     "require": [
       "esm"
     ],
-    "recursive": true,
     "spec": "app/test/*.spec.js"
   },
   "nyc": {
     "reporter": [
       "html",
-      "text",
       "text-summary"
     ],
     "include": [
       "app/src/**/*.js"
-    ],
-    "require": [
-      "esm"
-    ],
-    "check-coverage": false,
-    "cache": true
+    ]
   }
 }

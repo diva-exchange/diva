@@ -75,7 +75,7 @@ describe('//diva// /culture', function () {
     })
 
     it('should translate to UNDEFINED', () => {
-      assert.strictEqual(Culture.translateString('_invalid_'), undefined)
+      assert.strictEqual(Culture.translateString('_invalid_'), '_invalid_')
     })
 
     it('languageFromRequest, should use session[account].stateView part of the request stub', function () {

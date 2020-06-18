@@ -23,8 +23,6 @@ docker volume create iroha
 running "Start the container"
 docker run -d -p 25432:5432 -p 50151:50051 --name=iroha -v iroha:/opt/iroha/data divax/iroha:latest
 
-try_nvm
-
 running "Install dependencies"
 npm ci
 

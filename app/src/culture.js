@@ -108,20 +108,16 @@ export class Culture {
    * @returns {string}
    */
   static formatDateTime (timestamp, format = '') {
-    switch (format || '') {
-      case '':
-        switch (Culture.uiLanguage || CULTURE_DEFAULT_LANGUAGE_IDENT) {
-          case 'de':
-            format = 'dd.mm.yyyy HH:MM:ss.l o'
-            break
-          default:
-            format = 'mm/dd/yyyy hh:MM:ss.l TT o'
-        }
-        break
-      default:
-        break
+    if (format !== '') {
+      return dateFormat(timestamp, format)
     }
-    return dateFormat(timestamp, format)
+    switch (Culture.uiLanguage || CULTURE_DEFAULT_LANGUAGE_IDENT) {
+      case 'de':
+        return dateFormat(timestamp, 'dd.mm.yyyy HH:MM:ss.l o')
+      case 'en':
+      default:
+        return dateFormat(timestamp, 'mm/dd/yyyy hh:MM:ss.l TT o')
+    }
   }
 
   /**

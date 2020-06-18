@@ -23,5 +23,4 @@ else
 fi
 
 running "PM2 process manager is required, installing"
-try_nvm
 (! command_exists pm2) && npm i -g pm2

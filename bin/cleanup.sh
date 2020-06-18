@@ -30,10 +30,10 @@ read -p "Cleanup diva, ⚠️❗️ Attention: ALL containers will be removed. A
 if [[ $response =~ (yes|y|Y) ]];then
   action "Docker Clean up"
 
-  running "Prunning volumes"
+  running "Pruning volumes"
   docker volume prune
 
-  running "Prunning containers"
+  running "Pruning containers"
   docker system prune
 
   ok "System cleaned from diva! ☺️"

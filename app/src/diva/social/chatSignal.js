@@ -9,7 +9,7 @@ import WebSocket from 'ws'
 
 const SIGNALING_SERVER = 'http://localhost:3903/'
 
-//const webSocketSignal = new WebSocket(SIGNALING_SERVER)
+// const webSocketSignal = new WebSocket(SIGNALING_SERVER)
 
 export class ChatSignal {
   static make () {

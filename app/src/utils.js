@@ -24,7 +24,7 @@ export function shuffleArray (array) {
 }
 
 /**
- * Hash a string
+ * Hash a string to a 32bit Integer
  *
  * @param s {string}
  * @returns {number}

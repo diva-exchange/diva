@@ -80,29 +80,6 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production'
       }
-    },
-    {
-      name: 'utp-proxy',
-      script: 'app/bin/utp-proxy',
-      node_args: '-r esm',
-
-      min_uptime: '1h',
-      max_restarts: 10,
-
-      env: {
-        NODE_ENV: 'development',
-        BACKEND_BIND_IP: '127.0.0.1',
-        BACKEND_PORT: 10001,
-        UTP_BIND_IP: '127.0.0.1',
-        LOG_LEVEL: 'trace'
-      },
-      env_production: {
-        NODE_ENV: 'production',
-        BACKEND_BIND_IP: '0.0.0.0',
-        BACKEND_PORT: 10001,
-        UTP_BIND_IP: '0.0.0.0',
-        LOG_LEVEL: 'trace'
-      }
     }
     */
   ]
