@@ -16,11 +16,11 @@
     "url": "https://codeberg.org/diva.exchange/diva.git"
   },
   "scripts": {
-    "lint": "node_modules/.bin/eslint --fix app/src ; exit 0",
-    "css-build": "node_modules/node-sass/bin/node-sass --omit-source-map-url --output-style compressed sass/diva.scss app/static/css/diva.min.css",
+    "lint": "eslint --fix app/src ; exit 0",
+    "css-build": "node-sass --omit-source-map-url --output-style compressed app/static/sass/diva.scss app/static/css/diva.min.css",
     "install": "node -r esm app/bin/install-db",
     "start": "pm2 kill && pm2 start ecosystem.config.js",
-    "test": "nyc mocha"
+    "test": "rm -rf app/test/data/session ; nyc mocha"
   },
   "dependencies": {
     "@diva.exchange/diva-logger": "^0.2.5",

@@ -6,11 +6,11 @@
 
 'use strict'
 
-import fs from 'fs'
+import fs from 'fs-extra'
 import grpc from 'grpc'
 import {
-  QueryService_v1Client,
-  CommandService_v1Client
+  QueryService_v1Client as QueryService,
+  CommandService_v1Client as CommandService
 } from 'iroha-helpers/lib/proto/endpoint_grpc_pb'
 import { commands, queries } from 'iroha-helpers'
 import path from 'path'
@@ -73,12 +73,12 @@ export class Iroha {
     this._bufferCreatorPrivateKey = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES)
       .fill(Buffer.from(fs.readFileSync(pathPrivateKey).toString(), 'hex'))
 
-    this._commandService = new CommandService_v1Client(
+    this._commandService = new CommandService(
       torii,
       grpc.credentials.createInsecure()
     )
 
-    this._queryService = new QueryService_v1Client(
+    this._queryService = new QueryService(
       torii,
       grpc.credentials.createInsecure()
     )
@@ -123,7 +123,7 @@ export class Iroha {
    * @public
    */
   async createAccount (username, idDomain, publicKey) {
-    this._validateAccountId(username + '@' + idDomain)
+    Iroha._validateAccountId(username + '@' + idDomain)
 
     const response = await commands.createAccount(
       {
@@ -193,7 +193,7 @@ export class Iroha {
    * @throws {Error} If the account id is invalid
    * @private
    */
-  _validateAccountId (idAccount) {
+  static _validateAccountId (idAccount) {
     const _a = idAccount.split('@')
 
     if (typeof _a[0] === 'undefined' || !_a[0].match(REGEX_USERNAME)) {

@@ -7,7 +7,6 @@
 'use strict'
 
 import { Api } from './api'
-import { Auctioneer } from './auctioneer'
 import { Network } from '../network'
 import { Router } from '../router'
 

@@ -11,7 +11,6 @@ import WebSocket from 'ws'
 
 import { Config } from './config'
 import { shuffleArray } from './utils'
-import { Logger } from '@diva.exchange/diva-logger'
 
 const WEBSOCKET_CLIENT_OPTIONS = { followRedirects: false, perMessageDeflate: false }
 
@@ -37,7 +36,6 @@ export class Network {
     this._config = Config.make()
     this._websockets = new Map()
     this._availableWebsocketPeers = []
-    this._deadWebsocketPeers = []
     this._ratio = 0
     this._refreshNetwork()
   }
@@ -56,19 +54,18 @@ export class Network {
             }
             const socket = new WebSocket('ws://' + peer, '', options)
 
-            socket.once('open', () => {
+            socket.addEventListener('open', () => {
               this._websockets.set(peer, true)
               resolve()
-            })
-            socket.once('error', () => {
+            }, { once: true })
+            socket.addEventListener('error', () => {
               this._websockets.set(peer, false)
               resolve()
-            })
+            }, { once: true })
           })
         })
       )
       this._availableWebsocketPeers = Array.from(this._websockets).filter(v => v[1]).map(v => v[0])
-      this._deadWebsocketPeers = Array.from(this._websockets).filter(v => !v[1]).map(v => v[0])
       this._ratio = this._availableWebsocketPeers.length > 0
         ? this._availableWebsocketPeers.length / this._websockets.size : 0
       setTimeout(() => { this._refreshNetwork() }, (Math.pow(this._ratio, 3) * MAX_REFRESH_NETWORK_MS) + 1000)
@@ -113,7 +110,6 @@ export class Network {
     if (peer.match(/^.+\.i2p(:[\d]+)?$/)) {
       options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
     }
-    Logger.trace('Network.getWebsocket(): ' + peer)
     return new WebSocket('ws://' + peer, '', options)
   }
 
@@ -123,9 +119,7 @@ export class Network {
    */
   getWebsocketToB32 (b32) {
     const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
-    Logger.trace('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
     options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
-    Logger.trace('Network.getWebsocket(): ' + b32)
     return new WebSocket('ws://' + b32, '', options)
   }
 }
