@@ -80,7 +80,12 @@ class UiUser {
       if (response.isAuthenticated) {
         window.location.replace(response.pathView)
       } else {
+        u('form#auth #password').first().value = ''
         u('form#auth button#login').removeClass('is-loading')
+
+        // @TODO generic and consistent error UX handling
+        u('#error').removeClass('is-hidden')
+        setTimeout(() => u('#error').addClass('is-hidden'), 5000)
       }
     })
   }

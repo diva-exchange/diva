@@ -64,7 +64,7 @@ export class UXAuth {
           })
         break
       case '/login':
-        this._login(rq, rs)
+        UXAuth._login(rq, rs)
         break
       // get
       case '/logout':
@@ -72,7 +72,7 @@ export class UXAuth {
         rs.end()
         break
       case '/auth':
-        this._auth(rq, rs)
+        UXAuth._auth(rq, rs)
         break
       case '/newuser':
         rs.render('diva/newuser', {
@@ -90,7 +90,7 @@ export class UXAuth {
    * @param rs {Object} Response
    * @private
    */
-  _auth (rq, rs) {
+  static _auth (rq, rs) {
     const arrayUser = User.allAsArray()
     if (arrayUser.length > 0) {
       rs.render('diva/auth', {
@@ -109,7 +109,7 @@ export class UXAuth {
    * @param rs {Object} Response
    * @private
    */
-  _login (rq, rs) {
+  static _login (rq, rs) {
     const session = rq.session
     try {
       const user = User.open(rq.body.account || '', rq.body.password || '')

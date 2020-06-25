@@ -34,9 +34,9 @@ INSERT INTO config(key, value) VALUES
 
     ('i2p.webconsole.scraper.url', 'http://localhost:7070/?page=i2p_tunnels'),
     ('i2p.http.proxy.development', 'localhost:4444'),
-    ('i2p.http.proxy', 'i2pd.local:4444'),
+    ('i2p.http.proxy', 'localhost:4444'),
     ('i2p.socks.proxy.development', 'localhost:4445'),
-    ('i2p.socks.proxy', 'i2pd.local:4445'),
+    ('i2p.socks.proxy', 'localhost:4445'),
 
     ('postgres.iroha.host.development', 'localhost'),
     ('postgres.iroha.host', 'postgres.local'),
@@ -148,6 +148,9 @@ INSERT INTO culture (language_ident, ident, text) VALUES
     ('en', 'Karma', 'Karma'),
     ('de', 'Karma', 'Karma'),
 
+    ('en', 'auth.Error', 'Authentication failed'),
+    ('de', 'auth.Error', 'Anmeldung fehlgeschlagen'),
+
     ('en', 'Password', 'Password'),
     ('de', 'Password', 'Passwort'),
     ('en', 'NewPassword', 'New Password'),
@@ -163,6 +166,7 @@ INSERT INTO culture (language_ident, ident, text) VALUES
     ('en', 'main.DivaTitle', 'diva - Personal Distributed Value Exchange'),
     ('de', 'main.SuperHeroTitle', 'Du bist superheldenmässig unterwegs'),
     ('en', 'main.SuperHeroTitle', 'You Are a Bold Super Hero');
+
 
 
 DROP TABLE IF EXISTS job_status;

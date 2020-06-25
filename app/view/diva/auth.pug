@@ -53,3 +53,5 @@ html(data-culture-lang=Culture.uiLanguage lang=Culture.uiLanguage)
               div(class='field')
                 div(class='control')
                   button(id='login' class='button is-info' type='submit' data-culture-text='Login')= Culture.t('Login')
+
+              div(id='error' class='notification is-danger is-hidden')= Culture.t('auth.Error')
