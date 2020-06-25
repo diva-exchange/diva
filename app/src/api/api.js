@@ -16,6 +16,7 @@ import { Iroha } from './iroha'
 import { Logger } from '@diva.exchange/diva-logger'
 import { WebsocketServer } from '../websocket-server'
 import { Environment } from '../environment'
+import { Chat } from '../diva/social/chat'
 
 const API_NAME = 'diva'
 const API_VERSION = '0.1.0'
@@ -78,6 +79,7 @@ export class Api {
           this.isReady = true
         }
       })
+    this.chat = Chat.make()
   }
 
   /**
@@ -134,6 +136,14 @@ export class Api {
         }), API_WEBSOCKET_SEND_OPTIONS, () => {})
         break
       case API_WEBSOCKET_COMMAND_CHAT:
+        let details = this.chat.getConnectionDetails(data.name)
+        if (details === undefined || details.length == 0) {
+          this.chat.addConnectionDetails (data.name, data.sender, data.pk)
+        }
+        //let message = this.chat.decryptChatMessage (data.message, data.pk)
+        // this.chat.addMessage(data.name, message, 2)
+        this.chat.addMessage(data.name, data.message, 2)
+
         Logger.info('Incoming Chat Message: ' + (data.message || ''))
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:

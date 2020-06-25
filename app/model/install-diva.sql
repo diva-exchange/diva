@@ -261,10 +261,19 @@ INSERT INTO asset (asset_ident) VALUES
 DROP TABLE IF EXISTS diva_chat;
 
 CREATE TABLE diva_chat (
-    account_ident TEXT NOT NULL,
+    avatar TEXT NOT NULL,
     message TEXT NOT NULL,
     timestamp_ms INTEGER NOT NULL,
     sent_received TINYINT NOT NULL,
+
+    PRIMARY KEY (timestamp_ms)
+) WITHOUT ROWID;
+
+CREATE TABLE diva_chat_connections (
+    avatar TEXT NOT NULL,
+    b32_address TEXT NOT NULL,
+    pub_key TEXT NOT NULL,
+    timestamp_ms INTEGER NOT NULL,
 
     PRIMARY KEY (timestamp_ms)
 ) WITHOUT ROWID;

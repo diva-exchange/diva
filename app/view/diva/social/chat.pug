@@ -6,13 +6,13 @@ block content
         br
         div(class="columns")
             div(class="column is-one-thirds jumbotron")
-                input(class="form-control" id = "chatContactName" placeholder="account_ident")
+                input(class="form-control" id = "chatContactName" placeholder="avatar")
                 ul(class="chat_accounts_ul")
                   for account in arrayChatFriends
-                    if activeAccountIdent === account.account_ident
-                      li.currentChat= account.account_ident
+                    if activeAccountIdent === account.avatar
+                      li.current_chat= account.avatar
                     else
-                      li= account.account_ident
+                      li= account.avatar
                 br
 
             div(class="column is-one-thirds messages")
@@ -21,7 +21,10 @@ block content
                 div(class="chat_messages_div" id = "chatMessages" )
                     ul
                       for item in arrayMessage
-                        li= item.message
+                        if item.sent_received === 1
+                          li.my_message= item.message
+                        else
+                          li= item.message
                     br
                 textarea(class="form-control" id = "chatMessage" placeholder="Your Message Here")
                 button(class="button" id = "sendMessage") Send

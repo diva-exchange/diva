@@ -7,9 +7,8 @@
 'use strict'
 
 import { UXMain } from '../uxMain'
-import WebSocket from 'ws'
 import { Chat } from './chat'
-// import { ChatSignal } from './chatSignal'
+import { Network } from '../../network'
 
 export class UXSocial extends UXMain {
   /**
@@ -31,17 +30,7 @@ export class UXSocial extends UXMain {
     super(server)
 
     this.chat = Chat.make()
-    //    this.chatSignal = ChatSignal.make()
-
-    const webSocketChat = new WebSocket.Server({ port: 45315 })
-
-    webSocketChat.on('connection', function connection (ws, request, client) {
-      ws.on('message', function incoming (message) {
-        const ip = request.socket.remoteAddress
-        console.log(`Received message ${message} from address ${ip} from user ${client}`)
-        // this.chat.addMessage(JSON.parse(message).chatName, JSON.parse(message).chatMessage, 2)
-      })
-    })
+    this.myB32address = 'or4tfk72hyvdddsh5e5unx3qlyilvqwjmsu7vlebeunvjslczyta.b32.i2p:3902'
   }
 
   /**
@@ -57,11 +46,11 @@ export class UXSocial extends UXMain {
     }
 
     switch (rq.path) {
-      case '/social/newMessage':
+      case '/social/sendMessage':
         session.chatIdent = rq.body.chatName
         if (rq.body.chatMessage && rq.body.chatMessage !== null && rq.body.chatMessage !== '') {
           this.chat.addMessage(rq.body.chatName, rq.body.chatMessage, 1)
-          this.sendMessage(rq.body.chatName, rq.body.chatMessage)
+          this.sendMessage(rq.body.chatName, rq.body.chatMessage, session.account, session.keyPublic)
         }
 
       case '/social':
@@ -75,22 +64,31 @@ export class UXSocial extends UXMain {
       default:
         n()
     }
-    // this.chatSignal.signalServerOpen(session.account)
   }
 
-  sendMessage (name, message) {
-    const webSocketChatFriend = new WebSocket('ws://localhost:45315')
+  sendMessage (name, message, accountIndent, publicKey) {
+    let details = this.chat.getConnectionDetails(name)
+    const network = Network.make()
 
-    webSocketChatFriend.on('error', function error (err) {
+    if (details === undefined || details.length == 0) {
+      this.chat.addConnectionDetails(name, 'wvxl2ft5g3a5nkbkbcefbggnhis4nqgktjvv7z4kvjo7kq2iolqq.b32.i2p:3902', publicKey)
+    }
+
+    details = this.chat.getConnectionDetails(name)
+
+    const ws1 = network.getWebsocketToB32(details[0].b32_address)
+    ws1.on('error', function error (err) {
       console.log('Chat Socket Error : ' + err)
     })
 
-    webSocketChatFriend.on('open', function open () {
-      webSocketChatFriend.send(JSON.stringify({
-        chatName: name,
-        chatMessage: message
-      })
-      )
+    ws1.on('open', () => {
+      ws1.send(JSON.stringify({
+        command: 'chat',
+        sender: this.myB32address,
+        message: message, // this.chat.encryptChatMessage (message, publicKey, accountIndent),
+        pk: publicKey,
+        name: name,
+      }))
     })
   }
 }
