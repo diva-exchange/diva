@@ -6,6 +6,8 @@
 
 'use strict'
 
+import { KeyStore } from '../key-store'
+
 export class UXMain {
   /**
    * Factory
@@ -35,8 +37,8 @@ export class UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    if (!this.isAuth(rq)) {
-      return this.redirectAuth(rs)
+    if (!UXMain.isAuth(rq)) {
+      return UXMain.redirectAuth(rs)
     }
 
     rs.render('diva/main', {})
@@ -47,15 +49,18 @@ export class UXMain {
    * @returns {boolean}
    * @public
    */
-  isAuth (rq) {
-    return rq.session !== 'undefined' && rq.session.isAuthenticated
+  static isAuth (rq) {
+    if (!rq.session || !rq.session.isAuthenticated) {
+      return false
+    }
+    return !!KeyStore.make().get(rq.session.account + ':keyPrivate')
   }
 
   /**
    * @param rs {Object} Response
    * @public
    */
-  redirectAuth (rs) {
+  static redirectAuth (rs) {
     // redirect to login
     rs.redirect('/auth')
     rs.end()

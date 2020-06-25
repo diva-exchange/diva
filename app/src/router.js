@@ -107,7 +107,7 @@ export class Router {
     })
 
     // error handler
-    this._app.use((err, req, res, next) => this._errorHandler(err, req, res, next))
+    this._app.use((err, req, res, next) => Router._errorHandler(err, req, res, next))
   }
 
   /**
@@ -131,7 +131,7 @@ export class Router {
    * @param res
    * @param next
    */
-  _errorHandler (err, req, res, next) {
+  static _errorHandler (err, req, res, next) {
     Logger.trace(req.originalUrl).warn(err)
 
     // set locals, only providing error in development
