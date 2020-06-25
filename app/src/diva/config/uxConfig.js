@@ -28,8 +28,8 @@ export class UXConfig extends UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    if (!this.isAuth(rq)) {
-      return this.redirectAuth(rs)
+    if (!UXMain.isAuth(rq)) {
+      return UXMain.redirectAuth(rs)
     }
 
     const url = 'http://' + rq.hostname

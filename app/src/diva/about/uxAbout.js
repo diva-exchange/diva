@@ -27,8 +27,8 @@ export class UXAbout extends UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    if (!this.isAuth(rq)) {
-      return this.redirectAuth(rs)
+    if (!UXMain.isAuth(rq)) {
+      return UXMain.redirectAuth(rs)
     }
 
     switch (rq.path) {

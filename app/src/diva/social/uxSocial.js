@@ -41,8 +41,8 @@ export class UXSocial extends UXMain {
    */
   execute (rq, rs, n) {
     const session = rq.session
-    if (!this.isAuth(rq)) {
-      return this.redirectAuth(rs)
+    if (!UXMain.isAuth(rq)) {
+      return UXMain.redirectAuth(rs)
     }
 
     switch (rq.path) {
