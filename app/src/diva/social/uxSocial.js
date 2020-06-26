@@ -9,6 +9,7 @@
 import { UXMain } from '../uxMain'
 import { Chat } from './chat'
 import { Network } from '../../network'
+import { Environment } from '../../environment'
 
 export class UXSocial extends UXMain {
   /**
@@ -30,7 +31,12 @@ export class UXSocial extends UXMain {
     super(server)
 
     this.chat = Chat.make()
-    this.myB32address = 'or4tfk72hyvdddsh5e5unx3qlyilvqwjmsu7vlebeunvjslczyta.b32.i2p:3902'
+    Environment.getI2PApiAddress().then((result) => {
+      this.myB32address = result
+    }).catch((error) => {
+      this.myB32address = 'error_happened_no_result'
+      console.log('Error', error)
+    })
   }
 
   /**
@@ -70,8 +76,8 @@ export class UXSocial extends UXMain {
     let details = this.chat.getConnectionDetails(name)
     const network = Network.make()
 
-    if (details === undefined || details.length == 0) {
-      this.chat.addConnectionDetails(name, 'wvxl2ft5g3a5nkbkbcefbggnhis4nqgktjvv7z4kvjo7kq2iolqq.b32.i2p:3902', publicKey)
+    if (details === undefined || details.length === 0) {
+      this.chat.addConnectionDetails(name, 'qtzvie3h25qsn36w2nsa3mipqah4k3oql76cwp3xondprughuxha.b32.i2p:3902', publicKey)
     }
 
     details = this.chat.getConnectionDetails(name)
@@ -87,7 +93,7 @@ export class UXSocial extends UXMain {
         sender: this.myB32address,
         message: message, // this.chat.encryptChatMessage (message, publicKey, accountIndent),
         pk: publicKey,
-        name: name,
+        name: name
       }))
     })
   }

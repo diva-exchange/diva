@@ -136,14 +136,7 @@ export class Api {
         }), API_WEBSOCKET_SEND_OPTIONS, () => {})
         break
       case API_WEBSOCKET_COMMAND_CHAT:
-        let details = this.chat.getConnectionDetails(data.name)
-        if (details === undefined || details.length == 0) {
-          this.chat.addConnectionDetails (data.name, data.sender, data.pk)
-        }
-        //let message = this.chat.decryptChatMessage (data.message, data.pk)
-        // this.chat.addMessage(data.name, message, 2)
-        this.chat.addMessage(data.name, data.message, 2)
-
+        this.chat.receivedMessage(data)
         Logger.info('Incoming Chat Message: ' + (data.message || ''))
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:

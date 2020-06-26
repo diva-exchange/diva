@@ -61,6 +61,14 @@ export class Chat {
     })
   }
 
+  receivedMessage (data) {
+    const details = this.getConnectionDetails(data.name)
+    if (details === undefined || details.length === 0) {
+      this.addConnectionDetails(data.name, data.sender, data.pk)
+    }
+    this.addMessage(data.name, data.message, 2)
+  }
+
   encryptChatMessage (data, publicKey, account) {
     const bufferM = Buffer.from(data)
     const bufferC = sodium.sodium_malloc(data.length + sodium.crypto_box_MACBYTES)
