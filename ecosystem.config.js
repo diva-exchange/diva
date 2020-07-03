@@ -1,23 +1,5 @@
 module.exports = {
   apps: [
-    /*
-    {
-      name: 'diva.profile',
-      script: 'app/bin/profile',
-      node_args: '-r esm',
-
-      env: {
-        NODE_ENV: 'development',
-        BIND_IP: '0.0.0.0',
-        PORT: 3910
-      },
-      env_production: {
-        NODE_ENV: 'production',
-        BIND_IP: '0.0.0.0',
-        PORT: 3900
-      }
-    },
-    */
     {
       name: 'diva',
       script: 'app/bin/diva',
@@ -65,22 +47,7 @@ module.exports = {
         NODE_ENV: 'development',
         BIND_IP: '0.0.0.0',
         PORT: 3902
-      },
-    }
-
-    /*
-    {
-      name: 'iroha-keep-alive',
-      script: 'app/bin/iroha-keep-alive',
-      node_args: '-r esm',
-
-      env: {
-        NODE_ENV: 'development'
-      },
-      env_production: {
-        NODE_ENV: 'production'
       }
     }
-    */
   ]
 }

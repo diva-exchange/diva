@@ -21,12 +21,9 @@ CREATE TABLE config (
 ) WITHOUT ROWID;
 
 INSERT INTO config(key, value) VALUES
-    ('diva.websocket.development', '["localhost:3912"]'),
-    ('diva.websocket', '["exmtzchyabihsojgtwcmztfgkse5tby4lg7jopu2om5kya6cehmq.b32.i2p:3902", "cdg2b753gtkkqods4mu6t3dewt7fkerdja4a5y443uysgwcd6hca.b32.i2p:3902", "6rm2mv6h647rozau22bqxwkxnnqelpynwj6jiclnkrcc3ljqfc2a.b32.i2p:3902"]'),
+    ('diva.websocket', '["localhost:3912"]'),
 
-    ('diva.api.uri.development', '["localhost:3912"]'),
-    ('diva.api.uri.development.old', '["rv4bokgbumu752r4pl7gkiwykaszrhbtiqvihagzmkwckxqd7eba.b32.i2p:3902", "svbpbgdnlvpgbrnlwt6ybn23fdgqoqkkpqyerb747sk6voqdadeq.b32.i2p:3902", "iuywm2f2ftql27tgsnsc6kbx5clsfd4hh2ivgmgvlul26z33suuq.b32.i2p:3902"]'),
-    ('diva.api.uri', '["exmtzchyabihsojgtwcmztfgkse5tby4lg7jopu2om5kya6cehmq.b32.i2p:3902", "cdg2b753gtkkqods4mu6t3dewt7fkerdja4a5y443uysgwcd6hca.b32.i2p:3902", "6rm2mv6h647rozau22bqxwkxnnqelpynwj6jiclnkrcc3ljqfc2a.b32.i2p:3902"]'),
+    ('diva.api.uri', '["localhost:3912"]'),
 
     ('iroha.creator', 'diva@holodeck'),
     ('iroha.torii.development', 'localhost:50151'),

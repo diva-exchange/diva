@@ -84,8 +84,8 @@ Now get the diva repository via clone or download:
 
 Then, from the project folder and using your terminal:
 
-1. Install the project by running: `./scripts/install.sh`
-2. Then start it by running: `./scripts/strat.sh`
+1. Install the project by running: `./bin/install.sh`
+2. Then start it by running: `./bin/start.sh`
 
 Test it, as privileged user: `docker ps -a` should show a running **i2pd** container and an **iroha** container.
 Also, test it with your browser: [http://localhost:7070]() - you should see the I2Pd webconsole. I2P is up and running.
