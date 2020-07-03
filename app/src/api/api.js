@@ -79,7 +79,7 @@ export class Api {
           this.isReady = true
         }
       })
-    this.chat = Chat.make()
+    // this.chat = Chat.make()
   }
 
   /**
@@ -136,8 +136,9 @@ export class Api {
         }), API_WEBSOCKET_SEND_OPTIONS, () => {})
         break
       case API_WEBSOCKET_COMMAND_CHAT:
-        this.chat.receivedMessage(data)
+        // this.chat.receivedMessage(data)
         Logger.info('Incoming Chat Message: ' + (data.message || ''))
+        ws.send(JSON.stringify(data), API_WEBSOCKET_SEND_OPTIONS)
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:
         if (!this.hasBlockchain) {

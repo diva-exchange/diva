@@ -10,6 +10,8 @@ import { UXMain } from '../uxMain'
 import { Chat } from './chat'
 import { Network } from '../../network'
 import { Environment } from '../../environment'
+import { Messaging } from './messaging'
+import { Logger } from '@diva.exchange/diva-logger'
 
 export class UXSocial extends UXMain {
   /**
@@ -30,7 +32,8 @@ export class UXSocial extends UXMain {
   constructor (server) {
     super(server)
 
-    this.chat = Chat.make()
+    // this.chat = Chat.make()
+
     Environment.getI2PApiAddress().then((result) => {
       this.myB32address = result
     }).catch((error) => {
@@ -46,25 +49,31 @@ export class UXSocial extends UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    const session = rq.session
     if (!UXMain.isAuth(rq)) {
       return UXMain.redirectAuth(rs)
     }
 
+    const session = rq.session
+    this._messaging = Messaging.make(session, (bufferData) => {
+      this._onChatMessage(bufferData)
+    })
+
     switch (rq.path) {
       case '/social/sendMessage':
-        session.chatIdent = rq.body.chatName
+        /*session.chatIdent = rq.body.chatName
         if (rq.body.chatMessage && rq.body.chatMessage !== null && rq.body.chatMessage !== '') {
           this.chat.addMessage(rq.body.chatName, rq.body.chatMessage, 1)
           this.sendMessage(rq.body.chatName, rq.body.chatMessage, session.account, session.keyPublic)
         }
-
+        */
+        this._messaging.send('6qqy67tcqzjs5cpsrlmje2lvb4efdub6d6jt2jrsyrho3vlfu5cq.b32.i2p:3902', rq.body.chatMessage)
+        break
       case '/social':
         rs.render('diva/social/social', {
           title: 'Social',
-          arrayMessage: this.chat.getMessagesForUser(session.chatIdent),
-          arrayChatFriends: this.chat.getChatFriends(),
-          activeAccountIdent: session.chatIdent
+          arrayMessage: [], //this.chat.getMessagesForUser(session.chatIdent),
+          arrayChatFriends: [], // this.chat.getChatFriends(),
+          activeAccountIdent: '' // session.chatIdent
         })
         break
       default:
@@ -77,7 +86,7 @@ export class UXSocial extends UXMain {
     const network = Network.make()
 
     if (details === undefined || details.length === 0) {
-      this.chat.addConnectionDetails(name, 'qtzvie3h25qsn36w2nsa3mipqah4k3oql76cwp3xondprughuxha.b32.i2p:3902', publicKey)
+      this.chat.addConnectionDetails(name, '6qqy67tcqzjs5cpsrlmje2lvb4efdub6d6jt2jrsyrho3vlfu5cq.b32.i2p:3902', publicKey)
     }
 
     details = this.chat.getConnectionDetails(name)
@@ -96,6 +105,15 @@ export class UXSocial extends UXMain {
         name: name
       }))
     })
+  }
+
+  /**
+   * @param bufferData {Buffer}
+   * @private
+   */
+  _onChatMessage (bufferData) {
+    Logger.trace(bufferData)
+    // push data to UI (via UIWebsocket)
   }
 }
 
