@@ -213,7 +213,7 @@ export class Iroha {
    * @public
    */
   async setOrder (idAccount, jsonData, signature) {
-    this._validateAccountId(idAccount)
+    Iroha._validateAccountId(idAccount)
 
     const bufferPublicKey = Buffer.from(await this._irohaDb.getPublicKey(idAccount), 'hex')
     const bufferData = Buffer.from(jsonData)
