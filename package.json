@@ -19,7 +19,7 @@
     "lint": "eslint --fix app/src ; exit 0",
     "css-build": "node-sass --omit-source-map-url --output-style compressed app/static/sass/diva.scss app/static/css/diva.min.css",
     "install": "node -r esm app/bin/install-db",
-    "start": "pm2 kill && pm2 start ecosystem.config.js",
+    "start": "pm2 start ecosystem.config.js",
     "test": "rm -rf app/test/data/session ; nyc mocha ; exit 0"
   },
   "dependencies": {
