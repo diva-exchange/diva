@@ -18,6 +18,20 @@ module.exports = {
       }
     },
     {
+      name: 'diva.api',
+      script: 'app/bin/api',
+      node_args: '-r esm',
+      kill_timeout: 5000,
+
+      env: {
+        NAME_DATABASE: 'diva',
+        NODE_ENV: 'development',
+        BIND_IP: '0.0.0.0',
+        PORT: 3902
+      }
+    }
+/*
+    {
       name: 'diva.api-0',
       script: 'app/bin/api',
       node_args: '-r esm',
@@ -49,5 +63,6 @@ module.exports = {
         PORT: 3902
       }
     }
+*/
   ]
 }

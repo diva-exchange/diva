@@ -31,7 +31,7 @@ export class Environment {
       url: Config.make().getValueByKey('i2p.webconsole.scraper.url')
     })
     // Base32 alphabet, [a-z2-7]+
-    return response.match(/local-api.+?([a-z2-7]+\.b32\.i2p:[\d]+)/)[1] || false
+    return response.match(/api.+?([a-z2-7]+\.b32\.i2p:[\d]+)/)[1] || false
   }
 
   /**
