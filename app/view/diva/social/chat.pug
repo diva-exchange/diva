@@ -6,13 +6,13 @@ block content
         br
         div(class="columns")
             div(class="column is-one-thirds jumbotron")
-                input(class="form-control" id = "chatContactName" placeholder="avatar")
+                input(class="form-control" id = "chatContactName" placeholder="b32_address")
                 ul(class="chat_accounts_ul")
                   for account in arrayChatFriends
-                    if activeAccountIdent === account.avatar
-                      li.current_chat= account.avatar
+                    if activeAccountIdent === account.b32_address
+                      li.current_chat= account.b32_address
                     else
-                      li= account.avatar
+                      li= account.b32_address
                 br
 
             div(class="column is-one-thirds messages")

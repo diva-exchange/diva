@@ -2,13 +2,13 @@
 'use strict'
 
 // Umbrella, @see https://umbrellajs.com
-var u = u || false
+var _u = u || false
 // fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-var fetch = fetch || false
+var _fetch = fetch || false
 // WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 var _WebSocket = WebSocket || false
 
-if (!u || !fetch) {
+if (!_u || !_fetch || !_WebSocket) {
   throw new Error('invalid state')
 }
 
@@ -36,10 +36,10 @@ class UiChat {
       }
     })
 
-    u('#sendMessage').on('click', async e => {
+    _u('#sendMessage').on('click', async e => {
       const response = await UiChat._postJson('/social/sendMessage', {
-        chatName: u('#chatContactName').first().value,
-        chatMessage: u('#chatMessage').first().value
+        chatB32: _u('#chatContactName').first().value,
+        chatMessage: _u('#chatMessage').first().value
       })
 
       location.reload()
@@ -47,9 +47,9 @@ class UiChat {
       chatMessages.scrollTop = chatMessages.scrollHeight
     })
 
-    u('ul.chat_accounts_ul li').on('click', async e => {
+    _u('ul.chat_accounts_ul li').on('click', async e => {
       const response = await UiChat._postJson('/social/sendMessage', {
-        chatName: u(e.target).text(),
+        chatB32: _u(e.target).text(),
         chatMessage: ''
       })
 
@@ -57,7 +57,7 @@ class UiChat {
       var chatMessages = document.getElementById('chatMessages')
       chatMessages.scrollTop = chatMessages.scrollHeight
     })
-    u('#chatContactName').first().value = u('.current_chat').text()
+    _u('#chatContactName').first().value = _u('.current_chat').text()
   }
 
   /**
@@ -67,7 +67,7 @@ class UiChat {
     * @private
     */
   static _postJson (uri, objBody) {
-    return fetch(uri, {
+    return _fetch(uri, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

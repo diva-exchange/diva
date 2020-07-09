@@ -261,8 +261,8 @@ INSERT INTO asset (asset_ident) VALUES
 
 DROP TABLE IF EXISTS diva_chat;
 
-CREATE TABLE diva_chat (
-    avatar TEXT NOT NULL,
+CREATE TABLE diva_chat_messages (
+    b32_address TEXT NOT NULL,
     message TEXT NOT NULL,
     timestamp_ms INTEGER NOT NULL,
     sent_received TINYINT NOT NULL,
@@ -270,7 +270,7 @@ CREATE TABLE diva_chat (
     PRIMARY KEY (timestamp_ms)
 ) WITHOUT ROWID;
 
-CREATE TABLE diva_chat_connections (
+CREATE TABLE diva_chat_profiles (
     avatar TEXT NOT NULL,
     b32_address TEXT NOT NULL,
     pub_key TEXT NOT NULL,

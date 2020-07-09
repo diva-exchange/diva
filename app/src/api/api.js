@@ -39,6 +39,7 @@ const API_WEBSOCKET_COMMAND_CHAT = 'chat'
 
 const API_WEBSOCKET_RESOURCE_BLOCK = 'block'
 const API_WEBSOCKET_RESOURCE_ORDERBOOK = 'orderbook'
+const API_WEBSOCKET_RESOURCE_CHAT = 'chat'
 
 const API_WEBSOCKET_SEND_OPTIONS = { compress: true, binary: false, mask: false, fin: true }
 
@@ -92,6 +93,7 @@ export class Api {
     // attach block watcher
     this.subscriberBlock = new Map()
     this.subscriberOrderbook = new Map()
+    this.subscriberArrayChat = []
     this.iroha.watch(
       (block) => { this._processBlock(block) },
       (error) => { this._errorBlock(error) }
@@ -138,7 +140,9 @@ export class Api {
       case API_WEBSOCKET_COMMAND_CHAT:
         // this.chat.receivedMessage(data)
         Logger.info('Incoming Chat Message: ' + (data.message || ''))
+console.log(this)
         this.subscriberArrayChat.forEach((wsClient) => {
+        console.log(data)
           wsClient.send(data.message || '')
         })
         // we can store it here for later use

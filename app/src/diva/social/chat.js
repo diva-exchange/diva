@@ -15,7 +15,8 @@ export class Chat {
     return new Chat()
   }
 
-  constructor () {
+  constructor (identAccount) {
+    this.identAccount = identAccount
     this._db = Db.connect()
   }
 
@@ -23,36 +24,36 @@ export class Chat {
     * insert message into database
     *
     */
-  addMessage (avatarIndent, message, sentReceived) {
-    this._db.insert(`INSERT INTO diva_chat (avatar, message, timestamp_ms, sent_received)
+  addMessage (b32Address, message, sentReceived) {
+    this._db.insert(`INSERT INTO diva_chat_messages (b32_address, message, timestamp_ms, sent_received)
                 VALUES (@a, @m, @ts, @sr)`, {
-      a: avatarIndent,
+      a: b32Address,
       m: message,
       ts: +new Date(),
       sr: sentReceived
     })
   }
 
-  getMessagesForUser (avatarIndent) {
-    return this._db.allAsArray('SELECT message, timestamp_ms, sent_received FROM diva_chat WHERE avatar = @avatar',
+  getMessagesForUser (b32Address) {
+    return this._db.allAsArray('SELECT message, timestamp_ms, sent_received FROM diva_chat_messages WHERE b32_address = @b32_address',
       {
-        avatar: avatarIndent
+        b32_address: b32Address
       })
   }
 
   getChatFriends () {
-    return this._db.allAsArray('SELECT DISTINCT avatar FROM diva_chat_connections')
+    return this._db.allAsArray('SELECT DISTINCT b32_address FROM diva_chat_messages')
   }
 
-  getConnectionDetails (avatarIndent) {
-    return this._db.allAsArray('SELECT b32_address, pub_key FROM diva_chat_connections WHERE avatar = @avatar',
-      {
-        avatar: avatarIndent
-      })
+  getProfile (b32Address) {
+    return this._db.allAsArray('SELECT * FROM diva_chat_profile WHERE b32_address = @b32_address',
+    {
+      b32_address: b32Address
+    })
   }
 
-  addConnectionDetails (avatarIndent, b32Address, pubKey) {
-    this._db.insert(`INSERT INTO diva_chat_connections (avatar, b32_address, timestamp_ms, pub_key)
+  addProfile (avatarIndent, b32Address, pubKey) {
+    this._db.insert(`INSERT INTO diva_chat_profile (avatar, b32_address, timestamp_ms, pub_key)
                   VALUES (@a, @b, @ts, @p)`, {
       a: avatarIndent,
       b: b32Address,
@@ -66,7 +67,7 @@ export class Chat {
     if (details === undefined || details.length === 0) {
       this.addConnectionDetails(data.name, data.sender, data.pk)
     }
-    this.addMessage(data.name, data.message, 2)
+    this.addMessage(data.b32_address, data.message, 2)
   }
 
   encryptChatMessage (data, publicKey, account) {
@@ -81,14 +82,14 @@ export class Chat {
     return bufferC
   }
 
-  decryptChatMessage (data, publicKey) {
+  decryptChatMessage (data, publicKey, account) {
     console.log(KeyStore.make())
 
     const bufferC = Buffer.from(data)
     const bufferMessage = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_MACBYTES)
     const bufferN = sodium.sodium_malloc(sodium.crypto_box_NONCEBYTES)
     const pk = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES).fill(Buffer.from(publicKey))
-    const sk = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES).fill(Buffer.from(KeyStore.make().get(':keyPrivate')))
+    const sk = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES).fill(Buffer.from(KeyStore.make().get(account + ':keyPrivate')))
 
     sodium.crypto_box_open_easy(bufferMessage, bufferC, bufferN, pk, sk)
 

@@ -139,6 +139,14 @@ article.article {
   cursor: pointer;
 }
 
+ul.chat_accounts_ul li {
+  width: 234px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
+  color: darkblue;
+}
+
 .my_message {
   color: blue;
   padding-left: 15px;
