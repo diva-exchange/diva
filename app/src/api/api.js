@@ -138,7 +138,10 @@ export class Api {
       case API_WEBSOCKET_COMMAND_CHAT:
         // this.chat.receivedMessage(data)
         Logger.info('Incoming Chat Message: ' + (data.message || ''))
-        ws.send(JSON.stringify(data), API_WEBSOCKET_SEND_OPTIONS)
+        this.subscriberArrayChat.forEach((wsClient) => {
+          wsClient.send(data.message || '')
+        })
+        // we can store it here for later use
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:
         if (!this.hasBlockchain) {
@@ -149,6 +152,9 @@ export class Api {
           case API_WEBSOCKET_RESOURCE_BLOCK:
             this.subscriberBlock.set(_id, ws)
             ws.send(JSON.stringify(this._latestBlock), API_WEBSOCKET_SEND_OPTIONS)
+            break
+          case API_WEBSOCKET_RESOURCE_CHAT:
+            this.subscriberArrayChat.push(ws)
             break
           case API_WEBSOCKET_RESOURCE_ORDERBOOK:
             if (data.contract && this.mapContract.has(data.contract)) {

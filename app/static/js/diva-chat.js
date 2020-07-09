@@ -5,6 +5,8 @@
 var u = u || false
 // fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 var fetch = fetch || false
+// WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+var _WebSocket = WebSocket || false
 
 if (!u || !fetch) {
   throw new Error('invalid state')
@@ -12,6 +14,28 @@ if (!u || !fetch) {
 
 class UiChat {
   static make () {
+    // connect to local websocket
+    UiChat.websocket = new _WebSocket('ws://' + document.location.host)
+
+    // Connection opened
+    UiChat.websocket.addEventListener('open', () => {
+      UiChat.websocket.send(JSON.stringify({
+        command: 'subscribe',
+        resource: 'chat'
+      }))
+    })
+    // Listen for data
+    UiChat.websocket.addEventListener('message', async (event) => {
+      let objData
+      try {
+        objData = JSON.parse(event.data)
+        // output data here
+        console.log(objData)
+      } catch (error) {
+        window.location.replace('/logout')
+      }
+    })
+
     u('#sendMessage').on('click', async e => {
       const response = await UiChat._postJson('/social/sendMessage', {
         chatName: u('#chatContactName').first().value,
