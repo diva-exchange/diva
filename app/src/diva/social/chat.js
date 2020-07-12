@@ -47,9 +47,9 @@ export class Chat {
 
   getProfile (b32Address) {
     return this._db.allAsArray('SELECT * FROM diva_chat_profile WHERE b32_address = @b32_address',
-    {
-      b32_address: b32Address
-    })
+      {
+        b32_address: b32Address
+      })
   }
 
   addProfile (avatarIndent, b32Address, pubKey) {
@@ -63,11 +63,12 @@ export class Chat {
   }
 
   receivedMessage (data) {
-    const details = this.getConnectionDetails(data.name)
+  // console.log(KeyStore.make())
+    /* const details = this.getConnectionDetails(data.name)
     if (details === undefined || details.length === 0) {
       this.addConnectionDetails(data.name, data.sender, data.pk)
     }
-    this.addMessage(data.b32_address, data.message, 2)
+    this.addMessage(data.b32_address, data.message, 2) */
   }
 
   encryptChatMessage (data, publicKey, account) {

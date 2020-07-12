@@ -80,7 +80,7 @@ export class Api {
           this.isReady = true
         }
       })
-    // this.chat = Chat.make()
+    this.chat = Chat.make()
   }
 
   /**
@@ -138,14 +138,12 @@ export class Api {
         }), API_WEBSOCKET_SEND_OPTIONS, () => {})
         break
       case API_WEBSOCKET_COMMAND_CHAT:
-        // this.chat.receivedMessage(data)
         Logger.info('Incoming Chat Message: ' + (data.message || ''))
-console.log(this)
         this.subscriberArrayChat.forEach((wsClient) => {
-        console.log(data)
-          wsClient.send(data.message || '')
+          wsClient.send(JSON.stringify(data))
         })
         // we can store it here for later use
+        this.chat.receivedMessage(data)
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:
         if (!this.hasBlockchain) {

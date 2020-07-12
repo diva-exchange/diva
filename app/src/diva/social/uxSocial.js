@@ -71,8 +71,8 @@ export class UXSocial extends UXMain {
       case '/social/addMessage':
         session.chatIdent = rq.body.chatB32
         if (rq.body.chatMessage && rq.body.chatMessage !== null && rq.body.chatMessage !== '') {
-          this.chat.addMessage(rq.body.chatB32, rq.body.chatMessage, 1)
-         }
+          this.chat.addMessage(rq.body.chatB32, rq.body.chatMessage, 2)
+        }
         rs.render('diva/social/social', {
           title: 'Social',
           arrayMessage: this.chat.getMessagesForUser(session.chatIdent),
@@ -94,7 +94,6 @@ export class UXSocial extends UXMain {
   }
 
   sendMessage (chatB32, message) {
-
     this._ws = this._network.getWebsocketToB32(chatB32 + ':' + API_COMMUNICATION_PORT)
     this._ws.on('error', function error (err) {
       console.log('Chat Socket Error : ' + err)
