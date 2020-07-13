@@ -15,6 +15,7 @@ if (!_u || !_fetch || !_WebSocket) {
 class UiChat {
   static make () {
     UiChat._attachEvents()
+    UiChat.attachEventWithReload()
     // connect to local websocket
     UiChat.websocket = new _WebSocket('ws://' + document.location.host)
     // Connection opened
@@ -44,57 +45,73 @@ class UiChat {
   static _setHtmlMessages (objData, received = false) {
     let found = false
     let html = ''
-    if (received) {
+    _u('ul.chat_accounts_ul li').each((node, i) => {
+      if (node.innerText === objData.sender) {
+        found = true
+      }
+    })
+    if (!found) {
       _u('ul.chat_accounts_ul li').each((node, i) => {
-        if (node.innerText === objData.sender) {
-          found = true
+        if (_u(node).hasClass('current_chat')) {
+          _u(node).removeClass('current_chat')
         }
       })
-      if (!found) {
-        _u('ul.chat_accounts_ul').append(`<li class="current_chat">${objData.sender}</li>`)
-      }
-      if (_u('ul.chat_accounts_ul li.current_chat').text() === objData.sender) {
-        html += `<li>${objData.message}</li>`
-      }
-    } else {
-      html += `<li class="my_message">${objData.message}</li>`
+      _u('ul.chat_accounts_ul').append(`<li class="current_chat">${objData.sender}</li>`)
+      UiChat.attachEventWithReload()
     }
-    _u('#chatMessages ul').append(html)
+    if (received) {
+      html += `<li class="incoming_message_li"><div class="incoming_message_div">${objData.message}</div></li>`
+    } else {
+      html += `<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`
+    }
+    if (found && _u('ul.chat_accounts_ul li.current_chat').text() === objData.sender) {
+      _u('#chatMessages ul').append(html)
+    } else {
+      _u('#chatMessages ul').html(html)
+    }
+    var chatMessages = document.getElementById('chatMessages')
+    chatMessages.scrollTop = chatMessages.scrollHeight
   }
 
   static _attachEvents () {
+    // send message on click Send
     _u('#sendMessage').on('click', async e => {
       const b32Address = _u('#chatContactName').first().value ? _u('#chatContactName').first().value : _u('ul.chat_accounts_ul li.current_chat').text()
-      await UiChat._postJson('/social/sendMessage', {
-        chatB32: b32Address,
-        chatMessage: _u('#chatMessage').first().value
-      })
-
-      UiChat._setHtmlMessages({
-        message: _u('#chatMessage').first().value,
-        sender: _u('#chatContactName').first().value
-      })
-      var chatMessages = document.getElementById('chatMessages')
-      chatMessages.scrollTop = chatMessages.scrollHeight
-      _u('#chatMessage').first().value = ''
+      const messageToSend = _u('#chatMessage').first().value
+      if (b32Address && messageToSend) {
+        await UiChat._postJson('/social/sendMessage', {
+          chatB32: b32Address,
+          chatMessage: messageToSend
+        })
+        UiChat._setHtmlMessages({
+          message: _u('#chatMessage').first().value,
+          sender: b32Address
+        })
+        _u('#chatMessage').first().value = ''
+        _u('#chatContactName').first().value = ''
+      }
     })
-
-    _u('ul.chat_accounts_ul li').on('click', async e => {
-      await UiChat._postJson('/social/sendMessage', {
-        chatB32: _u(e.target).text(),
-        chatMessage: ''
-      })
-
-      document.location.reload()
-      var chatMessages = document.getElementById('chatMessages')
-      chatMessages.scrollTop = chatMessages.scrollHeight
-    })
-    _u('#chatContactName').first().value = _u('.current_chat').text()
-
+    // send message on Enter
     _u('#chatMessage').handle('keyup', function (event) {
       if (event.keyCode === 13) {
         _u('#sendMessage').trigger('click')
       }
+    })
+  }
+
+  static attachEventWithReload () {
+    // refresh message history with chosen b32 address
+    _u('ul.chat_accounts_ul li').on('click', async e => {
+      const b32Address = _u(e.target).text()
+      if (b32Address) {
+        await UiChat._postJson('/social/sendMessage', {
+          chatB32: b32Address,
+          chatMessage: ''
+        })
+        document.location.reload()
+      }
+      var chatMessages = document.getElementById('chatMessages')
+      chatMessages.scrollTop = chatMessages.scrollHeight
     })
   }
 

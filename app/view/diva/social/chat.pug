@@ -22,9 +22,11 @@ block content
                     ul
                       for item in arrayMessage
                         if item.sent_received === 1
-                          li.my_message= item.message
+                          li.my_message_li
+                            div.my_message_div= item.message
                         else
-                          li= item.message
+                          li.incoming_message_li
+                            div.incoming_message_div= item.message
                     br
                 textarea(class="form-control" id = "chatMessage" placeholder="Your Message Here")
                 button(class="button" id = "sendMessage") Send

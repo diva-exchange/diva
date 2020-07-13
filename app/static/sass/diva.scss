@@ -147,9 +147,34 @@ ul.chat_accounts_ul li {
   color: darkblue;
 }
 
-.my_message {
+.my_message_li {
   color: blue;
-  padding-left: 15px;
+  padding-left: 45px;
+}
+
+.incoming_message_li {
+  color: grey;
+  padding-right: 45px;
+}
+
+.my_message_div {
+  border: 2px solid blue;
+  padding: 7px;
+  border-radius: 9px 9px 0px 9px;
+  margin: 9px;
+  z-index: 27;
+  position: relative;
+  background: #ffffff;
+}
+
+.incoming_message_div {
+  border: 2px solid grey;
+  padding: 7px;
+  border-radius: 9px 9px 9px 0px;
+  margin: 9px;
+  z-index: 27;
+  position: relative;
+  background: #ffffff;
 }
 
 @import "../../../node_modules/bulma/bulma";
