@@ -16,7 +16,6 @@ import { Iroha } from './iroha'
 import { Logger } from '@diva.exchange/diva-logger'
 import { WebsocketServer } from '../websocket-server'
 import { Environment } from '../environment'
-import { Chat } from '../diva/social/chat'
 
 const API_NAME = 'diva'
 const API_VERSION = '0.1.0'
@@ -80,7 +79,6 @@ export class Api {
           this.isReady = true
         }
       })
-    this.chat = Chat.make()
   }
 
   /**
@@ -142,8 +140,6 @@ export class Api {
         this.subscriberArrayChat.forEach((wsClient) => {
           wsClient.send(JSON.stringify(data))
         })
-        // we can store it here for later use
-        this.chat.receivedMessage(data)
         break
       case API_WEBSOCKET_COMMAND_SUBSCRIBE:
         if (!this.hasBlockchain) {
