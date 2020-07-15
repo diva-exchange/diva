@@ -6,16 +6,21 @@
 
 'use strict'
 
-import { assert } from 'chai'
 import { describe, it, before, after, beforeEach, afterEach } from 'mocha'
 import { User } from '../../../src/diva/config/user'
+
+var chai = require('chai')
+var chaiAsPromised = require('chai-as-promised')
+var assert = chai.assert
+
+chai.use(chaiAsPromised)
 
 /**
  * Project: diva
  * Context: diva/config/user
  */
 describe('//diva// /diva/config/user', function () {
-  const USER = 'konrad_test'
+  const USER = 'konrad_test@testnet'
   const PWD = '1234567890-abc'
 
   function createTestUser () {
@@ -35,15 +40,17 @@ describe('//diva// /diva/config/user', function () {
     })
 
     it('Empty username throws Error', function () {
-      assert.throw(function () {
-        User.create('', '')
-      }, 'Invalid username')
+      assert.isRejected(
+        User.create('', ''),
+        'Invalid account'
+      )
     })
 
     it('Invalid password throws Error', function () {
-      assert.throw(function () {
-        User.create('konrad', '1234567890abc')
-      }, 'Invalid password')
+      assert.isRejected(
+        User.create('konrad_test@testnet', '1234567890abc'),
+        'Invalid password'
+      )
     })
   })
 
