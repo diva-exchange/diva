@@ -1,5 +1,5 @@
 doctype html
-html
+html(class='error' lang=en)
   head
     title= title
     link(type='text/css' rel='stylesheet' href='/css/fontawesome.min.css')
@@ -9,5 +9,10 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
   body
     div(class='container')
-      h1= error.status + ' ' + message
+      h1
+        span(class='error-status')= status
+        span(class='error-message')= message
+
+    if error.stack
+      hr
       pre= error.stack

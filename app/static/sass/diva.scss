@@ -18,6 +18,15 @@
   animation: fadeout 1s linear forwards;
 }
 
+html.error {
+  h1 {
+    font-size: 4rem
+  }
+  h1 span.error-status {
+    padding-right: 1rem
+  }
+}
+
 div.data-loader {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 40px calc(50% - 200px);
