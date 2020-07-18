@@ -25,8 +25,8 @@ INSERT INTO config(key, value) VALUES
 
     ('diva.api.uri', '["localhost:3902"]'),
 
-    ('iroha.creator', 'diva@holodeck'),
-    ('iroha.torii.development', 'localhost:50151'),
+    ('iroha.creator', 'diva@testnet'),
+    ('iroha.torii.development', '127.18.1.1:50051'),
     ('iroha.torii', 'iroha.local:50051'),
 
     ('i2p.webconsole.scraper.url', 'http://localhost:7070/?page=i2p_tunnels'),
@@ -35,13 +35,12 @@ INSERT INTO config(key, value) VALUES
     ('i2p.socks.proxy.development', 'localhost:4445'),
     ('i2p.socks.proxy', 'localhost:4445'),
 
-    ('postgres.iroha.host.development', 'localhost'),
+    ('postgres.iroha.host.development', '127.18.1.1'),
     ('postgres.iroha.host', 'postgres.local'),
-    ('postgres.iroha.port.development', '25432'),
     ('postgres.iroha.port', '5432'),
-    ('postgres.iroha.database', 'iroha_data0'),
-    ('postgres.iroha.user', 'postgres'),
-    ('postgres.iroha.password', 'iroha');
+    ('postgres.iroha.database', 'iroha_data'),
+    ('postgres.iroha.user', 'explorer'),
+    ('postgres.iroha.password', 'explorer');
 
 DROP TABLE IF EXISTS language;
 CREATE TABLE language (

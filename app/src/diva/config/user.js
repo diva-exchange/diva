@@ -13,7 +13,6 @@ import { Db } from '../../db'
 import { JOB_STATUS_OK } from '../../job'
 import { KeyStore } from '../../key-store'
 import { shuffleArray } from '../../utils'
-import { Logger } from '@diva.exchange/diva-logger'
 
 const REGEX_IDENT_ACCOUNT = /^[a-z_0-9]{1,32}@([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/
 const REGEX_PASSWORD = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[-+_,;£~$!%*#?&])[A-Za-z\d\-+_,;£~$!%*#?&]{10,32}$/
@@ -172,8 +171,7 @@ export class User {
       json: true
     })
     if (!response.idJob) {
-      Logger.error('User._registerUser(): failed to get Job Id')
-      throw new Error(response.toString())
+      throw new Error(JSON.stringify(response))
     }
 
     response = await request({
@@ -182,8 +180,7 @@ export class User {
       json: true
     })
     if (!response.job_status_ident || response.job_status_ident !== JOB_STATUS_OK) {
-      Logger.error('User._registerUser(): user registration failed')
-      throw new Error(response.toString())
+      throw new Error(JSON.stringify(response))
     }
 
     response = JSON.parse(response.response)

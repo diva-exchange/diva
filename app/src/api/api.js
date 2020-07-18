@@ -27,7 +27,7 @@ const API_ERROR_INVALID_PUBLIC_KEY = 'invalid public key'
 const API_ERROR_INVALID_IDENT_CONTRACT = 'invalid identContract'
 const API_ERROR_NO_BLOCKCHAIN = 'no blockchain available'
 
-const API_DOMAINID_HOLODECK = 'holodeck'
+const API_DOMAINID_TESTNET = 'testnet'
 const REGEX_DOMAINID = /^([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/
 
 const API_WEBSOCKET_COMMAND_VERSION = 'version'
@@ -504,7 +504,7 @@ export class Api {
 
     let domain = rq.query.domain || ''
     if (!(domain.match(REGEX_DOMAINID))) {
-      domain = API_DOMAINID_HOLODECK
+      domain = API_DOMAINID_TESTNET
     }
 
     // create a new username, length: between 16 and 32 bytes

@@ -36,7 +36,6 @@
     "http-errors": "~1.8.0",
     "iroha-helpers": "^0.8.10",
     "nanoid": "^3.1.10",
-    "npm-check-updates": "^7.0.1",
     "pg": "^8.3.0",
     "pug": "^3.0.0",
     "request-promise-native": "^1.0.8",
@@ -58,6 +57,7 @@
     "minimist": ">=1.2.5",
     "mocha": "^8.0.1",
     "node-sass": "^4.14.1",
+    "npm-check-updates": "^7.0.2",
     "nyc": "^15.1.0",
     "umbrellajs": "^3.2.3"
   },

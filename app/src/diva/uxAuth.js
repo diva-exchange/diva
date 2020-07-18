@@ -52,7 +52,8 @@ export class UXAuth {
     switch (rq.path) {
       // post
       case '/register':
-        User.register(rq.body.password || '')
+        // @FIXME testnet is very wrong here
+        User.register(rq.body.password || '', 'testnet')
           .then((user) => {
             rs.json({
               username: user.getUsername(),
