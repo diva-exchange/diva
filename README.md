@@ -135,6 +135,8 @@ Interesting blog post: "Introduction to I2P", [https://www.diva.exchange/en/priv
 
 ### Contact the Developers
 
+On [DIVA.EXCHANGE](https://www.diva.exchange) you'll find various options to get in touch with the team. 
+
 Talk to us via Telegram [https://t.me/diva_exchange_chat_de]() (English or German).
 
 ### Donations

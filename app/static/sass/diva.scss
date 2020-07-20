@@ -1,5 +1,7 @@
 @charset "utf-8";
 
+@import "../../../node_modules/bulma/bulma";
+
 @keyframes fadein {
     from { opacity: 0; visibility: visible; }
     to   { opacity: 1; visibility: visible; }
@@ -169,7 +171,7 @@ ul.chat_accounts_ul li {
 .my_message_div {
   border: 2px solid blue;
   padding: 7px;
-  border-radius: 9px 9px 0px 9px;
+  border-radius: 9px 9px 0 9px;
   margin: 9px;
   z-index: 27;
   position: relative;
@@ -179,11 +181,9 @@ ul.chat_accounts_ul li {
 .incoming_message_div {
   border: 2px solid grey;
   padding: 7px;
-  border-radius: 9px 9px 9px 0px;
+  border-radius: 9px 9px 9px 0;
   margin: 9px;
   z-index: 27;
   position: relative;
   background: #ffffff;
 }
-
-@import "../../../node_modules/bulma/bulma";
