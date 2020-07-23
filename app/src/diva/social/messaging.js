@@ -99,7 +99,7 @@ export class Messaging {
     const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
 
     const success = sodium.crypto_box_seal_open(decrypted, bufferC, this._publicKey, KeyStore.make().get(':keySecretForChat'))
-    return (success ? decrypted.toString() : 'Can not encrypt message.')
+    return (success && decrypted.toString()) || 'Can not encrypt message.'
   }
 }
 

@@ -275,7 +275,7 @@ CREATE TABLE diva_chat_profiles (
     pub_key TEXT NOT NULL,
     timestamp_ms INTEGER NOT NULL,
 
-    PRIMARY KEY (timestamp_ms)
+    PRIMARY KEY (b32_address)
 ) WITHOUT ROWID;
 
 PRAGMA foreign_keys = on
