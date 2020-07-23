@@ -43,14 +43,14 @@ export class ChatDb {
   }
 
   getProfile (b32Address) {
-    return this._db.allAsArray('SELECT * FROM diva_chat_profile WHERE b32_address = @b32_address',
+    return this._db.allAsArray('SELECT * FROM diva_chat_profiles WHERE b32_address = @b32_address',
       {
         b32_address: b32Address
       })
   }
 
-  addProfile (avatarIndent, b32Address, pubKey) {
-    this._db.insert(`INSERT INTO diva_chat_profile (avatar, b32_address, timestamp_ms, pub_key)
+  setProfile (avatarIndent, b32Address, pubKey) {
+    this._db.insert(`REPLACE INTO diva_chat_profiles (avatar, b32_address, timestamp_ms, pub_key)
                   VALUES (@a, @b, @ts, @p)`, {
       a: avatarIndent,
       b: b32Address,

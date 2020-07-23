@@ -345,6 +345,13 @@ export class User {
     sodium.sodium_munlock(bufferPrivateKey)
     sodium.sodium_munlock(bufferSecret)
 
+    /* create box keypair for chat encryption */
+    const pkForChat = sodium.sodium_malloc(sodium.crypto_box_PUBLICKEYBYTES)
+    const skForChat = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES)
+    sodium.crypto_box_keypair(pkForChat, skForChat)
+    KeyStore.make().set(':keyPublicForChat', pkForChat)
+    KeyStore.make().set(':keySecretForChat', skForChat)
+
     return this
   }
 }

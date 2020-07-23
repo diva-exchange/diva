@@ -33,9 +33,15 @@ class UiChat {
         objData.sender = objData.sender.split(':')[0]
         await UiChat._postJson('/social/addMessage', {
           chatB32: objData.sender,
-          chatMessage: objData.message
+          chatMessage: objData.message,
+          chatPK: objData.pubK,
+          chatFM: objData.firstM
         })
-        UiChat._setHtmlMessages(objData, true)
+        // UiChat._setHtmlMessages(objData, true)
+        // _u('ul.chat_accounts_ul li.current_chat').trigger('click')
+        // need to be solved - reason => objData.message is still encrypted text
+
+        document.location.reload()
       } catch (error) {
         window.location.replace('/logout')
       }
