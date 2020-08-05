@@ -47,11 +47,11 @@ export class IrohaDb {
    */
   async _connect () {
     this._client = new Client({
-      host: this._config.getValueByKey('postgres.iroha.host'),
-      port: parseInt(this._config.getValueByKey('postgres.iroha.port')),
-      database: this._config.getValueByKey('postgres.iroha.database'),
-      user: this._config.getValueByKey('postgres.iroha.user'),
-      password: this._config.getValueByKey('postgres.iroha.password')
+      host: this._config.getValueByKey('iroha.postgres.host'),
+      port: parseInt(this._config.getValueByKey('iroha.postgres.port')),
+      database: this._config.getValueByKey('iroha.postgres.database'),
+      user: this._config.getValueByKey('iroha.postgres.user'),
+      password: this._config.getValueByKey('iroha.postgres.password')
     })
 
     await this._client.connect()
