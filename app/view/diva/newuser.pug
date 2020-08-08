@@ -1,61 +1,62 @@
 include mixin-section-title
 
 doctype html
-html(data-culture-lang=Culture.uiLanguage lang=Culture.uiLanguage)
+html(class='has-navbar-fixed-top' data-culture-lang=Culture.uiLanguage lang=Culture.uiLanguage)
   include head.pug
 
   script Ui.load('/js/diva-user.js', () => UiUser.newUser())
 
   body
+    nav(class='navbar container is-fixed-top is-transparent top' role='navigation' aria-label='main navigation')
+      div(class='navbar-brand')
+        a(class='navbar-item' href='#')
+          img(src='/media/diva-exchange-logo-32x32.png' width='32' height='32')
+
     section(class='section' id='app')
       div(class='container')
-        div(class='columns is-centered')
-          div(class='column is-half')
-            div(class='is-pulled-right')
-              include ui-language
-            div(class='is-clearfix')
+        div(class='is-pulled-right')
+          include ui-language
+        div(class='is-clearfix')
 
       div(class='container')
-        div(class='columns is-centered')
-          div(class='column is-half')
-            div(class='tabs is-large is-size-5-mobile')
-              ul
-                if arrayUser.length > 0
-                  li
-                    a(href='/auth'
-                      data-culture-text='Login')= Culture.t('Login')
-                li(class='is-active')
-                  a(class='newuser' data-culture-text='SignUp')= Culture.t('SignUp')
+        div(class='tabs is-large is-size-5-mobile')
+          ul
+            if arrayUser.length > 0
+              li
+                a(href='/auth'
+                  data-culture-text='Login')= Culture.t('Login')
+            li(class='is-active')
+              a(class='newuser' data-culture-text='SignUp')= Culture.t('SignUp')
 
-            form(id='newuser' method='post' action='/register')
-              div(class='field')
-                div(class='control has-icons-left')
-                  input(class='input'
-                    id='password'
-                    name='password'
-                    type='password'
-                    pattern='.{10,32}'
-                    autofocus
-                    required
-                    data-culture-placeholder='NewPassword'
-                    placeholder=Culture.t('NewPassword'))
-                  span(class='icon is-small is-left')
-                    i(class='fas fa-lock')
-                  p(class='help' data-culture-text='newuser.PasswordHelp')= Culture.t('newuser.PasswordHelp')
+        form(id='newuser' method='post' action='/register')
+          div(class='field')
+            div(class='control has-icons-left')
+              input(class='input'
+                id='password'
+                name='password'
+                type='password'
+                pattern='.{10,32}'
+                autofocus
+                required
+                data-culture-placeholder='NewPassword'
+                placeholder=Culture.t('NewPassword'))
+              span(class='icon is-small is-left')
+                i(class='fas fa-lock')
+              p(class='help' data-culture-text='newuser.PasswordHelp')= Culture.t('newuser.PasswordHelp')
 
-              div(class='field')
-                div(class='control')
-                  button(id='create'
-                    class='button is-info'
-                    type='submit'
-                    data-culture-text='Create')= Culture.t('Create')
+          div(class='field')
+            div(class='control')
+              button(id='create'
+                class='button is-info'
+                type='submit'
+                data-culture-text='Create')= Culture.t('Create')
 
-              div(id='creating' class='notification is-info is-hidden')
-                p(data-culture-text='newuser.CreatingUser')= Culture.t('newuser.CreatingUser')
+          div(id='creating' class='notification is-info is-hidden')
+            p(data-culture-text='newuser.CreatingUser')= Culture.t('newuser.CreatingUser')
 
-              div(id='success' class='notification is-success is-hidden')
-                p(data-culture-text='newuser.UserCreated')= Culture.t('newuser.UserCreated')
-                a(href='/auth')
+          div(id='success' class='notification is-success is-hidden')
+            p(data-culture-text='newuser.UserCreated')= Culture.t('newuser.UserCreated')
+            a(href='/auth')
 
-              div(id='error' class='notification is-danger is-hidden')
+          div(id='error' class='notification is-danger is-hidden')
 

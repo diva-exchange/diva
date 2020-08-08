@@ -29,6 +29,30 @@ html.error {
   }
 }
 
+nav.navbar.top, .navbar-menu {
+  background-color: #0f4057;
+  min-height: 70px;
+
+  .navbar-item img {
+    max-height: none;
+    margin-right: 30px;
+  }
+
+  .navbar-item, .navbar-burger {
+    color: #ffffff;
+  }
+
+  .navbar-item.is-tab.is-active {
+    border-bottom-color: #dbf514;
+    color: #dbf514;
+  }
+
+  .navbar-item.is-tab:focus, .navbar-item.is-tab:hover {
+    border-bottom-color: #dbf514;
+    color: #dbf514;
+  }
+}
+
 div.data-loader {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 40px calc(50% - 200px);
@@ -37,6 +61,10 @@ div.data-loader {
 }
 div.data-loader .progress:indeterminate {
   background-image: linear-gradient(to right, orange 30%, #ededed 30%)
+}
+
+section#app {
+  margin: 20px 0;
 }
 
 #order .tabs {

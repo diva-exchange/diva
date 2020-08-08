@@ -57,7 +57,7 @@
     "minimist": ">=1.2.5",
     "mocha": "^8.1.1",
     "node-sass": "^4.14.1",
-    "npm-check-updates": "^7.0.2",
+    "npm-check-updates": "^7.0.3",
     "nyc": "^15.1.0",
     "umbrellajs": "^3.2.3"
   },
