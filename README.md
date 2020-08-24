@@ -31,14 +31,12 @@ This project is unstable and highly experimental. Feedback and pull requests are
 ## Get Started - Local Installation
 
 To get _diva_ up and running, achieve this:
-1. Install Docker and Docker Compose
-2. Pull the _diva_ repositories from codeberg
-3. Build the Docker images within your local environment
-4. Start the Docker containers
+1. Fetch the code from the repository
+2. Start the Docker containers
 
 Please read on to get that done!
 
-Currently _diva_ requires Docker. Docker is just a "Container Framework" helping you to install "something else" on your existing system (like your laptop) without interfering with your existing environment. Docker works on Linux, MacOS and Windows.
+Currently _diva_ uses Docker. Docker is just a "Container Framework" helping you to install "something else" on your existing system (like your laptop) without interfering with your existing environment. Docker works on Linux, MacOS and Windows.
 
 Get a short overview of Docker here: [https://docs.docker.com/get-started/](). Just read the short introduction to get the point (first two paragraphs).
 
@@ -69,10 +67,13 @@ Docker Compose: [https://docs.docker.com/compose/install/]()
 
 Have you installed Docker? If not, please do so first (see above).
 
-Now get the diva repository via clone or download:
+Now get the diva repository via clone _or_ download:
 
-1. clone the diva repository: `git clone https://codeberg.org/diva.exchange/diva.git ~/diva.exchange/diva`
-2. [download](https://codeberg.org/diva.exchange/diva/archive/master.zip) and unpack the code repository to your local device. 
+* clone the diva repository: `git clone https://codeberg.org/diva.exchange/diva.git ~/diva.exchange/diva`
+
+_or_
+
+* [download](https://codeberg.org/diva.exchange/diva/archive/master.zip) and unpack the code repository to your local device. 
 
    We assume that you store the downloaded repository within your User folder, which is usually located here:
 
@@ -84,32 +85,48 @@ Now get the diva repository via clone or download:
 
 Then, from the project folder and using your terminal:
 
-1. Install the project by running: `./bin/install.sh`. During the installation process, you will be asked for for the password of the priviledged user, since `sudo` gets used to access docker.
-2. Then start it by running: `./bin/start.sh`. During the start-up process, you will be asked for for the password of the priviledged user, since `sudo` gets used to access docker.
+1. Install the project by running: `./bin/install.sh`. During the installation process, you will be asked for for the password of the privileged user, since `sudo` gets used to access docker.
+2. Then start it by running: `./bin/start.sh`. During the start-up process, you will be asked for for the password of the privileged user, since `sudo` gets used to access docker.
 
 
-Test it, as privileged user: `docker ps -a` should show a running **i2pd** container and an **iroha** container.
-Also, test it with your browser: [http://localhost:7070]() - you should see the I2Pd webconsole. I2P is up and running.
+Test it, as privileged user: `docker ps -a` should show a running **i2pd** container, three **iroha** containers (that's the so called DIVA testnet) and a iroha-node container, like this:
 
-You also have now two services available locally: the application DIVA and the API.
-- The application on [http://localhost:3911]() (this is DIVA - all you do happens locally - no data transferred over the network). 
+```
+diva $ sudo docker ps
+IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                                                                  NAMES
+divax/iroha-node:latest   "/entrypoint.sh"         21 seconds ago      Up 19 seconds                                                                                              iroha-node
+divax/iroha:latest        "/entrypoint.sh"         21 seconds ago      Up 21 seconds       127.19.3.1:10032->5432/tcp, 127.19.3.1:10011->10001/tcp, 127.19.3.1:10051->50051/tcp   iroha3
+divax/iroha:latest        "/entrypoint.sh"         22 seconds ago      Up 21 seconds       127.19.2.1:10032->5432/tcp, 127.19.2.1:10011->10001/tcp, 127.19.2.1:10051->50051/tcp   iroha2
+divax/iroha:latest        "/entrypoint.sh"         23 seconds ago      Up 22 seconds       127.19.1.1:10032->5432/tcp, 127.19.1.1:10011->10001/tcp, 127.19.1.1:10051->50051/tcp   iroha1
+divax/i2p:latest          "/home/i2pd/entrypoi…"   24 seconds ago      Up 23 seconds       0.0.0.0:4444-4445->4444-4445/tcp, 0.0.0.0:7070->7070/tcp                               i2pd
+
+```
+
+Take a close look at your running NodeJS processes using the process manager pm2:
+
+```
+diva $ pm2 status
+┌─────┬─────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0   │ diva        │ default     │ 0.1.0   │ fork    │ 7717     │ 15m    │ 0    │ online    │ 0.9%     │ 85.3mb   │ diva     │ disabled │
+│ 1   │ diva.api    │ default     │ 0.1.0   │ fork    │ 7724     │ 15m    │ 0    │ online    │ 0.5%     │ 86.0mb   │ diva     │ disabled │
+└─────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+```
+
+Hence there should be two services available locally: the application DIVA and the API.
+- DIVA application now runs on on [http://localhost:3911](). Open in up in a browser and create your *local* account. Remember: using this setup, nothing related to DIVA will ever leave your local box.
 - The API is boring but super important. You can access it using your browser, http://localhost:3912.
+
+Also, test I2PD it with your browser: [http://localhost:7070]() - you should see the I2Pd webconsole. I2P is up and running.
 
 > ⚠️ Please note: your using a development branch. There might be dragons.
 
-### How to Stop
+### How to Stop and Remove DIVA
 
-To stop, yet keep the containers and data, run from the project folder:
+To stop and remove DIVA from your local box:
 
-`./scripts/cleanup.sh`
-
-### How to Stop and Clean Up
-
-To stop and completely remove the docker container. All data within the containers (like the blockchain) will be lost - that's fine if you want to have a fresh start.
-
-Run from the project folder:
-
-`./scripts/cleanup.sh`
+`./bin/stop.sh`
 
 ### How to Build the Docker Images
 

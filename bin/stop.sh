@@ -31,7 +31,7 @@ source "${PROJECT_PATH}bin/helpers.sh"
 
 ############################################################################
 
-bot "Stopping diva services, data and container will remain untouched"
+bot "Stopping and removing diva services"
 running "Stop diva"
 npm run stop
 
