@@ -1,33 +1,46 @@
 #!/usr/bin/env bash
+#
+#    Copyright (C) 2020 diva.exchange
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+#
+#    Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
+#
 
 ###############################################################################
 # Start
 ###############################################################################
 
-CUR_DIR=$(pwd)
-source "$CUR_DIR/scripts/echos.sh"
-source "$CUR_DIR/scripts/helpers.sh"
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/../"
+cd ${PROJECT_PATH}
+
+source "${PROJECT_PATH}bin/echos.sh"
+source "${PROJECT_PATH}bin/helpers.sh"
 
 ############################################################################
 
 bot "Start diva"
 
 running "Start the docker container for I2P"
-docker run -p 7070:7070 -p 4444:4444 -p 4445:4445 -d --name i2pd divax/i2p:latest
+sudo docker run -p 7070:7070 -p 4444:4444 -p 4445:4445 -d --name i2pd divax/i2p:latest
 
-bot "Start the docker container for Iroha"
-
-running "Create the volume"
-docker volume create iroha
-
-running "Start the container"
-docker run -d -p 25432:5432 -p 50151:50051 --name=iroha -v iroha:/opt/iroha/data divax/iroha:latest
+bot "Starting the Iroha testnet"
+sudo ${PROJECT_PATH}bin/start-p2p-testnet.sh
 
 running "Install dependencies"
-npm ci
-
-running "Install the diva database"
-npm run install
+npm i
 
 running "Start diva"
 npm start

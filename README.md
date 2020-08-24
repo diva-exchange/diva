@@ -2,7 +2,7 @@
 
 Distributed value exchange upholding security, reliability and privacy.
 
-_Diva_ is an application (free software, GPLv3). It enables everyone to manage and trade digital values (like crypto currencies). Every installation of _diva_ (like on your laptop) is your personal and private bank and exchange. There is no dependency to any cloud or other central service. _Diva_ includes all necessary services locally. Therefore a complete _diva_ installation consists of several parts:
+_Diva_ is an application (free software, AGPLv3). It enables everyone to manage and trade digital values (like crypto currencies). Every installation of _diva_ (like on your laptop) is your personal and private bank and exchange. There is no dependency to any cloud or other central service. _Diva_ includes all necessary services locally. Therefore a complete _diva_ installation consists of several parts:
 * an instance of the "Hyperledger/Iroha" Blockchain
 * the private and secure communication network "I2P" (aka "darknet")
 * the _diva_ application
@@ -11,7 +11,7 @@ There are two flavours of _diva_ available: a light version (without blockchain 
 
 ## About
 
-This is a research project driven by a small community of researchers which are highly motivated by exploring and understanding the unknown. Respect the GPLv3 license terms!
+This is a research project driven by a small community of researchers which are highly motivated by exploring and understanding the unknown. Respect the AGPLv3 license terms!
 
 ![alt text](https://social.diva.exchange/system/site_uploads/files/000/000/001/original/social-diva-background-1200-630.png)
 
@@ -84,8 +84,9 @@ Now get the diva repository via clone or download:
 
 Then, from the project folder and using your terminal:
 
-1. Install the project by running: `./bin/install.sh`
-2. Then start it by running: `./bin/start.sh`
+1. Install the project by running: `./bin/install.sh`. During the installation process, you will be asked for for the password of the priviledged user, since `sudo` gets used to access docker.
+2. Then start it by running: `./bin/start.sh`. During the start-up process, you will be asked for for the password of the priviledged user, since `sudo` gets used to access docker.
+
 
 Test it, as privileged user: `docker ps -a` should show a running **i2pd** container and an **iroha** container.
 Also, test it with your browser: [http://localhost:7070]() - you should see the I2Pd webconsole. I2P is up and running.

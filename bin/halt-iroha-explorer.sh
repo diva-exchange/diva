@@ -19,30 +19,15 @@
 #    Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
 #
 
-###############################################################################
-# Install
-###############################################################################
+# -e  Exit immediately if a simple command exits with a non-zero status
+set -e
 
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/../"
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"/../
 cd ${PROJECT_PATH}
 
-source "${PROJECT_PATH}bin/echos.sh"
-source "${PROJECT_PATH}bin/helpers.sh"
+# stop and remove the container
+docker stop iroha-explorer
+docker rm iroha-explorer
 
-############################################################################
-
-bot "Installing diva"
-
-if command_exists docker; then
-  running "Pull i2p"
-  sudo docker pull divax/i2p:latest
-
-  running "Pull iroha"
-  sudo docker pull divax/iroha:latest
-  sudo docker pull divax/iroha-node:latest
-else
-  error "Install Docker and Docker Compose before you install diva."
-fi
-
-running "PM2 process manager is required, installing"
-(! command_exists pm2) && npm i -g pm2
+# remove the volume
+docker volume rm iroha-explorer

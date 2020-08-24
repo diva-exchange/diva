@@ -20,6 +20,7 @@
     "css-build": "node-sass --omit-source-map-url --output-style compressed app/static/sass/diva.scss app/static/css/diva.min.css",
     "install": "node -r esm app/bin/install-db",
     "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
     "test": "rm -rf app/test/data/session ; nyc mocha"
   },
   "dependencies": {
@@ -36,7 +37,7 @@
     "http-errors": "~1.8.0",
     "iroha-helpers": "^0.9.0",
     "nanoid": "^3.1.12",
-    "pg": "^8.3.0",
+    "pg": "^8.3.2",
     "pug": "^3.0.0",
     "request-promise-native": "^1.0.9",
     "socks-proxy-agent": "^5.0.0",
@@ -44,11 +45,11 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "acorn": ">=7.4.0",
+    "acorn": ">=8.0.1",
     "bulma": "^0.9.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^7.6.0",
+    "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
@@ -57,12 +58,12 @@
     "minimist": ">=1.2.5",
     "mocha": "^8.1.1",
     "node-sass": "^4.14.1",
-    "npm-check-updates": "^7.0.3",
+    "npm-check-updates": "^7.1.1",
     "nyc": "^15.1.0",
     "umbrellajs": "^3.2.3"
   },
   "peerDependencies": {
-    "pm2": "^4.4.0"
+    "pm2": "^4.4.1"
   },
   "mocha": {
     "require": [
