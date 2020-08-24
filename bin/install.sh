@@ -45,4 +45,4 @@ else
 fi
 
 running "PM2 process manager is required, installing"
-(! command_exists pm2) && npm i -g pm2
+(! command_exists pm2) && sudo npm i -g pm2
