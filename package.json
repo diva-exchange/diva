@@ -10,7 +10,7 @@
     "asset"
   ],
   "author": "Konrad Baechler <konrad@diva.exchange> (https://diva.exchange)",
-  "license": "GPL-3.0-or-later",
+  "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "https://codeberg.org/diva.exchange/diva.git"
