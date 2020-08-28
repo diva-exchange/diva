@@ -48,7 +48,6 @@ export class Router {
       this._app.use(
         session({
           cookie: {
-            domain: 'localhost',
             httpOnly: true,
             secure: false,
             sameSite: 'strict'
@@ -81,6 +80,9 @@ export class Router {
     if (routes.get && Object.entries(routes.get).length > 0) {
       Object.entries(routes.get).forEach(
         ([path, controller]) => this._app.get(path, (req, res, next) => {
+          if (routes.session && !req.session.cookie.domain) {
+            req.session.cookie.domain = req.hostname
+          }
           if (routes.storePathView && routes.storePathView.indexOf(req.path) >= 0) {
             if (req.session.stateView && req.session.stateView[req.session.account]) {
               req.session.stateView[req.session.account].pathView = req.path

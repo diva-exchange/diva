@@ -13,7 +13,7 @@ module.exports = {
       },
       env_production: {
         NODE_ENV: 'production',
-        BIND_IP: '127.0.0.1',
+        BIND_IP: '0.0.0.0',
         PORT: 3901
       }
     },
