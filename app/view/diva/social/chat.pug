@@ -6,29 +6,51 @@ block content
         br
         div(class="columns")
             div(class="column is-one-thirds jumbotron")
-                input(class="form-control" id = "chatContactName" placeholder="b32_address")
-                ul(class="chat_accounts_ul")
-                  for account in arrayChatFriends
-                    if activeAccountIdent === account.b32_address
-                      li.current_chat= account.b32_address
-                    else
-                      li= account.b32_address
-                br
+              p(class='chat_segment_title') Accounts :
+              ul(class="chat_accounts_ul")
+                for account in arrayChatFriends
+                  if activeAccount !== undefined && activeAccount.account_ident === account.account_ident
+                    li.current_chat= account.account_ident
+                  else
+                    li= account.account_ident
+              br
 
             div(class="column is-one-thirds messages")
-                h1(class="display-4") Message
+              p(class='chat_segment_title') Messages :
+              br
+              div(class="chat_messages_div"  id = "chat_messages")
+                ul
+                  for item in arrayMessage
+                    if item.sent_received === 1
+                      li.my_message_li
+                        div.my_message_div= item.message
+                    else
+                      li.incoming_message_li
+                        div.incoming_message_div= item.message
                 br
-                div(class="chat_messages_div" id = "chatMessages" )
-                    ul
-                      for item in arrayMessage
-                        if item.sent_received === 1
-                          li.my_message_li
-                            div.my_message_div= item.message
-                        else
-                          li.incoming_message_li
-                            div.incoming_message_div= item.message
-                    br
-                textarea(class="form-control" id = "chatMessage" placeholder="Your Message Here")
-                button(class="button" id = "sendMessage") Send
-                br
-            div(class="column is-one-thirds") Some text about choosed user...
+              textarea(class="form-control" id = "chat_message" placeholder="Your Message Here")
+              button(class="button" id = "send_message" type="hidden") Send
+              br
+            div(class="column is-one-thirds")
+              p(class='chat_segment_title') Profile details :
+              if activeAccount !== undefined
+
+                ul
+                  li
+                    div.profile_fields
+                      p Account :
+                      p#profile_account_ident=activeAccount.account_ident
+                  li
+                    div.profile_fields
+                      p Avatar :
+                      input(class="form-control" id = "chatIdentAvatar" placeholder="avatar" value=`${activeAccount.avatar}`)
+                  li
+                    div.profile_fields
+                      p B32 Address :
+                      input(class="form-control" id = "chat_profile_B32" placeholder="b32_address" value=`${activeAccount.b32_address}`)
+                  li
+                    input(type="hidden" class="form-control" id = "chatContactPK" placeholder="public_key" value=`${activeAccount.pub_key}`)
+                  li
+                  div.profile_fields
+                    button(class="button" id = "updateProfile") Update
+

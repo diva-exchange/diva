@@ -34,7 +34,6 @@ export class Messaging {
    * @private
    */
   constructor (session) {
-    this._identAccount = session.account
     this._publicKey = KeyStore.make().get(':keyPublicForChat')
     this._socket = new Map()
 
@@ -50,16 +49,16 @@ export class Messaging {
    * @param toB32 {string}
    * @param message {string}
    */
-  send (toB32, message, firstMessage = false) {
+  send (myAccountIdent, toB32, message, firstMessage = false) {
     if (!this._socket.has(toB32)) {
       this._initiate(toB32)
     }
-
     if (this._socket.get(toB32).readyState !== WebSocket.OPEN) {
-      setTimeout(() => { this.send(toB32, message, firstMessage) }, 500)
+      setTimeout(() => { this.send(myAccountIdent, toB32, message, firstMessage) }, 500)
     } else {
       this._socket.get(toB32).send(JSON.stringify({
         command: 'chat',
+        account: myAccountIdent,
         sender: this.myB32address,
         message: message,
         pubK: this._publicKey.toString('hex'),
@@ -74,7 +73,6 @@ export class Messaging {
    */
   _initiate (toB32) {
     const socket = Network.make().getWebsocketToB32(toB32 + ':' + API_COMMUNICATION_PORT)
-
     socket.on('error', (error) => {
       Logger.warn(error)
       socket.close()
@@ -82,14 +80,12 @@ export class Messaging {
     socket.on('close', () => {
       this._socket.delete(toB32)
     })
-
     this._socket.set(toB32, socket)
   }
 
   encryptChatMessage (data, publicKeyRecipient) {
     const bufferM = Buffer.from(data)
     const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + data.length)
-
     sodium.crypto_box_seal(ciphertext, bufferM, Buffer.from(publicKeyRecipient, 'hex'))
     return ciphertext.toString('base64')
   }
@@ -97,7 +93,6 @@ export class Messaging {
   decryptChatMessage (data) {
     const bufferC = Buffer.from(data, 'base64')
     const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
-
     const success = sodium.crypto_box_seal_open(decrypted, bufferC, this._publicKey, KeyStore.make().get(':keySecretForChat'))
     return (success && decrypted.toString()) || 'Can not encrypt message.'
   }

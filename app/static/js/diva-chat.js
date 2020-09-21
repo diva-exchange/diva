@@ -32,19 +32,76 @@ class UiChat {
         objData = JSON.parse(event.data)
         objData.sender = objData.sender.split(':')[0]
         await UiChat._postJson('/social/addMessage', {
+          chatAccount: objData.account,
           chatB32: objData.sender,
           chatMessage: objData.message,
           chatPK: objData.pubK,
           chatFM: objData.firstM
         })
-        // UiChat._setHtmlMessages(objData, true)
-        // _u('ul.chat_accounts_ul li.current_chat').trigger('click')
-        // need to be solved - reason => objData.message is still encrypted text
 
         document.location.reload()
       } catch (error) {
         window.location.replace('/logout')
       }
+    })
+  }
+
+  static _attachEvents () {
+    // send message on click Send
+    _u('#send_message').on('click', async e => {
+      const account = _u('#profile_account_ident').first().value ? _u('#profile_account_ident').first().value : _u('ul.chat_accounts_ul li.current_chat').text().trim()
+      const messageToSend = _u('#chat_message').first().value.trim()
+      const myAccount = _u('#account').html().trim().match(/[^@]*/i)[0]
+      if (account && messageToSend) {
+        await UiChat._postJson('/social/sendMessage', {
+          myAccountIdent: myAccount,
+          accountIdentRecipient: account,
+          chatMessage: messageToSend
+        })
+        UiChat._setHtmlMessages({
+          message: messageToSend,
+          sender: account
+        })
+        _u('#chat_message').first().value = ''
+        _u('#chat_profile_B32').first().value = ''
+      }
+    })
+    // send message on Enter
+    _u('#chat_message').handle('keyup', function (event) {
+      if (event.keyCode === 13) {
+        _u('#send_message').trigger('click')
+      }
+    })
+
+    _u('#updateProfile').on('click', async e => {
+      const account = _u('#profile_account_ident').first().value ? _u('#profile_account_ident').first().value : _u('ul.chat_accounts_ul li.current_chat').text()
+      const b32Address = _u('#chat_profile_B32').first().value
+      const avatar = _u('#chatIdentAvatar').first().value
+      const pk = _u('#chatContactPK').first().value
+      if (account || b32Address) {
+        await UiChat._postJson('/social/updateProfile', {
+          profileIdent: account.trim(),
+          profileB32: b32Address.trim(),
+          profileAvatar: avatar.trim(),
+          profilePk: pk.trim()
+        })
+      }
+    })
+  }
+
+  static attachEventWithReload () {
+    // refresh message history with chosen account
+    _u('ul.chat_accounts_ul li').on('click', async e => {
+      const account = _u(e.target).text()
+      if (account) {
+        await UiChat._postJson('/social/sendMessage', {
+          accountIdentRecipient: account,
+          chatMessage: ''
+        })
+        document.location.reload()
+      }
+      var chatMessages = document.getElementById('chat_messages')
+      chatMessages.scrollTop = chatMessages.scrollHeight
     })
   }
 
@@ -71,54 +128,12 @@ class UiChat {
       html += `<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`
     }
     if (found && _u('ul.chat_accounts_ul li.current_chat').text() === objData.sender) {
-      _u('#chatMessages ul').append(html)
+      _u('#chat_messages ul').append(html)
     } else {
-      _u('#chatMessages ul').html(html)
+      _u('#chat_messages ul').html(html)
     }
-    var chatMessages = document.getElementById('chatMessages')
+    var chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
-  }
-
-  static _attachEvents () {
-    // send message on click Send
-    _u('#sendMessage').on('click', async e => {
-      const b32Address = _u('#chatContactName').first().value ? _u('#chatContactName').first().value : _u('ul.chat_accounts_ul li.current_chat').text()
-      const messageToSend = _u('#chatMessage').first().value
-      if (b32Address && messageToSend) {
-        await UiChat._postJson('/social/sendMessage', {
-          chatB32: b32Address,
-          chatMessage: messageToSend
-        })
-        UiChat._setHtmlMessages({
-          message: _u('#chatMessage').first().value,
-          sender: b32Address
-        })
-        _u('#chatMessage').first().value = ''
-        _u('#chatContactName').first().value = ''
-      }
-    })
-    // send message on Enter
-    _u('#chatMessage').handle('keyup', function (event) {
-      if (event.keyCode === 13) {
-        _u('#sendMessage').trigger('click')
-      }
-    })
-  }
-
-  static attachEventWithReload () {
-    // refresh message history with chosen b32 address
-    _u('ul.chat_accounts_ul li').on('click', async e => {
-      const b32Address = _u(e.target).text()
-      if (b32Address) {
-        await UiChat._postJson('/social/sendMessage', {
-          chatB32: b32Address,
-          chatMessage: ''
-        })
-        document.location.reload()
-      }
-      var chatMessages = document.getElementById('chatMessages')
-      chatMessages.scrollTop = chatMessages.scrollHeight
-    })
   }
 
   /**

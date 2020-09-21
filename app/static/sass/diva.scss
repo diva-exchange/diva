@@ -147,6 +147,7 @@ article.article {
   padding: 10px 10px 10px 10px;
   position: relative;
 }
+
 .chat_messages_div:after {
   background-image: url("../media/diva-exchange-600x315.jpg");
   background-repeat: no-repeat;
@@ -161,11 +162,16 @@ article.article {
   width: 100%;
 }
 
+#chat_message {
+  width: 100%;
+  resize: unset;
+  border-radius: 4px;
+}
 .chat_accounts_ul {
   background-color: #f5f5f5;
-  height: 250px;
+  height: 277px;
   overflow-y: auto;
-  margin: 20px 150px 5px 10px;
+  margin: 20px 90px 5px 10px;
   border-radius: 4px;
   padding: 10px 10px 10px 10px;
 }
@@ -214,4 +220,13 @@ ul.chat_accounts_ul li {
   z-index: 27;
   position: relative;
   background: #ffffff;
+}
+
+.chat_segment_title {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.profile_fields {
+  padding: 15px;
 }

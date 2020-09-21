@@ -200,6 +200,21 @@ export class IrohaDb {
     }
     return Promise.resolve('')
   }
+
+  /**
+   * @returns {array}
+   * @throws {Error}
+   */
+  async getAccounts () {
+    const data = await this._client.query('SELECT account_id FROM account')
+    if (data.rowCount < 1) {
+      throw new Error('no accounts found')
+    }
+
+    return Promise.all(data.rows.map(async (row) => {
+      return row.account_id
+    }))
+  }
 }
 
 module.exports = { IrohaDb, IROHA_ORDER_VERSION_CURRENT }
