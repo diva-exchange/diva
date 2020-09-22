@@ -5,7 +5,7 @@ block content
     div(class="container")
         br
         div(class="columns")
-            div(class="column is-one-thirds jumbotron")
+            div(class="column")
               p(class='chat_segment_title') Accounts :
               ul(class="chat_accounts_ul")
                 for account in arrayChatFriends
@@ -15,7 +15,7 @@ block content
                     li= account.account_ident
               br
 
-            div(class="column is-one-thirds messages")
+            div(class="column messages")
               p(class='chat_segment_title') Messages :
               br
               div(class="chat_messages_div"  id = "chat_messages")
@@ -29,12 +29,10 @@ block content
                         div.incoming_message_div= item.message
                 br
               textarea(class="form-control" id = "chat_message" placeholder="Your Message Here")
-              button(class="button" id = "send_message" type="hidden") Send
               br
-            div(class="column is-one-thirds")
+            div(class="column")
               p(class='chat_segment_title') Profile details :
               if activeAccount !== undefined
-
                 ul
                   li
                     div.profile_fields
@@ -52,5 +50,5 @@ block content
                     input(type="hidden" class="form-control" id = "chatContactPK" placeholder="public_key" value=`${activeAccount.pub_key}`)
                   li
                   div.profile_fields
-                    button(class="button" id = "updateProfile") Update
+                    button(class="button" id = "updateProfile" type="submit") Update
 

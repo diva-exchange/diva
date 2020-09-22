@@ -43,77 +43,70 @@ export class UXSocial extends UXMain {
     if (!UXMain.isAuth(rq)) {
       return UXMain.redirectAuth(rs)
     }
-
+    if (typeof rq.body.accountIdentRecipient !== 'undefined') {
+      session.chatIdent = rq.body.accountIdentRecipient
+    }
     switch (rq.path) {
       case '/social/sendMessage': {
-        session.chatIdent = rq.body.accountIdentRecipient
-        const b32Address = this.chatDb.getProfile(rq.body.accountIdentRecipient)[0].b32_address
-        if (rq.body.chatMessage && rq.body.chatMessage !== null && rq.body.chatMessage !== '') {
-          this.chatDb.addMessage(rq.body.accountIdentRecipient, rq.body.chatMessage, 1)
-
-          const publicKeyRecipient = this.chatDb.getProfile(rq.body.accountIdentRecipient)
-
+        const b32Address = this.chatDb.getProfile(session.chatIdent)[0].b32_address
+        if (typeof rq.body.chatMessage !== 'undefined' && rq.body.chatMessage !== '' &&
+            typeof b32Address !== 'undefined' && b32Address !== '') {
+          this.chatDb.addMessage(session.chatIdent, rq.body.chatMessage, 1)
+          const publicKeyRecipient = this.chatDb.getProfile(session.chatIdent)
           // the if statement is for the first not encrypted message - before they exchange it - it will be removed
-          if (typeof publicKeyRecipient !== 'undefined' && publicKeyRecipient[0].pub_key !== '' && publicKeyRecipient[0].pub_key.length !== 0) {
+          if (typeof publicKeyRecipient !== 'undefined' && publicKeyRecipient[0].pub_key !== '') {
             const encryptedMessage = this.messaging.encryptChatMessage(rq.body.chatMessage, publicKeyRecipient[0].pub_key)
             this.messaging.send(rq.body.myAccountIdent, b32Address, encryptedMessage)
           } else {
             this.messaging.send(rq.body.myAccountIdent, b32Address, rq.body.chatMessage, true)
           }
         }
-        rs.render('diva/social/social', {
-          title: 'Social',
-          arrayMessage: this.chatDb.getMessagesForUser(session.chatIdent),
-          arrayChatFriends: this.chatDb.getChatFriends(),
-          activeAccount: this.chatDb.getProfile(session.chatIdent)[0]
-        })
+        this.renderPage(rs, session.chatIdent)
         break
       }
       case '/social/addMessage': {
-        session.chatIdent = rq.body.chatAccount
         const receivedProfile = this.chatDb.getProfile(session.chatIdent)[0]
-        if (rq.body.chatMessage && rq.body.chatMessage !== null && rq.body.chatMessage !== '' && rq.body.chatAccount !== '') {
+        if (rq.body.chatMessage !== null && rq.body.chatMessage !== '' && session.chatIdent !== '') {
           this.chatDb.setProfile(receivedProfile.account_ident, receivedProfile.b32_address, rq.body.chatPK, receivedProfile.avatar)
           // temporary solution - first message is not encrypted
           if (!rq.body.chatFM) {
             const decryptedMessage = this.messaging.decryptChatMessage(rq.body.chatMessage)
-            this.chatDb.addMessage(rq.body.chatAccount, decryptedMessage, 2)
+            this.chatDb.addMessage(session.chatIdent, decryptedMessage, 2)
           } else {
-            this.chatDb.addMessage(rq.body.chatAccount, rq.body.chatMessage, 2)
+            this.chatDb.addMessage(session.chatIdent, rq.body.chatMessage, 2)
           }
         }
-        rs.render('diva/social/social', {
-          title: 'Social',
-          arrayMessage: this.chatDb.getMessagesForUser(session.chatIdent),
-          arrayChatFriends: this.chatDb.getChatFriends(),
-          activeAccount: receivedProfile
-        })
+        this.renderPage(rs, session.chatIdent)
         break
       }
       case '/social/updateProfile': {
         if (rq.body.profileIdent && rq.body.profileIdent !== null && rq.body.profileIdent !== '') {
           this.chatDb.setProfile(rq.body.profileIdent, rq.body.profileB32, rq.body.profilePk, rq.body.profileAvatar)
         }
-        rs.render('diva/social/social', {
-          title: 'Social',
-          arrayMessage: this.chatDb.getMessagesForUser(session.chatIdent),
-          arrayChatFriends: this.chatDb.getChatFriends(),
-          activeAccount: this.chatDb.getProfile(session.chatIdent)[0]
-        })
+        this.renderPage(rs, session.chatIdent)
         break
       }
       case '/social': {
-        rs.render('diva/social/social', {
-          title: 'Social',
-          arrayMessage: this.chatDb.getMessagesForUser(session.chatIdent),
-          arrayChatFriends: this.chatDb.getChatFriends(),
-          activeAccount: this.chatDb.getProfile(session.chatIdent)[0]
-        })
+        this.renderPage(rs, session.chatIdent)
         break
       }
       default:
         n()
     }
+  }
+
+  /**
+   * @param rs {Object} Response
+   * @param chatIdent {String}
+   * @public
+   */
+  renderPage (rs, chatIdent) {
+    rs.render('diva/social/social', {
+      title: 'Social',
+      arrayMessage: this.chatDb.getMessagesForUser(chatIdent),
+      arrayChatFriends: this.chatDb.getChatFriends(),
+      activeAccount: this.chatDb.getProfile(chatIdent)[0]
+    })
   }
 }
 

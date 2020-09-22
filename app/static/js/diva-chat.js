@@ -32,44 +32,39 @@ class UiChat {
         objData = JSON.parse(event.data)
         objData.sender = objData.sender.split(':')[0]
         await UiChat._postJson('/social/addMessage', {
-          chatAccount: objData.account,
+          accountIdentRecipient: objData.account,
           chatB32: objData.sender,
           chatMessage: objData.message,
           chatPK: objData.pubK,
           chatFM: objData.firstM
         })
-
-        document.location.reload()
+        location = ''
       } catch (error) {
         window.location.replace('/logout')
       }
     })
+    var chatMessages = document.getElementById('chat_messages')
+    chatMessages.scrollTop = chatMessages.scrollHeight
   }
 
   static _attachEvents () {
-    // send message on click Send
-    _u('#send_message').on('click', async e => {
-      const account = _u('#profile_account_ident').first().value ? _u('#profile_account_ident').first().value : _u('ul.chat_accounts_ul li.current_chat').text().trim()
-      const messageToSend = _u('#chat_message').first().value.trim()
-      const myAccount = _u('#account').html().trim().match(/[^@]*/i)[0]
-      if (account && messageToSend) {
-        await UiChat._postJson('/social/sendMessage', {
-          myAccountIdent: myAccount,
-          accountIdentRecipient: account,
-          chatMessage: messageToSend
-        })
-        UiChat._setHtmlMessages({
-          message: messageToSend,
-          sender: account
-        })
-        _u('#chat_message').first().value = ''
-        _u('#chat_profile_B32').first().value = ''
-      }
-    })
     // send message on Enter
-    _u('#chat_message').handle('keyup', function (event) {
-      if (event.keyCode === 13) {
-        _u('#send_message').trigger('click')
+    _u('#chat_message').handle('keyup', async e => {
+      if (e.keyCode === 13) {
+        const account = _u('ul.chat_accounts_ul li.current_chat').text().trim()
+        const messageToSend = _u('#chat_message').first().value.trim()
+        const myAccount = _u('#account').html().trim().match(/[^@]*/i)[0]
+        if (account && messageToSend) {
+          await UiChat._postJson('/social/sendMessage', {
+            myAccountIdent: myAccount,
+            accountIdentRecipient: account,
+            chatMessage: messageToSend
+          })
+          UiChat._setHtmlMessages({
+            message: messageToSend
+          })
+          _u('#chat_message').first().value = ''
+        }
       }
     })
 
@@ -86,6 +81,7 @@ class UiChat {
           profilePk: pk.trim()
         })
       }
+      location = ''
     })
   }
 
@@ -98,40 +94,13 @@ class UiChat {
           accountIdentRecipient: account,
           chatMessage: ''
         })
-        document.location.reload()
+        location = ''
       }
-      var chatMessages = document.getElementById('chat_messages')
-      chatMessages.scrollTop = chatMessages.scrollHeight
     })
   }
 
-  static _setHtmlMessages (objData, received = false) {
-    let found = false
-    let html = ''
-    _u('ul.chat_accounts_ul li').each((node, i) => {
-      if (node.innerText === objData.sender) {
-        found = true
-      }
-    })
-    if (!found) {
-      _u('ul.chat_accounts_ul li').each((node, i) => {
-        if (_u(node).hasClass('current_chat')) {
-          _u(node).removeClass('current_chat')
-        }
-      })
-      _u('ul.chat_accounts_ul').append(`<li class="current_chat">${objData.sender}</li>`)
-      UiChat.attachEventWithReload()
-    }
-    if (received) {
-      html += `<li class="incoming_message_li"><div class="incoming_message_div">${objData.message}</div></li>`
-    } else {
-      html += `<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`
-    }
-    if (found && _u('ul.chat_accounts_ul li.current_chat').text() === objData.sender) {
-      _u('#chat_messages ul').append(html)
-    } else {
-      _u('#chat_messages ul').html(html)
-    }
+  static _setHtmlMessages (objData) {
+    _u('#chat_messages ul').append(`<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`)
     var chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
   }
