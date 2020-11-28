@@ -8,13 +8,8 @@ module.exports = {
 
       env: {
         NODE_ENV: 'development',
-        BIND_IP: '0.0.0.0',
+        BIND_IP: '127.0.0.1',
         PORT: 3911
-      },
-      env_production: {
-        NODE_ENV: 'production',
-        BIND_IP: '0.0.0.0',
-        PORT: 3901
       }
     },
     {
@@ -26,8 +21,8 @@ module.exports = {
       env: {
         NAME_DATABASE: 'diva',
         NODE_ENV: 'development',
-        BIND_IP: '0.0.0.0',
-        PORT: 3902
+        BIND_IP: '127.0.0.1',
+        PORT: 3912
       }
     }
   ]
