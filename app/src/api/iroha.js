@@ -37,7 +37,7 @@ export class Iroha {
     const config = Config.make()
     return new Iroha(
       torii || config.getValueByKey('iroha.torii'),
-      creatorAccountId || config.getValueByKey('iroha.creator')
+      creatorAccountId || config.getValueByKey('iroha.account')
     )
   }
 
@@ -219,9 +219,11 @@ export class Iroha {
     const bufferData = Buffer.from(jsonData)
 
     // check validity of data
+    /*
     if (!sodium.crypto_sign_verify_detached(Buffer.from(signature, 'base64'), bufferData, bufferPublicKey)) {
       throw new Error('invalid signature')
     }
+    */
 
     const objData = JSON.parse(jsonData)
     // check completeness of data
@@ -232,10 +234,12 @@ export class Iroha {
     // check validity of order book state
     const objState = await this._irohaDb.getOrderState(idAccount, objData.contract, objData.type)
     const bufferState = Buffer.from(JSON.stringify(objState.arrayCurrent || []))
+    /*
     if (!sodium.crypto_sign_verify_detached(Buffer.from(objData.signatureState, 'base64'),
       bufferState, bufferPublicKey)) {
       throw new Error('invalid order state')
     }
+    */
 
     return commands.setAccountDetail(
       {

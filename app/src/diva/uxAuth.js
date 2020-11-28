@@ -8,6 +8,7 @@
 
 import { Logger } from '@diva.exchange/diva-logger'
 
+import { Config } from '../config'
 import { Culture } from '../culture'
 import { User } from './config/user'
 import { KeyStore } from '../key-store'
@@ -40,7 +41,8 @@ export class UXAuth {
    */
   execute (rq, rs, n) {
     const session = rq.session
-    const account = session.account || ''
+    const account = Config.make().getValueByKey('iroha.account')
+    // const account = session.account || ''
     session.isAuthenticated = false
     KeyStore.make().delete(session.account + ':keyPrivate')
     session.account = Buffer.from(session.account || '').fill('0').toString()
@@ -51,6 +53,7 @@ export class UXAuth {
 
     switch (rq.path) {
       // post
+      /*
       case '/register':
         // @FIXME testnet is very wrong here
         User.register(rq.body.password || '', 'testnet')
@@ -67,20 +70,24 @@ export class UXAuth {
       case '/login':
         UXAuth._login(rq, rs)
         break
+      */
       // get
       case '/logout':
         rs.redirect('/auth' + (account && account.replace(/0/g, '') ? '?account=' + account : ''))
         rs.end()
         break
       case '/auth':
-        UXAuth._auth(rq, rs)
+        UXAuth._login(rq, rs)
+        // UXAuth._auth(rq, rs)
         break
+      /*
       case '/newuser':
         rs.render('diva/newuser', {
           title: 'New User',
           arrayUser: User.allAsArray()
         })
         break
+      */
       default:
         n()
     }
@@ -113,7 +120,8 @@ export class UXAuth {
   static _login (rq, rs) {
     const session = rq.session
     try {
-      const user = User.open(rq.body.account || '', rq.body.password || '')
+      const user = User.open(Config.make().getValueByKey('iroha.account'))
+      // const user = User.open(rq.body.account || '', rq.body.password || '')
       session.isAuthenticated = true
       session.account = user.getAccountIdent()
       session.keyPublic = user.getPublicKey()
@@ -127,10 +135,12 @@ export class UXAuth {
       Logger.error(error)
     }
 
+    /*
     rs.json({
       isAuthenticated: session.isAuthenticated,
       pathView: session.isAuthenticated ? session.stateView[session.account].pathView : '/'
     })
+   */
   }
 }
 

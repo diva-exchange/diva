@@ -7,6 +7,7 @@
 'use strict'
 
 import { KeyStore } from '../key-store'
+import { UXAuth } from './uxAuth'
 
 export class UXMain {
   /**
@@ -38,7 +39,8 @@ export class UXMain {
    */
   execute (rq, rs, n) {
     if (!UXMain.isAuth(rq)) {
-      return UXMain.redirectAuth(rs)
+      UXAuth._login(rq, rs)
+      // return UXMain.redirectAuth(rs)
     }
 
     rs.render('diva/main', {})
