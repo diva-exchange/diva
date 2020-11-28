@@ -26,21 +26,21 @@ INSERT INTO config(key, value) VALUES
     ('diva.api.uri', '["localhost:3902"]'),
 
     ('iroha.creator', 'diva@testnet'),
-    ('iroha.torii.development', '127.19.1.1:10051'),
-    ('iroha.torii', 'iroha.local:50051'),
-    ('iroha.postgres.host.development', '127.19.1.1'),
-    ('iroha.postgres.host', 'postgres.local'),
-    ('iroha.postgres.port.development', '10032'),
+    ('iroha.torii.development', '172.20.101.3:50051'),
+    ('iroha.torii', '172.20.101.3:50051'),
+    ('iroha.postgres.host.development', '172.20.101.2'),
+    ('iroha.postgres.host', '172.20.101.2'),
+    ('iroha.postgres.port.development', '5432'),
     ('iroha.postgres.port', '5432'),
-    ('iroha.postgres.database', 'iroha_data'),
-    ('iroha.postgres.user', 'explorer'),
-    ('iroha.postgres.password', 'explorer'),
+    ('iroha.postgres.database', 'diva_iroha_aiqueicoozehaiwi'),
+    ('iroha.postgres.user', 'iroha'),
+    ('iroha.postgres.password', 'iroha'),
 
-    ('i2p.webconsole.scraper.url', 'http://localhost:7070/?page=i2p_tunnels'),
-    ('i2p.http.proxy.development', 'localhost:4444'),
-    ('i2p.http.proxy', 'localhost:4444'),
-    ('i2p.socks.proxy.development', 'localhost:4445'),
-    ('i2p.socks.proxy', 'localhost:4445');
+    ('i2p.webconsole.scraper.url', 'http://172.20.101.200:7070/?page=i2p_tunnels'),
+    ('i2p.http.proxy.development', '172.20.101.200:4444'),
+    ('i2p.http.proxy', '172.20.101.200:4444'),
+    ('i2p.socks.proxy.development', '172.20.101.200:4445'),
+    ('i2p.socks.proxy', '172.20.101.200:4445');
 
 DROP TABLE IF EXISTS language;
 CREATE TABLE language (
