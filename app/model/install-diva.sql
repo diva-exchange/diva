@@ -21,9 +21,9 @@ CREATE TABLE config (
 ) WITHOUT ROWID;
 
 INSERT INTO config(key, value) VALUES
-    ('diva.websocket', '["localhost:3902"]'),
+    ('diva.websocket', '["localhost:3912"]'),
 
-    ('diva.api.uri', '["localhost:3902"]'),
+    ('diva.api.uri', '["localhost:3912"]'),
 
     ('iroha.creator', 'diva@testnet'),
     ('iroha.torii.development', '172.20.101.3:50051'),
