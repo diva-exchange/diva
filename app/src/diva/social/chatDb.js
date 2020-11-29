@@ -8,6 +8,7 @@
 
 import { Db } from '../../db'
 import { IrohaDb } from '../../api/iroha-db'
+import get from 'simple-get'
 
 export class ChatDb {
   static make () {
@@ -44,15 +45,18 @@ export class ChatDb {
       })
   }
 
-  getChatFriends () {
-    const arrayAccounts = this._irohaDb.getAccounts()
-    arrayAccounts.then((result) => {
-      let i = 0
-      result.forEach(element => {
-        const accountCurrent = this.getProfile(element.match(/[^@]*/i)[0])[0]
-        if (typeof accountCurrent === 'undefined' && !accountCurrent) {
-          this.setProfile(element.match(/[^@]*/i)[0], '', '', 'Avatar')
-        }
+  async getChatFriends () {
+
+    const url = 'http://172.20.101.201'
+    const port = '19012'
+    const path = 'accounts'
+
+    get.concat(url + ':' + port + '/' + path, function (err, res, data) {
+      if (err) throw err
+      const accounts = JSON.parse(data)
+      accounts.forEach(element => {
+       console.log(element.account_id)
+       this.setProfile(element.account_id, element.i2p, element.pk, 'Avatar')
       })
     })
     return this._db.allAsArray('SELECT account_ident FROM diva_chat_profiles')

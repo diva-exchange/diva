@@ -25,14 +25,14 @@ INSERT INTO config(key, value) VALUES
 
     ('diva.api.uri', '["localhost:3912"]'),
 
-    ('iroha.account', 'd75lhmx93jvzb5ig3xdjk8lk91fpvaja@testnet'),
+    ('iroha.account', 'd3r8tkhl43mpxv6ro62p1mi2sv4a0d5a@testnet'),
     ('iroha.torii.development', '172.20.101.3:50051'),
     ('iroha.torii', '172.20.101.3:50051'),
     ('iroha.postgres.host.development', '172.20.101.2'),
     ('iroha.postgres.host', '172.20.101.2'),
     ('iroha.postgres.port.development', '5432'),
     ('iroha.postgres.port', '5432'),
-    ('iroha.postgres.database', 'diva_iroha_aiqueicoozehaiwi'),
+    ('iroha.postgres.database', 'diva_iroha_quaicoopheifieph'),
     ('iroha.postgres.user', 'iroha'),
     ('iroha.postgres.password', 'iroha'),
 
