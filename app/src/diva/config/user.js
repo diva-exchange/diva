@@ -121,8 +121,8 @@ export class User {
     this._bufferPassword.fill(password)
 
     if (this._identAccount !== '') {
-      //this._createKeyPairSign()
-      //this._add()
+      this._createKeyPairSign()
+      this._add()
       this._fetch()
     }
   }

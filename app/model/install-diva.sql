@@ -24,6 +24,7 @@ INSERT INTO config(key, value) VALUES
     ('diva.websocket', '["localhost:3912"]'),
 
     ('diva.api.uri', '["localhost:3912"]'),
+    ('iroha.node.local', '172.20.101.201:19012'),
 
     ('iroha.account', 'd3r8tkhl43mpxv6ro62p1mi2sv4a0d5a@testnet'),
     ('iroha.torii.development', '172.20.101.3:50051'),

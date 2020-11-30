@@ -7,8 +7,6 @@
 'use strict'
 
 import { Db } from '../../db'
-import { IrohaDb } from '../../api/iroha-db'
-import get from 'simple-get'
 
 export class ChatDb {
   static make () {
@@ -17,17 +15,16 @@ export class ChatDb {
 
   constructor () {
     this._db = Db.connect()
-    this._initIrohaDB()
   }
 
-  async _initIrohaDB () {
-    this._irohaDb = await IrohaDb.make()
+  getAllAccountsFromDB () {
+    return this._db.allAsArray('SELECT account_ident FROM diva_chat_profiles')
   }
 
   /*
-    * insert message into database
-    *
-    */
+  * insert message into database
+  *
+  */
   addMessage (accountIdent, message, sentReceived) {
     this._db.insert(`INSERT INTO diva_chat_messages (account_ident, message, timestamp_ms, sent_received)
                 VALUES (@a, @m, @ts, @sr)`, {
@@ -43,23 +40,6 @@ export class ChatDb {
       {
         account_ident: accountIdent
       })
-  }
-
-  async getChatFriends () {
-
-    const url = 'http://172.20.101.201'
-    const port = '19012'
-    const path = 'accounts'
-
-    get.concat(url + ':' + port + '/' + path, function (err, res, data) {
-      if (err) throw err
-      const accounts = JSON.parse(data)
-      accounts.forEach(element => {
-       console.log(element.account_id)
-       this.setProfile(element.account_id, element.i2p, element.pk, 'Avatar')
-      })
-    })
-    return this._db.allAsArray('SELECT account_ident FROM diva_chat_profiles')
   }
 
   getProfile (accountIdent) {

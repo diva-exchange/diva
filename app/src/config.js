@@ -7,6 +7,7 @@
 'use strict'
 
 import { Db } from './db'
+import get from 'simple-get'
 
 export class Config {
   /**
@@ -50,6 +51,17 @@ export class Config {
     } catch (error) {
       return this._data[key]
     }
+  }
+
+  getMyIrohaAccount () {
+    const url = 'http://' + this.getValueByKey('iroha.node.local')
+    return new Promise((resolve, reject) => {
+      get.concat(url, function (err, res, data) {
+        if (err) throw err
+        const result = JSON.parse(data)
+        resolve(result.account)
+      })
+    })
   }
 }
 

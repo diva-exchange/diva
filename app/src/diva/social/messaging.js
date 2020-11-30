@@ -6,13 +6,16 @@
 
 'use strict'
 
+import sodium from 'sodium-native'
+import WebSocket from 'ws'
+import get from 'simple-get'
+
 import { Environment } from '../../environment'
 import { Network } from '../../network'
 import { KeyStore } from '../../key-store'
+import { ChatDb } from './chatDb'
 import { Logger } from '@diva.exchange/diva-logger'
-
-import sodium from 'sodium-native'
-import WebSocket from 'ws'
+import { Config } from '../../config'
 
 const API_COMMUNICATION_PORT = 3902
 
@@ -36,6 +39,8 @@ export class Messaging {
   constructor (session) {
     this._publicKey = KeyStore.make().get(':keyPublicForChat')
     this._socket = new Map()
+    this._chatDb = ChatDb.make()
+    this._config = Config.make()
 
     Environment.getI2PApiAddress().then((result) => {
       this.myB32address = result
@@ -95,6 +100,22 @@ export class Messaging {
     const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
     const success = sodium.crypto_box_seal_open(decrypted, bufferC, this._publicKey, KeyStore.make().get(':keySecretForChat'))
     return (success && decrypted.toString()) || 'Can not encrypt message.'
+  }
+
+  reloadAccountsFromNode () {
+    const url = 'http://' + this._config.getValueByKey('iroha.node.local')
+    const path = '/accounts'
+    const self = this
+    get.concat(url + path, function (err, res, data) {
+      if (err) throw err
+      const accounts = JSON.parse(data)
+      accounts.forEach(element => {
+        const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
+        if (typeof accountCurrent === 'undefined' && !accountCurrent) {
+          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar')
+        }
+      })
+    })
   }
 }
 
