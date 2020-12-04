@@ -48,17 +48,13 @@ export class UXSocial extends UXMain {
     }
     switch (rq.path) {
       case '/social/sendMessage': {
-        const b32Address = this.chatDb.getProfile(session.chatIdent)[0].b32_address
         if (typeof rq.body.chatMessage !== 'undefined' && rq.body.chatMessage !== '' &&
-            typeof b32Address !== 'undefined' && b32Address !== '') {
+            typeof session.chatIdent !== 'undefined' && session.chatIdent !== '') {
           this.chatDb.addMessage(session.chatIdent, rq.body.chatMessage, 1)
           const publicKeyRecipient = this.chatDb.getProfile(session.chatIdent)
-          // the if statement is for the first not encrypted message - before they exchange it - it will be removed
-          if (typeof publicKeyRecipient !== 'undefined' && publicKeyRecipient[0].pub_key !== '') {
+          if (typeof publicKeyRecipient !== 'undefined' && publicKeyRecipient !== '') {
             const encryptedMessage = this.messaging.encryptChatMessage(rq.body.chatMessage, publicKeyRecipient[0].pub_key)
-            this.messaging.send(rq.body.myAccountIdent, b32Address, encryptedMessage)
-          } else {
-            this.messaging.send(rq.body.myAccountIdent, b32Address, rq.body.chatMessage, true)
+            this.messaging.send(session.chatIdent, encryptedMessage)
           }
         }
         this.renderPage(rs, session.chatIdent)

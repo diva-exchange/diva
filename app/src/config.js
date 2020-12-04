@@ -30,6 +30,7 @@ export class Config {
     this._db.allAsArray('SELECT * FROM config').forEach((row) => {
       this._data[row.key] = row.value
     })
+    this.setMyIrohaAccount()
   }
 
   /**
@@ -53,14 +54,19 @@ export class Config {
     }
   }
 
-  getMyIrohaAccount () {
+  setMyIrohaAccount () {
     const url = 'http://' + this.getValueByKey('iroha.node.local')
-    return new Promise((resolve, reject) => {
-      get.concat(url, function (err, res, data) {
-        if (err) throw err
-        const result = JSON.parse(data)
-        resolve(result.account)
+    const self = this
+    get.concat(url, function (err, res, data) {
+      if (err) throw err
+      const result = JSON.parse(data)
+      self._db.insert(`REPLACE INTO config (key, value)
+           VALUES (@key, @value)`,
+      {
+        key: 'iroha.account',
+        value: result.account
       })
+      self._data['iroha.account'] = result.account
     })
   }
 }

@@ -125,7 +125,7 @@ export class UXAuth {
       session.isAuthenticated = true
       session.account = user.getAccountIdent()
       session.keyPublic = user.getPublicKey()
-      if (typeof session.stateView[session.account] === 'undefined') {
+      if (typeof session.stateView !== 'undefined' && typeof session.stateView[session.account] === 'undefined') {
         session.stateView[session.account] = {
           pathView: '/',
           uiLanguage: Culture.languageFromRequest(rq)

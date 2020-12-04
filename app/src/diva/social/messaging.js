@@ -10,14 +10,11 @@ import sodium from 'sodium-native'
 import WebSocket from 'ws'
 import get from 'simple-get'
 
-import { Environment } from '../../environment'
 import { Network } from '../../network'
 import { KeyStore } from '../../key-store'
 import { ChatDb } from './chatDb'
 import { Logger } from '@diva.exchange/diva-logger'
 import { Config } from '../../config'
-
-const API_COMMUNICATION_PORT = 3902
 
 export class Messaging {
   /**
@@ -41,12 +38,11 @@ export class Messaging {
     this._socket = new Map()
     this._chatDb = ChatDb.make()
     this._config = Config.make()
+    this._irohaNodeLocal = this._config.getValueByKey('iroha.node.local')
 
-    Environment.getI2PApiAddress().then((result) => {
-      this.myB32address = result
-    }).catch((error) => {
-      this.myB32address = 'error_happened_no_result'
-      Logger.error('Error - no b32 address :', error)
+    this.setSocket()
+    this._socket.get(this._irohaNodeLocal).on('message', function incoming (data) {
+      console.log(data)
     })
   }
 
@@ -54,21 +50,26 @@ export class Messaging {
    * @param toB32 {string}
    * @param message {string}
    */
-  send (myAccountIdent, toB32, message, firstMessage = false) {
-    if (!this._socket.has(toB32)) {
-      this._initiate(toB32)
+  send (recipientAccount, message) {
+    if (!this._socket.has(this._irohaNodeLocal)) {
+      this._initiate()
     }
-    if (this._socket.get(toB32).readyState !== WebSocket.OPEN) {
-      setTimeout(() => { this.send(myAccountIdent, toB32, message, firstMessage) }, 500)
+    if (this._socket.get(this._irohaNodeLocal).readyState !== WebSocket.OPEN) {
+      setTimeout(() => { this.send(recipientAccount, message) }, 500)
     } else {
-      this._socket.get(toB32).send(JSON.stringify({
-        command: 'chat',
-        account: myAccountIdent,
-        sender: this.myB32address,
+      this._socket.get(this._irohaNodeLocal).send(JSON.stringify({
         message: message,
-        pubK: this._publicKey.toString('hex'),
-        firstM: firstMessage
+        recipient: recipientAccount
       }))
+    }
+  }
+
+  setSocket () {
+    if (!this._socket.has(this._irohaNodeLocal)) {
+      this._initiate()
+    }
+    if (this._socket.get(this._irohaNodeLocal).readyState !== WebSocket.OPEN) {
+      setTimeout(() => { this._initiate() }, 500)
     }
   }
 
@@ -76,16 +77,16 @@ export class Messaging {
    * @param toB32 {string}
    * @private
    */
-  _initiate (toB32) {
-    const socket = Network.make().getWebsocketToB32(toB32 + ':' + API_COMMUNICATION_PORT)
+  _initiate () {
+    const socket = Network.make().getWebsocketToLocalNode()
     socket.on('error', (error) => {
       Logger.warn(error)
       socket.close()
     })
     socket.on('close', () => {
-      this._socket.delete(toB32)
+      this._socket.delete(this._irohaNodeLocal)
     })
-    this._socket.set(toB32, socket)
+    this._socket.set(this._irohaNodeLocal, socket)
   }
 
   encryptChatMessage (data, publicKeyRecipient) {
