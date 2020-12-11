@@ -41,9 +41,6 @@ export class Messaging {
     this._irohaNodeLocal = this._config.getValueByKey('iroha.node.local')
 
     this.setSocket()
-    this._socket.get(this._irohaNodeLocal).on('message', function incoming (data) {
-      console.log(data)
-    })
   }
 
   /**
@@ -69,7 +66,11 @@ export class Messaging {
       this._initiate()
     }
     if (this._socket.get(this._irohaNodeLocal).readyState !== WebSocket.OPEN) {
-      setTimeout(() => { this._initiate() }, 500)
+      setTimeout(() => { this.setSocket() }, 500)
+    } else {
+      this._socket.get(this._irohaNodeLocal).on('message', function incoming (data) {
+        console.log(data)
+      })
     }
   }
 

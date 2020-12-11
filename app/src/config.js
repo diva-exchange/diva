@@ -69,6 +69,13 @@ export class Config {
       self._data['iroha.account'] = result.account
     })
   }
+
+  updatePKOnIroha (pk) {
+    const completeUrl = 'http://' + this.getValueByKey('iroha.node.local') + '/register-ux?key='+ pk +'&token=token'
+    get.concat(completeUrl, function (err, res, data) {
+      if (err) throw err
+    })
+  }
 }
 
 module.exports = { Config }

@@ -355,6 +355,9 @@ export class User {
     KeyStore.make().set(':keyPublicForChat', pkForChat)
     KeyStore.make().set(':keySecretForChat', skForChat)
 
+    const pk = KeyStore.make().get(':keyPublicForChat')
+    this._config.updatePKOnIroha(pk.toString('hex'))
+
     return this
   }
 }
