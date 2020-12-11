@@ -59,6 +59,17 @@ export class ChatDb {
       av: avatarIdent
     })
   }
+
+  updateAvatar (profileIdent, profileAvatar) {
+    this._db.update(`UPDATE diva_chat_profiles SET
+        avatar = @avatar
+      WHERE
+        account_ident = @account_ident`,
+    {
+      avatar: profileAvatar,
+      account_ident: profileIdent
+    })
+  }
 }
 
 module.exports = { ChatDb }

@@ -50,21 +50,13 @@ export class UXSocial extends UXMain {
       case '/social/sendMessage': {
         if (typeof rq.body.chatMessage !== 'undefined' && rq.body.chatMessage !== '' &&
             typeof session.chatIdent !== 'undefined' && session.chatIdent !== '') {
-          this.chatDb.addMessage(session.chatIdent, rq.body.chatMessage, 1)
-          const publicKeyRecipient = this.chatDb.getProfile(session.chatIdent)
-          if (typeof publicKeyRecipient !== 'undefined' && publicKeyRecipient !== '') {
-            const encryptedMessage = this.messaging.encryptChatMessage(rq.body.chatMessage, publicKeyRecipient[0].pub_key)
-            this.messaging.send(session.chatIdent, encryptedMessage)
-          }
+          this.messaging.send(session.chatIdent, rq.body.chatMessage)
         }
         this.renderPage(rs, session.chatIdent)
         break
       }
       case '/social/addMessage': {
-        const receivedProfile = this.chatDb.getProfile(session.chatIdent)[0]
         if (rq.body.chatMessage !== null && rq.body.chatMessage !== '' && session.chatIdent !== '') {
-          this.chatDb.setProfile(receivedProfile.account_ident, receivedProfile.b32_address, rq.body.chatPK, receivedProfile.avatar)
-          // temporary solution - first message is not encrypted
           if (!rq.body.chatFM) {
             const decryptedMessage = this.messaging.decryptChatMessage(rq.body.chatMessage)
             this.chatDb.addMessage(session.chatIdent, decryptedMessage, 2)
@@ -75,9 +67,9 @@ export class UXSocial extends UXMain {
         this.renderPage(rs, session.chatIdent)
         break
       }
-      case '/social/updateProfile': {
-        if (rq.body.profileIdent && rq.body.profileIdent !== null && rq.body.profileIdent !== '') {
-          this.chatDb.setProfile(rq.body.profileIdent, rq.body.profileB32, rq.body.profilePk, rq.body.profileAvatar)
+      case '/social/updateAvatar': {
+        if (rq.body.profileIdent !== null && rq.body.profileIdent !== '') {
+          this.chatDb.updateAvatar(rq.body.profileIdent, rq.body.profileAvatar)
         }
         this.renderPage(rs, session.chatIdent)
         break

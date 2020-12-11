@@ -54,10 +54,13 @@ export class Messaging {
     if (this._socket.get(this._irohaNodeLocal).readyState !== WebSocket.OPEN) {
       setTimeout(() => { this.send(recipientAccount, message) }, 500)
     } else {
+      const publicKeyRecipient = this._chatDb.getProfile(recipientAccount)[0].pub_key
+      const encryptedMessage = this.encryptChatMessage(message, publicKeyRecipient)
       this._socket.get(this._irohaNodeLocal).send(JSON.stringify({
-        message: message,
+        message: encryptedMessage,
         recipient: recipientAccount
       }))
+      this._chatDb.addMessage(recipientAccount, message, 1)
     }
   }
 
@@ -68,8 +71,11 @@ export class Messaging {
     if (this._socket.get(this._irohaNodeLocal).readyState !== WebSocket.OPEN) {
       setTimeout(() => { this.setSocket() }, 500)
     } else {
+      const self = this
       this._socket.get(this._irohaNodeLocal).on('message', function incoming (data) {
-        console.log(data)
+        const parsedData = JSON.parse(data)
+        const decryptedMessage = self.decryptChatMessage(parsedData.message)
+        self._chatDb.addMessage(parsedData.sender, decryptedMessage, 2)
       })
     }
   }
@@ -115,6 +121,8 @@ export class Messaging {
         const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
         if (typeof accountCurrent === 'undefined' && !accountCurrent) {
           self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar')
+        } else {
+          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar)
         }
       })
     })

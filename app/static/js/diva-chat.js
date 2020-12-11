@@ -2,11 +2,11 @@
 'use strict'
 
 // Umbrella, @see https://umbrellajs.com
-var _u = u || false
+const _u = u || false
 // fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-var _fetch = fetch || false
+const _fetch = fetch || false
 // WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
-var _WebSocket = WebSocket || false
+const _WebSocket = WebSocket || false
 
 if (!_u || !_fetch || !_WebSocket) {
   throw new Error('invalid state')
@@ -43,7 +43,7 @@ class UiChat {
         window.location.replace('/logout')
       }
     })
-    var chatMessages = document.getElementById('chat_messages')
+    const chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
   }
 
@@ -70,15 +70,11 @@ class UiChat {
 
     _u('#updateProfile').on('click', async e => {
       const account = _u('#profile_account_ident').first().value ? _u('#profile_account_ident').first().value : _u('ul.chat_accounts_ul li.current_chat').text()
-      const b32Address = _u('#chat_profile_B32').first().value
       const avatar = _u('#chatIdentAvatar').first().value
-      const pk = _u('#chatContactPK').first().value
-      if (account || b32Address) {
-        await UiChat._postJson('/social/updateProfile', {
+      if (account && avatar) {
+        await UiChat._postJson('/social/updateAvatar', {
           profileIdent: account.trim(),
-          profileB32: b32Address.trim(),
-          profileAvatar: avatar.trim(),
-          profilePk: pk.trim()
+          profileAvatar: avatar.trim()
         })
       }
       location = ''
@@ -101,7 +97,7 @@ class UiChat {
 
   static _setHtmlMessages (objData) {
     _u('#chat_messages ul').append(`<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`)
-    var chatMessages = document.getElementById('chat_messages')
+    const chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
   }
 
