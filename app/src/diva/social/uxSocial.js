@@ -55,18 +55,6 @@ export class UXSocial extends UXMain {
         this.renderPage(rs, session.chatIdent)
         break
       }
-      case '/social/addMessage': {
-        if (rq.body.chatMessage !== null && rq.body.chatMessage !== '' && session.chatIdent !== '') {
-          if (!rq.body.chatFM) {
-            const decryptedMessage = this.messaging.decryptChatMessage(rq.body.chatMessage)
-            this.chatDb.addMessage(session.chatIdent, decryptedMessage, 2)
-          } else {
-            this.chatDb.addMessage(session.chatIdent, rq.body.chatMessage, 2)
-          }
-        }
-        this.renderPage(rs, session.chatIdent)
-        break
-      }
       case '/social/updateAvatar': {
         if (rq.body.profileIdent !== null && rq.body.profileIdent !== '') {
           this.chatDb.updateAvatar(rq.body.profileIdent, rq.body.profileAvatar)

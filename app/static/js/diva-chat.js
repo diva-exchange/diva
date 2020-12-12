@@ -2,11 +2,11 @@
 'use strict'
 
 // Umbrella, @see https://umbrellajs.com
-const _u = u || false
+var _u = u || false
 // fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-const _fetch = fetch || false
+var _fetch = fetch || false
 // WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
-const _WebSocket = WebSocket || false
+var _WebSocket = WebSocket || false
 
 if (!_u || !_fetch || !_WebSocket) {
   throw new Error('invalid state')
@@ -30,20 +30,19 @@ class UiChat {
       let objData
       try {
         objData = JSON.parse(event.data)
-        objData.sender = objData.sender.split(':')[0]
-        await UiChat._postJson('/social/addMessage', {
-          accountIdentRecipient: objData.account,
-          chatB32: objData.sender,
-          chatMessage: objData.message,
-          chatPK: objData.pubK,
-          chatFM: objData.firstM
-        })
+//        await UiChat._postJson('/social/addMessage', {
+//          accountIdentRecipient: objData.account,
+//          chatB32: objData.sender,
+//          chatMessage: objData.message,
+//          chatPK: objData.pubK,
+//          chatFM: objData.firstM
+//        })
         location = ''
       } catch (error) {
         window.location.replace('/logout')
       }
     })
-    const chatMessages = document.getElementById('chat_messages')
+    var chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
   }
 
@@ -87,8 +86,7 @@ class UiChat {
       const account = _u(e.target).text()
       if (account) {
         await UiChat._postJson('/social/sendMessage', {
-          accountIdentRecipient: account,
-          chatMessage: ''
+          accountIdentRecipient: account
         })
         location = ''
       }
@@ -97,7 +95,7 @@ class UiChat {
 
   static _setHtmlMessages (objData) {
     _u('#chat_messages ul').append(`<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`)
-    const chatMessages = document.getElementById('chat_messages')
+    var chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
   }
 
