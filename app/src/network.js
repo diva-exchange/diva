@@ -129,7 +129,7 @@ export class Network {
   getWebsocketToLocalNode () {
     const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
     // options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
-    return new WebSocket('ws://172.20.101.201:19012', '', options)
+    return new WebSocket('ws://' + this._config.getValueByKey('iroha.node.local'), '', options)
   }
 }
 
