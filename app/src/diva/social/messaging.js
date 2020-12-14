@@ -120,9 +120,9 @@ export class Messaging {
       accounts.forEach(element => {
         const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
         if (typeof accountCurrent === 'undefined' && !accountCurrent) {
-          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pkUX || '', 'Avatar')
+          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar')
         } else {
-          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pkUX || '', accountCurrent.avatar)
+          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar)
         }
       })
     })
