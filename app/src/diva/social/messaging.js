@@ -110,19 +110,26 @@ export class Messaging {
     return (success && decrypted.toString()) || 'Can not encrypt message.'
   }
 
-  reloadAccountsFromNode () {
+  async reloadAccountsFromNode () {
     const url = 'http://' + this._config.getValueByKey('iroha.node.local')
     const path = '/accounts'
     const self = this
-    get.concat(url + path, function (err, res, data) {
-      if (err) throw err
-      const accounts = JSON.parse(data)
-      accounts.forEach(element => {
-        const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
-        if (typeof accountCurrent === 'undefined' && !accountCurrent) {
-          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar')
-        } else {
-          self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar)
+    return new Promise((resolve) => {
+      get.concat(url + path, function (err, res, data) {
+        if (err) throw err
+        const accounts = JSON.parse(data)
+        let count = 0
+        for (const element of accounts) {
+          const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
+          if (typeof accountCurrent === 'undefined' && !accountCurrent) {
+            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar')
+          } else {
+            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar)
+          }
+          count += 1
+          if (count == accounts.length) {
+            resolve()
+          }
         }
       })
     })

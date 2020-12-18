@@ -77,12 +77,13 @@ export class UXSocial extends UXMain {
    * @public
    */
   renderPage (rs, chatIdent) {
-    this.messaging.reloadAccountsFromNode()
-    rs.render('diva/social/social', {
-      title: 'Social',
-      arrayMessage: this.chatDb.getMessagesForUser(chatIdent),
-      arrayChatFriends: this.chatDb.getAllAccountsFromDB(),
-      activeAccount: this.chatDb.getProfile(chatIdent)[0]
+    this.messaging.reloadAccountsFromNode().then(() => {
+      rs.render('diva/social/social', {
+        title: 'Social',
+        arrayMessage: this.chatDb.getMessagesForUser(chatIdent),
+        arrayChatFriends: this.chatDb.getAllAccountsFromDB(),
+        activeAccount: this.chatDb.getProfile(chatIdent)[0]
+      })
     })
   }
 }
