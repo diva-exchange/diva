@@ -16,6 +16,8 @@ import { ChatDb } from './chatDb'
 import { Logger } from '@diva.exchange/diva-logger'
 import { Config } from '../../config'
 
+const ONE_HOUR = 60 * 60
+
 export class Messaging {
   /**
    * Factory
@@ -120,11 +122,15 @@ export class Messaging {
         const accounts = JSON.parse(data)
         let count = 0
         for (const element of accounts) {
+          let activate = 0
+          if (element.pk != 'undefined' && (Math.floor(+new Date()/1000) - element.ping) < ONE_HOUR ) {
+            activate = 1
+          }
           const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
           if (typeof accountCurrent === 'undefined' && !accountCurrent) {
-            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar')
+            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar', activate)
           } else {
-            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar)
+            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar, activate)
           }
           count += 1
           if (count == accounts.length) {

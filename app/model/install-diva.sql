@@ -275,6 +275,7 @@ CREATE TABLE diva_chat_profiles (
     b32_address TEXT NOT NULL,
     pub_key TEXT NOT NULL,
     timestamp_ms INTEGER NOT NULL,
+    active TINYINT NOT NULL DEFAULT 0,
 
     PRIMARY KEY (account_ident)
 ) WITHOUT ROWID;

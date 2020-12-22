@@ -18,7 +18,7 @@ export class ChatDb {
   }
 
   getAllAccountsFromDB () {
-    return this._db.allAsArray('SELECT account_ident FROM diva_chat_profiles')
+    return this._db.allAsArray('SELECT account_ident FROM diva_chat_profiles  WHERE active = 1')
   }
 
   /*
@@ -49,14 +49,15 @@ export class ChatDb {
       })
   }
 
-  setProfile (accountIdent, b32Address, pubKey, avatarIdent) {
-    this._db.insert(`REPLACE INTO diva_chat_profiles (account_ident, b32_address, timestamp_ms, pub_key, avatar)
-                  VALUES (@a, @b, @ts, @p, @av)`, {
+  setProfile (accountIdent, b32Address, pubKey, avatarIdent, active) {
+    this._db.insert(`REPLACE INTO diva_chat_profiles (account_ident, b32_address, timestamp_ms, pub_key, avatar, active)
+                  VALUES (@a, @b, @ts, @p, @av, @act)`, {
       a: accountIdent,
       b: b32Address,
       ts: +new Date(),
       p: pubKey,
-      av: avatarIdent
+      av: avatarIdent,
+      act: active
     })
   }
 
