@@ -21,20 +21,7 @@ CREATE TABLE config (
 ) WITHOUT ROWID;
 
 INSERT INTO config(key, value) VALUES
-    ('diva.websocket', '["localhost:3912"]'),
-
-    ('diva.api.uri', '["localhost:3912"]'),
-    ('iroha.node.local', '172.29.101.30:19012'),
-
-    ('iroha.torii.development', '172.29.101.21:50051'),
-    ('iroha.torii', '172.29.101.21:50051'),
-    ('iroha.postgres.host.development', '172.20.101.2'),
-    ('iroha.postgres.host', '172.20.101.2'),
-    ('iroha.postgres.port.development', '5432'),
-    ('iroha.postgres.port', '5432'),
-    ('iroha.postgres.database', 'iroha'),
-    ('iroha.postgres.user', 'iroha'),
-    ('iroha.postgres.password', 'iroha'),
+    ('api', '172.29.101.30:19012'),
 
     ('i2p.webconsole.scraper.url', 'http://172.22.3.2:7070/?page=i2p_tunnels'),
     ('i2p.http.proxy.development', '172.22.3.2:4444'),

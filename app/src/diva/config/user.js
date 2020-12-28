@@ -5,14 +5,11 @@
  */
 'use strict'
 
-import request from 'request-promise-native'
 import sodium from 'sodium-native'
 
 import { Config } from '../../config'
 import { Db } from '../../db'
-import { JOB_STATUS_OK } from '../../job'
 import { KeyStore } from '../../key-store'
-import { shuffleArray } from '../../utils'
 
 const REGEX_IDENT_ACCOUNT = /^[a-z_0-9]{1,32}@([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/
 const REGEX_PASSWORD = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[-+_,;£~$!%*#?&])[A-Za-z\d\-+_,;£~$!%*#?&]{10,32}$/
@@ -29,18 +26,6 @@ export class User {
       sql += ' AND domain_ident = @domain_ident'
     }
     return Db.connect().allAsArray(sql, { domain_ident: identDomain })
-  }
-
-  /**
-   * Register a new User on the blockchain
-   *
-   * @param password {string}
-   * @param identDomain {string}
-   * @returns {Promise<User>}
-   * @public
-   */
-  static async register (password, identDomain = '') {
-    return (new User(password, identDomain))._createKeyPairSign()._registerUser()
   }
 
   /**
@@ -102,10 +87,8 @@ export class User {
       throw new Error('Invalid password')
     }
     this._identAccount = ''
-    this._username = ''
     if (identAccount.match(/^[^@]+@[^@]+$/)) {
       this._identAccount = identAccount
-      this._username = identAccount.split('@')[0]
       this._domain = identAccount.split('@')[1]
     } else {
       this._domain = identAccount
@@ -129,20 +112,6 @@ export class User {
   /**
    * @returns {string}
    */
-  getUsername () {
-    return this._username
-  }
-
-  /**
-   * @returns {string}
-   */
-  getDomain () {
-    return this._domain
-  }
-
-  /**
-   * @returns {string}
-   */
   getAccountIdent () {
     return this._identAccount
   }
@@ -152,44 +121,6 @@ export class User {
    */
   getPublicKey () {
     return this._bufferPublicKey.toString('hex')
-  }
-
-  /**
-   * @returns {Promise<User>}
-   * @private
-   */
-  async _registerUser () {
-    const peer = shuffleArray(this._config.getValueByKey('diva.api.uri'))[0]
-    const proxy = peer.match(/^.+\.i2p(:[\d]+)?$/) ? 'http://' + this._config.getValueByKey('i2p.http.proxy') : ''
-
-    let url = 'http://' + peer + '/user/create?publickey=' + this._bufferPublicKey.toString('hex')
-    if (this._domain) {
-      url += '&domain=' + this._domain
-    }
-
-    let response = await request({
-      proxy: proxy,
-      url: url,
-      json: true
-    })
-    if (!response.idJob) {
-      throw new Error(JSON.stringify(response))
-    }
-
-    response = await request({
-      proxy: proxy,
-      url: 'http://' + peer + '/job?idJob=' + response.idJob,
-      json: true
-    })
-    if (!response.job_status_ident || response.job_status_ident !== JOB_STATUS_OK) {
-      throw new Error(JSON.stringify(response))
-    }
-
-    response = JSON.parse(response.response)
-    this._username = response.username
-    this._domain = response.domain
-    this._identAccount = this._username + '@' + this._domain
-    return this._add()
   }
 
   /**

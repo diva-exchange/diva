@@ -40,7 +40,7 @@ export class Messaging {
     this._socket = new Map()
     this._chatDb = ChatDb.make()
     this._config = Config.make()
-    this._irohaNodeLocal = this._config.getValueByKey('iroha.node.local')
+    this._irohaNodeLocal = this._config.getValueByKey('api')
 
     this.setSocket()
   }
@@ -113,7 +113,7 @@ export class Messaging {
   }
 
   async reloadAccountsFromNode () {
-    const url = 'http://' + this._config.getValueByKey('iroha.node.local')
+    const url = 'http://' + this._config.getValueByKey('api')
     const path = '/accounts'
     const self = this
     return new Promise((resolve) => {

@@ -65,7 +65,7 @@ export class Config {
    * @private
    */
   _setMyIrohaAccount () {
-    const url = 'http://' + this.getValueByKey('iroha.node.local') + '/about'
+    const url = 'http://' + this.getValueByKey('api') + '/about'
     get.concat(url, (err, res, data) => {
       if (err) throw err
       const result = JSON.parse(data)
@@ -80,7 +80,7 @@ export class Config {
   }
 
   updatePKOnIroha (pk) {
-    const completeUrl = 'http://' + this.getValueByKey('iroha.node.local') + '/register-ux?key=' + pk + '&token=token'
+    const completeUrl = 'http://' + this.getValueByKey('api') + '/register-ux?key=' + pk + '&token=token'
     get.concat(completeUrl, (err, res, data) => {
       if (err) throw err
     })

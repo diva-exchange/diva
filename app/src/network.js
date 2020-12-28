@@ -15,7 +15,6 @@ import { shuffleArray } from './utils'
 const WEBSOCKET_CLIENT_OPTIONS = { followRedirects: false, perMessageDeflate: false }
 
 const MIN_CONNECTION_RATIO = 0.5
-const MAX_REFRESH_NETWORK_MS = 5 * 60 * 1000 // 5 minutes
 
 export class Network {
   /**
@@ -34,41 +33,8 @@ export class Network {
    */
   constructor () {
     this._config = Config.make()
-    this._websockets = new Map()
     this._availableWebsocketPeers = []
     this._ratio = 0
-    this._refreshNetwork()
-  }
-
-  /**
-   * @private
-   */
-  _refreshNetwork () {
-    (async () => {
-      await Promise.all(
-        this._config.getValueByKey('diva.websocket').map((peer) => {
-          return new Promise((resolve) => {
-            const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
-            if (peer.match(/^.+\.i2p(:[\d]+)?$/)) {
-              options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
-            }
-            const socket = new WebSocket('ws://' + peer, '', options)
-
-            socket.addEventListener('open', () => {
-              this._websockets.set(peer, true)
-              resolve()
-            }, { once: true })
-            socket.addEventListener('error', () => {
-              this._websockets.set(peer, false)
-              resolve()
-            }, { once: true })
-          })
-        })
-      )
-      this._availableWebsocketPeers = Array.from(this._websockets).filter(v => v[1]).map(v => v[0])
-      this._ratio = this._availableWebsocketPeers.length > 0 ? this._availableWebsocketPeers.length / this._websockets.size : 0
-      setTimeout(() => { this._refreshNetwork() }, (Math.pow(this._ratio, 3) * MAX_REFRESH_NETWORK_MS) + 1000)
-    })()
   }
 
   /**
@@ -113,22 +79,11 @@ export class Network {
   }
 
   /**
-   * @param b32 {String}
    * @returns {WebSocket}
    */
-  getWebsocketToB32 (b32) {
-    const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
-    options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
-    return new WebSocket('ws://' + b32, '', options)
-  }
-
-  /**
-     * @returns {WebSocket}
-     */
   getWebsocketToLocalNode () {
     const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
-    // options.agent = new SocksProxyAgent('socks://' + this._config.getValueByKey('i2p.socks.proxy'))
-    return new WebSocket('ws://' + this._config.getValueByKey('iroha.node.local'), '', options)
+    return new WebSocket('ws://' + this._config.getValueByKey('api'), '', options)
   }
 }
 
