@@ -93,7 +93,8 @@ export class Config {
   }
 
   updatePKOnIroha (pk) {
-    const completeUrl = 'http://' + this.getValueByKey('api') + '/register-ux?key=' + pk + '&token=9IzRX8NMxv7ftVpQHXaTrwMXjOGcYPHbtXOfZA1gmFc='
+    const completeUrl = 'http://' + this.getValueByKey('api') +
+      '/register-ux?key=' + pk + '&token=' + this.getValueByKey('api.token')
     get.concat(completeUrl, (err, res, data) => {
       if (err) throw err
     })
