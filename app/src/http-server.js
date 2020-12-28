@@ -19,10 +19,11 @@
 
 'use strict'
 
+import { Config } from './config'
 import http from 'http'
 import { Logger } from '@diva.exchange/diva-logger'
-
 import { Routes as DivaRoutes } from './diva/routes'
+import WebSocket from 'ws'
 
 export class HttpServer {
   /**
@@ -51,24 +52,67 @@ export class HttpServer {
     this._port = HttpServer.normalizePort(process.env.PORT || port)
     this.router.getApp().set('port', this._port)
 
-    this._server = http.createServer(this.router.getApp())
-    this._server.on('listening', () => {
+    this._httpServer = http.createServer(this.router.getApp())
+    this._httpServer.on('listening', () => {
       Logger.info(`${name} HttpServer listening on ${bindIP}:${this._port}`)
     })
-    this._server.on('close', () => {
+    this._httpServer.on('close', () => {
       Logger.info(`${name} HttpServer closing on ${bindIP}:${this._port}`)
     })
-    this._server.on('error', this.onError.bind(this))
+    this._httpServer.on('error', this.onError.bind(this))
 
-    this._server.listen(this._port, bindIP)
+    this._httpServer.listen(this._port, bindIP)
     this.router.init()
+
+    /** @type WebSocket */
+    this._websocketApi = new WebSocket('ws://' + Config.make().getValueByKey('api'),
+      {
+        headers: {
+          'diva-auth-token': Config.make().getValueByKey('api.token')
+        }
+      }
+    )
+    this._websocketApi.on('open', () => {
+      Logger.trace(`${name} WebsocketApi connection established`)
+
+      /** @type WebSocket.Server */
+      this._websocketServer = new WebSocket.Server({ server: this._httpServer })
+      this._websocketServer.on('connection', (ws) => {
+        ws.on('message', async (data) => {
+          Logger.trace('WebsocketServer incoming data').trace(data)
+          // proxy data
+          this._websocketApi.send(data)
+        })
+        ws.on('close', (code, reason) => {
+          Logger.info(`${name} Websocket closed ${code}, ${reason}`)
+        })
+      })
+      this._websocketServer.on('error', (error) => {
+        Logger.warn(`${name} WebsocketServer error`).trace(error)
+      })
+      this._websocketServer.on('listening', () => {
+        const wsa = this._websocketServer.address()
+        Logger.info(`${name} WebsocketServer listening on ${wsa.address}:${wsa.port}`)
+      })
+      this._websocketServer.on('close', () => {
+        Logger.info(`${name} WebsocketServer closed`)
+      })
+    })
+    this._websocketApi.on('message', (data) => {
+      Logger.trace('WebsocketApi incoming data').trace(data)
+      // @TODO filter it by subscription
+      this._websocketServer.clients.forEach((c) => { c.send(data) })
+    })
+    this._websocketApi.on('error', (error) => {
+      Logger.warn(`${name} WebsocketApi error`).trace(error)
+    })
   }
 
   /**
    * @returns {Server}
    */
   getServer () {
-    return this._server
+    return this._httpServer
   }
 
   /**

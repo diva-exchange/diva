@@ -4,7 +4,6 @@ module.exports = {
       name: 'diva',
       script: 'app/bin/diva',
       node_args: '-r esm',
-      kill_timeout: 5000,
 
       env: {
         NODE_ENV: 'development',
