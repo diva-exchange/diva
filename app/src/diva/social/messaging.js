@@ -115,9 +115,8 @@ export class Messaging {
   async reloadAccountsFromNode () {
     const url = 'http://' + this._config.getValueByKey('api')
     const path = '/accounts'
-    const self = this
     return new Promise((resolve) => {
-      get.concat(url + path, function (err, res, data) {
+      get.concat(url + path, (err, res, data) => {
         if (err) throw err
         const accounts = JSON.parse(data)
         let count = 0
@@ -126,11 +125,11 @@ export class Messaging {
           if (typeof element.pk !== 'undefined' && (Math.floor(+new Date() / 1000) - element.ping) < ONE_HOUR) {
             activate = 1
           }
-          const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
+          const accountCurrent = this._chatDb.getProfile(element.account_id)[0]
           if (typeof accountCurrent === 'undefined' && !accountCurrent) {
-            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar', activate)
+            this._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar', activate)
           } else {
-            self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar, activate)
+            this._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar, activate)
           }
           count += 1
           if (count === accounts.length) {
