@@ -1,7 +1,20 @@
-/*!
- * Diva Network
- * Copyright(c) 2020 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+/**
+ * Copyright (C) 2020 diva.exchange
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
  */
 
 'use strict'
@@ -13,8 +26,6 @@ import { Config } from './config'
 import { shuffleArray } from './utils'
 
 const WEBSOCKET_CLIENT_OPTIONS = { followRedirects: false, perMessageDeflate: false }
-
-const MIN_CONNECTION_RATIO = 0.5
 
 export class Network {
   /**
@@ -34,32 +45,6 @@ export class Network {
   constructor () {
     this._config = Config.make()
     this._availableWebsocketPeers = []
-    this._ratio = 0
-  }
-
-  /**
-   * @param threshold
-   * @returns {Promise<void>}
-   */
-  async waitFor (threshold = MIN_CONNECTION_RATIO) {
-    return new Promise((resolve) => {
-      const _isAvailable = () => {
-        if (this.isAvailable(threshold)) {
-          resolve()
-        } else {
-          setTimeout(_isAvailable, 1000)
-        }
-      }
-      _isAvailable()
-    })
-  }
-
-  /**
-   * @param threshold {number}
-   * @returns {boolean}
-   */
-  isAvailable (threshold = 0) {
-    return this._ratio > 0 && this._ratio >= threshold
   }
 
   /**
@@ -67,9 +52,6 @@ export class Network {
    * @throws {Error}
    */
   getWebsocket () {
-    if (!this.isAvailable()) {
-      throw new Error('No websocket available')
-    }
     const peer = shuffleArray(this._availableWebsocketPeers)[0]
     const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
     if (peer.match(/^.+\.i2p(:[\d]+)?$/)) {

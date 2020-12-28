@@ -176,8 +176,7 @@ CREATE TABLE job_interface (
 ) WITHOUT ROWID;
 
 INSERT INTO job_interface (job_interface_ident, sort_order) VALUES
-    ('jiUI', 1),
-    ('jiAPI', 2);
+    ('jiUI', 1);
 
 DROP TABLE IF EXISTS job;
 CREATE TABLE job (
