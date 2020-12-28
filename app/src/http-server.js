@@ -49,7 +49,7 @@ export class HttpServer {
   constructor (name, port = 3000, bindIP = '0.0.0.0') {
     this.router = new DivaRoutes(this)
 
-    this._port = HttpServer.normalizePort(process.env.PORT || port)
+    this._port = HttpServer.normalizePort(port)
     this.router.getApp().set('port', this._port)
 
     this._httpServer = http.createServer(this.router.getApp())
@@ -61,9 +61,6 @@ export class HttpServer {
     })
     this._httpServer.on('error', this.onError.bind(this))
 
-    this._httpServer.listen(this._port, bindIP)
-    this.router.init()
-
     /** @type WebSocket */
     this._websocketApi = new WebSocket('ws://' + Config.make().getValueByKey('api'),
       {
@@ -74,29 +71,6 @@ export class HttpServer {
     )
     this._websocketApi.on('open', () => {
       Logger.trace(`${name} WebsocketApi connection established`)
-
-      /** @type WebSocket.Server */
-      this._websocketServer = new WebSocket.Server({ server: this._httpServer })
-      this._websocketServer.on('connection', (ws) => {
-        ws.on('message', async (data) => {
-          Logger.trace('WebsocketServer incoming data').trace(data)
-          // proxy data
-          this._websocketApi.send(data)
-        })
-        ws.on('close', (code, reason) => {
-          Logger.info(`${name} Websocket closed ${code}, ${reason}`)
-        })
-      })
-      this._websocketServer.on('error', (error) => {
-        Logger.warn(`${name} WebsocketServer error`).trace(error)
-      })
-      this._websocketServer.on('listening', () => {
-        const wsa = this._websocketServer.address()
-        Logger.info(`${name} WebsocketServer listening on ${wsa.address}:${wsa.port}`)
-      })
-      this._websocketServer.on('close', () => {
-        Logger.info(`${name} WebsocketServer closed`)
-      })
     })
     this._websocketApi.on('message', (data) => {
       Logger.trace('WebsocketApi incoming data').trace(data)
@@ -104,15 +78,53 @@ export class HttpServer {
       this._websocketServer.clients.forEach((c) => { c.send(data) })
     })
     this._websocketApi.on('error', (error) => {
-      Logger.warn(`${name} WebsocketApi error`).trace(error)
+      Logger.error(`${name} WebsocketApi error`).trace(error)
+      this.onError(error)
     })
+    this._websocketApi.on('close', (code, reason) => {
+      Logger.warn(`${name} WebsocketApi closing ${code} ${reason}`)
+    })
+
+    /** @type WebSocket.Server */
+    this._websocketServer = new WebSocket.Server({ server: this._httpServer })
+    this._websocketServer.on('connection', (ws) => {
+      ws.on('message', async (data) => {
+        Logger.trace('WebsocketServer incoming data').trace(data)
+        // proxy data
+        this._websocketApi.send(data)
+      })
+      ws.on('close', (code, reason) => {
+        Logger.info(`${name} Websocket closed ${code}, ${reason}`)
+      })
+    })
+    this._websocketServer.on('error', (error) => {
+      Logger.error(`${name} WebsocketServer error`).trace(error)
+      this.onError(error)
+    })
+    this._websocketServer.on('listening', () => {
+      const wsa = this._websocketServer.address()
+      Logger.info(`${name} WebsocketServer listening on ${wsa.address}:${wsa.port}`)
+    })
+    this._websocketServer.on('close', () => {
+      Logger.info(`${name} WebsocketServer closed`)
+    })
+
+    this._httpServer.listen(this._port, bindIP)
+    this.router.init()
   }
 
   /**
-   * @returns {Server}
+   * @returns {Promise<void>}
    */
-  getServer () {
-    return this._httpServer
+  shutdown () {
+    return new Promise((resolve) => {
+      this._websocketApi.close(1001, 'Bye')
+      this._websocketServer.close(() => {
+        this._httpServer.close(() => {
+          resolve()
+        })
+      })
+    })
   }
 
   /**

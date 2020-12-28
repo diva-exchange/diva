@@ -27,9 +27,11 @@ import { SessionGarbage } from '../src/session-garbage'
   const bind = process.env.BIND_IP || '127.0.0.1'
   const port = process.env.PORT || 3911
 
-  const s = HttpServer.make('diva', port, bind).getServer()
+  const h = HttpServer.make('diva', port, bind)
   process.on('SIGINT', () => {
-    s.close(() => { process.exit(0) })
+    h.shutdown().then(() => {
+      process.exit(0)
+    })
   })
 
   SessionGarbage.collect()
