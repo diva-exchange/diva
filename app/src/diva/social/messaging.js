@@ -59,6 +59,7 @@ export class Messaging {
       const publicKeyRecipient = this._chatDb.getProfile(recipientAccount)[0].pub_key
       const encryptedMessage = this.encryptChatMessage(message, publicKeyRecipient)
       this._socket.get(this._irohaNodeLocal).send(JSON.stringify({
+        cmd: 'message',
         message: encryptedMessage,
         recipient: recipientAccount
       }))
@@ -73,11 +74,10 @@ export class Messaging {
     if (this._socket.get(this._irohaNodeLocal).readyState !== WebSocket.OPEN) {
       setTimeout(() => { this.setSocket() }, 500)
     } else {
-      const self = this
-      this._socket.get(this._irohaNodeLocal).on('message', function incoming (data) {
+      this._socket.get(this._irohaNodeLocal).on('message', (data) => {
         const parsedData = JSON.parse(data)
-        const decryptedMessage = self.decryptChatMessage(parsedData.message)
-        self._chatDb.addMessage(parsedData.sender, decryptedMessage, 2)
+        const decryptedMessage = this.decryptChatMessage(parsedData.message)
+        this._chatDb.addMessage(parsedData.sender, decryptedMessage, 2)
       })
     }
   }

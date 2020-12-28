@@ -65,6 +65,7 @@ export class Network {
    */
   getWebsocketToLocalNode () {
     const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)
+    options.headers = { "diva-auth-token": "wJUonoCx5nNwu15CnQ/ErfyScAE/Gs338bWRHJMfxc0=" }
     return new WebSocket('ws://' + this._config.getValueByKey('api'), '', options)
   }
 }

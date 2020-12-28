@@ -19,27 +19,23 @@ class UiChat {
     // connect to local websocket
     UiChat.websocket = new _WebSocket('ws://' + document.location.host)
     // Connection opened
-    UiChat.websocket.addEventListener('open', () => {
+    UiChat.websocket.on('open', () => {
       UiChat.websocket.send(JSON.stringify({
-        command: 'subscribe',
+        cmd: 'subscribe',
         resource: 'chat'
       }))
     })
     // Listen for data
-    UiChat.websocket.addEventListener('message', async (event) => {
+    UiChat.websocket.on('message', async (event) => {
       let objData
       try {
         objData = JSON.parse(event.data)
-//        await UiChat._postJson('/social/addMessage', {
-//          accountIdentRecipient: objData.account,
-//          chatB32: objData.sender,
-//          chatMessage: objData.message,
-//          chatPK: objData.pubK,
-//          chatFM: objData.firstM
-//        })
+        //////////////// CONSOLE LOG
+        console.log(objData)
+
         location = ''
       } catch (error) {
-        window.location.replace('/logout')
+        console.error(error)
       }
     })
     var chatMessages = document.getElementById('chat_messages')
@@ -59,6 +55,13 @@ class UiChat {
             accountIdentRecipient: account,
             chatMessage: messageToSend
           })
+
+//        UiChat.websocket.send(JSON.stringify({
+//          cmd: 'message',
+//          accountIdentRecipient: account,
+//          chatMessage: messageToSend
+//        }))
+
           UiChat._setHtmlMessages({
             message: messageToSend
           })
@@ -75,6 +78,13 @@ class UiChat {
           profileIdent: account.trim(),
           profileAvatar: avatar.trim()
         })
+
+//        UiChat.websocket.send(JSON.stringify({
+//          cmd: 'updateAvatar',
+//          profileIdent: account.trim(),
+//          profileAvatar: avatar.trim()
+//        }))
+
       }
       location = ''
     })
@@ -89,6 +99,12 @@ class UiChat {
           accountIdentRecipient: account
         })
         location = ''
+
+//        UiChat.websocket.send(JSON.stringify({
+//          cmd: 'message',
+//          accountIdentRecipient: account
+//        }))
+
       }
     })
   }
