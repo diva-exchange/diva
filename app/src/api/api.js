@@ -14,7 +14,6 @@ import { Db } from '../db'
 import { Job, JOB_INTERFACE_API } from '../job'
 import { Iroha } from './iroha'
 import { Logger } from '@diva.exchange/diva-logger'
-import { WebsocketServer } from '../websocket-server'
 import { Environment } from '../environment'
 
 const API_NAME = 'diva'

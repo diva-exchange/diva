@@ -1,7 +1,7 @@
 /*!
  * HTTPServer
  * Copyright(c) 2019-2020 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+ * AGPL3 Licensed
  */
 
 'use strict'
@@ -9,7 +9,6 @@
 import http from 'http'
 import { Logger } from '@diva.exchange/diva-logger'
 
-import { Routes as ApiRoutes } from './api/routes'
 import { Routes as DivaRoutes } from './diva/routes'
 
 export class HttpServer {
@@ -34,16 +33,7 @@ export class HttpServer {
    * @private
    */
   constructor (name, port = 3000, bindIP = '0.0.0.0') {
-    switch (name) {
-      case 'api':
-        this.router = new ApiRoutes(this)
-        break
-      case 'diva':
-        this.router = new DivaRoutes(this)
-        break
-      default:
-        throw new Error('Unknown Application')
-    }
+    this.router = new DivaRoutes(this)
 
     this._port = HttpServer.normalizePort(process.env.PORT || port)
     this.router.getApp().set('port', this._port)

@@ -8,8 +8,6 @@
 
 import { Network } from '../network'
 import { Router } from '../router'
-import { Updater } from './trade/updater'
-import { WebsocketProxy } from '../websocket-proxy'
 
 import { UXAuth } from './uxAuth'
 import { UXCulture } from './uxCulture'
@@ -72,11 +70,7 @@ export class Routes extends Router {
    * @returns {Router}
    */
   init () {
-    Network.make().waitFor().then(() => {
-      WebsocketProxy.make(this.httpServer)
-      Updater.make()
-    })
-
+    Network.make()
     return this
   }
 }
