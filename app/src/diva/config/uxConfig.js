@@ -33,8 +33,7 @@ export class UXConfig extends UXMain {
     }
 
     const url = 'http://' + rq.hostname
-    const port = rq.query.port && rq.query.port > 0 && rq.query.port <= 0xffff
-      ? rq.query.port : 7070
+    const port = rq.query.port && rq.query.port > 0 && rq.query.port <= 0xffff ? rq.query.port : 7070
 
     switch (rq.path) {
       case '/config/has-i2p-webconsole':

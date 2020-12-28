@@ -120,7 +120,7 @@ export class UXAuth {
   static _login (rq, rs) {
     const session = rq.session
     try {
-    Logger.trace(Config.make().getValueByKey('iroha.account'))
+      Logger.trace(Config.make().getValueByKey('iroha.account'))
       const user = User.open(Config.make().getValueByKey('iroha.account'))
       // const user = User.open(rq.body.account || '', rq.body.password || '')
       session.isAuthenticated = true

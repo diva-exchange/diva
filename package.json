@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@diva.exchange/diva-logger": "^1.0.0",
-    "better-sqlite3": "^7.1.1",
+    "better-sqlite3": "^7.1.2",
     "bignumber.js": "^9.0.1",
     "compression": "^1.7.4",
-    "dateformat": "^4.0.0",
+    "dateformat": "^4.4.1",
     "esm": "^3.2.25",
     "express": "~4.17.1",
     "express-session": "^1.17.1",
@@ -36,20 +36,20 @@
     "grpc": "^1.24.4",
     "http-errors": "~1.8.0",
     "iroha-helpers": "^0.9.1",
-    "nanoid": "^3.1.18",
+    "nanoid": "^3.1.20",
     "pg": "^8.5.1",
     "pug": "^3.0.0",
     "request-promise-native": "^1.0.9",
     "socks-proxy-agent": "^5.0.0",
     "sodium-native": "^3.2.0",
-    "ws": "^7.4.0"
+    "ws": "^7.4.1"
   },
   "devDependencies": {
     "acorn": ">=8.0.4",
     "bulma": "^0.9.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^7.14.0",
+    "eslint": "^7.16.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
@@ -58,12 +58,12 @@
     "minimist": ">=1.2.5",
     "mocha": "^8.2.1",
     "node-sass": "^5.0.0",
-    "npm-check-updates": "^10.2.2",
+    "npm-check-updates": "^10.2.5",
     "nyc": "^15.1.0",
     "umbrellajs": "^3.2.3"
   },
   "peerDependencies": {
-    "pm2": "^4.5.0"
+    "pm2": "^4.5.1"
   },
   "mocha": {
     "require": [

@@ -66,8 +66,7 @@ export class Network {
         })
       )
       this._availableWebsocketPeers = Array.from(this._websockets).filter(v => v[1]).map(v => v[0])
-      this._ratio = this._availableWebsocketPeers.length > 0
-        ? this._availableWebsocketPeers.length / this._websockets.size : 0
+      this._ratio = this._availableWebsocketPeers.length > 0 ? this._availableWebsocketPeers.length / this._websockets.size : 0
       setTimeout(() => { this._refreshNetwork() }, (Math.pow(this._ratio, 3) * MAX_REFRESH_NETWORK_MS) + 1000)
     })()
   }

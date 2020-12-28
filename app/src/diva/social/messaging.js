@@ -123,7 +123,7 @@ export class Messaging {
         let count = 0
         for (const element of accounts) {
           let activate = 0
-          if (element.pk != 'undefined' && (Math.floor(+new Date()/1000) - element.ping) < ONE_HOUR ) {
+          if (typeof element.pk !== 'undefined' && (Math.floor(+new Date() / 1000) - element.ping) < ONE_HOUR) {
             activate = 1
           }
           const accountCurrent = self._chatDb.getProfile(element.account_id)[0]
@@ -133,7 +133,7 @@ export class Messaging {
             self._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar, activate)
           }
           count += 1
-          if (count == accounts.length) {
+          if (count === accounts.length) {
             resolve()
           }
         }
