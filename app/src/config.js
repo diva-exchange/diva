@@ -26,11 +26,8 @@ export class Config {
    */
   constructor () {
     this._db = Db.connect()
-    this._data = []
-    this._db.allAsArray('SELECT * FROM config').forEach((row) => {
-      this._data[row.key] = row.value
-    })
-    this.setMyIrohaAccount()
+    this._refresh()
+    this._setMyIrohaAccount()
   }
 
   /**
@@ -54,25 +51,37 @@ export class Config {
     }
   }
 
-  setMyIrohaAccount () {
-    const url = 'http://' + this.getValueByKey('iroha.node.local')
-    const self = this
-    get.concat(url, function (err, res, data) {
+  /**
+   * @private
+   */
+  _refresh () {
+    this._data = []
+    this._db.allAsArray('SELECT * FROM config').forEach((row) => {
+      this._data[row.key] = row.value
+    })
+  }
+
+  /**
+   * @private
+   */
+  _setMyIrohaAccount () {
+    const url = 'http://' + this.getValueByKey('iroha.node.local') + "/about"
+    get.concat(url, (err, res, data) => {
       if (err) throw err
       const result = JSON.parse(data)
-      self._db.insert(`REPLACE INTO config (key, value)
+      this._db.insert(`REPLACE INTO config (key, value)
            VALUES (@key, @value)`,
       {
         key: 'iroha.account',
-        value: result.account
+        value: result.creator
       })
-      self._data['iroha.account'] = result.account
+      this._refresh()
     })
   }
 
   updatePKOnIroha (pk) {
     const completeUrl = 'http://' + this.getValueByKey('iroha.node.local') + '/register-ux?key='+ pk +'&token=token'
-    get.concat(completeUrl, function (err, res, data) {
+    get.concat(completeUrl, (err, res, data) => {
       if (err) throw err
     })
   }

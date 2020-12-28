@@ -24,10 +24,10 @@ INSERT INTO config(key, value) VALUES
     ('diva.websocket', '["localhost:3912"]'),
 
     ('diva.api.uri', '["localhost:3912"]'),
-    ('iroha.node.local', '172.22.3.5:19012'),
+    ('iroha.node.local', '172.29.101.30:19012'),
 
-    ('iroha.torii.development', '172.22.3.3:50051'),
-    ('iroha.torii', '172.22.3.3:50051'),
+    ('iroha.torii.development', '172.29.101.21:50051'),
+    ('iroha.torii', '172.29.101.21:50051'),
     ('iroha.postgres.host.development', '172.20.101.2'),
     ('iroha.postgres.host', '172.20.101.2'),
     ('iroha.postgres.port.development', '5432'),
