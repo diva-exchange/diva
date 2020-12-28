@@ -43,14 +43,13 @@ export class UXSocial extends UXMain {
     if (!UXMain.isAuth(rq)) {
       return UXMain.redirectAuth(rs)
     }
-    if (typeof rq.body.accountIdentRecipient !== 'undefined') {
-      session.chatIdent = rq.body.accountIdentRecipient
+    if (typeof rq.body.sender !== 'undefined' || typeof rq.body.recipient !== 'undefined') {
+      session.chatIdent = rq.body.sender || rq.body.recipient
     }
     switch (rq.path) {
-      case '/social/sendMessage': {
-        if (typeof rq.body.chatMessage !== 'undefined' && rq.body.chatMessage !== '' &&
-            typeof session.chatIdent !== 'undefined' && session.chatIdent !== '') {
-          this.messaging.send(session.chatIdent, rq.body.chatMessage)
+      case '/social/message': {
+        if (typeof rq.body.message !== 'undefined' && rq.body.message !== '') {
+          this.chatDb.addMessage(session.chatIdent, rq.body.message, rq.body.sent_received)
         }
         this.renderPage(rs, session.chatIdent)
         break
