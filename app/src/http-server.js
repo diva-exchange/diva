@@ -23,6 +23,7 @@ import { Config } from './config'
 import http from 'http'
 import { Logger } from '@diva.exchange/diva-logger'
 import { Routes as DivaRoutes } from './diva/routes'
+import { Messaging } from './diva/social/messaging'
 import WebSocket from 'ws'
 
 export class HttpServer {
@@ -48,6 +49,7 @@ export class HttpServer {
    */
   constructor (name, port = 3000, bindIP = '0.0.0.0') {
     this.router = new DivaRoutes(this)
+    this._messaging = Messaging.make()
 
     this._port = HttpServer.normalizePort(port)
     this.router.getApp().set('port', this._port)
@@ -75,6 +77,7 @@ export class HttpServer {
     this._websocketApi.on('message', (data) => {
       Logger.trace('WebsocketApi incoming data').trace(data)
       // @TODO filter it by subscription
+      data = this._messaging.decryptChatMessage(data)
       this._websocketServer.clients.forEach((c) => { c.send(data) })
     })
     this._websocketApi.on('error', (error) => {
@@ -91,6 +94,7 @@ export class HttpServer {
       ws.on('message', async (data) => {
         Logger.trace('WebsocketServer incoming data').trace(data)
         // proxy data
+        data = this._messaging.encryptChatMessage(data)
         this._websocketApi.send(data)
       })
       ws.on('close', (code, reason) => {

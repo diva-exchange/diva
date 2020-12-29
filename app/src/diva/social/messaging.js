@@ -19,38 +19,50 @@ export class Messaging {
   /**
    * Factory
    *
-   * @param session
    * @param onMessage {Function} Callback
    * @returns {Messaging}
    */
-  static make (session) {
-    return new Messaging(session)
+  static make () {
+    return new Messaging()
   }
 
   /**
-   * @param session
    * @param onMessage {Function}
    * @private
    */
-  constructor (session) {
-    this._publicKey = KeyStore.make().get(':keyPublicForChat')
+  constructor () {
     this._chatDb = ChatDb.make()
     this._config = Config.make()
     this._irohaNodeLocal = this._config.getValueByKey('api')
   }
 
-  encryptChatMessage (data, publicKeyRecipient) {
-    const bufferM = Buffer.from(data)
-    const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + data.length)
+  encryptChatMessage (data) {
+    const objData = JSON.parse(data)
+    if (objData.cmd !== 'message') {
+      return data
+    }
+    const publicKeyRecipient = this._chatDb.getProfile(objData.recipient)[0].pub_key
+    const bufferM = Buffer.from(objData.message)
+    const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + objData.message.length)
     sodium.crypto_box_seal(ciphertext, bufferM, Buffer.from(publicKeyRecipient, 'hex'))
-    return ciphertext.toString('base64')
+    objData.message = ciphertext.toString('base64')
+    return JSON.stringify(objData)
   }
 
   decryptChatMessage (data) {
-    const bufferC = Buffer.from(data, 'base64')
+    const objData = JSON.parse(data)
+    if (objData.cmd !== 'message') {
+      return data
+    }
+    const bufferC = Buffer.from(objData.message, 'base64')
     const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
-    const success = sodium.crypto_box_seal_open(decrypted, bufferC, this._publicKey, KeyStore.make().get(':keySecretForChat'))
-    return (success && decrypted.toString()) || 'Can not encrypt message.'
+    const success = sodium.crypto_box_seal_open(
+      decrypted,
+      bufferC, KeyStore.make().get(':keyPublicForChat'),
+      KeyStore.make().get(':keySecretForChat')
+    )
+    objData.message = (success && decrypted.toString()) || 'Can not decrypt message.'
+    return JSON.stringify(objData)
   }
 
   async reloadAccountsFromNode () {

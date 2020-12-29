@@ -32,7 +32,7 @@ class Ui {
     // Connection opened
     Ui.websocket.addEventListener('open', () => {
       Ui.websocket.send(JSON.stringify({
-        command: 'subscribe',
+        cmd: 'subscribe',
         resource: 'block'
       }))
     })

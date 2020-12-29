@@ -39,7 +39,7 @@ export class UXSocial extends UXMain {
    */
   execute (rq, rs, n) {
     const session = rq.session
-    this.messaging = Messaging.make(session)
+    this.messaging = Messaging.make()
     if (!UXMain.isAuth(rq)) {
       return UXMain.redirectAuth(rs)
     }
