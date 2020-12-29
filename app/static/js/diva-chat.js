@@ -20,8 +20,8 @@ class UiChat {
     // Connection opened
     UiChat.websocket.addEventListener('open', () => {
       UiChat.websocket.send(JSON.stringify({
-        cmd: 'subscribe',
-        resource: 'chat'
+        command: 'subscribe',
+        channel: 'chat'
       }))
     })
     // Listen for data
@@ -46,7 +46,8 @@ class UiChat {
         const messageToSend = _u('#chat_message').first().value.trim()
         if (account && messageToSend) {
           UiChat.websocket.send(JSON.stringify({
-            cmd: 'message',
+            command: 'message',
+            channel: 'chat',
             recipient: account,
             message: messageToSend
           }))

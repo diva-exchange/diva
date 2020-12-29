@@ -47,6 +47,10 @@ export class HttpServer {
    * @private
    */
   constructor (name, port = 3000, bindIP = '0.0.0.0') {
+    this._mapWebSocketSubscription = new Map()
+    this._idWebSocket = 0
+    this._mapWebSocket = new Map()
+
     this.router = new DivaRoutes(this)
 
     this._port = HttpServer.normalizePort(port)
@@ -74,8 +78,17 @@ export class HttpServer {
     })
     this._websocketApi.on('message', (data) => {
       Logger.trace('WebsocketApi incoming data').trace(data)
-      // @TODO filter it by subscription
-      this._websocketServer.clients.forEach((c) => { c.send(data) })
+      let obj = {}
+      try {
+        obj = JSON.parse(data)
+      } catch (error) {
+        return
+      }
+      if (this._mapWebSocketSubscription.has(obj.channel || false)) {
+        this._mapWebSocketSubscription.get(obj.channel).forEach((id) => {
+          this._mapWebSocket.get(id).send(data)
+        })
+      }
     })
     this._websocketApi.on('error', (error) => {
       Logger.error(`${name} WebsocketApi error`).trace(error)
@@ -88,14 +101,24 @@ export class HttpServer {
     /** @type WebSocket.Server */
     this._websocketServer = new WebSocket.Server({ server: this._httpServer })
     this._websocketServer.on('connection', (ws) => {
+      this._idWebSocket++
+      const id = this._idWebSocket
       ws.on('message', async (data) => {
         Logger.trace('WebsocketServer incoming data').trace(data)
-        // proxy data
-        this._websocketApi.send(data)
+        this._processWebSocketData(id, data)
       })
       ws.on('close', (code, reason) => {
         Logger.info(`${name} Websocket closed ${code}, ${reason}`)
+        this._mapWebSocketSubscription.forEach((arrayId, channel) => {
+          const k = arrayId.indexOf(id)
+          if (k > -1) {
+            arrayId.splice(k, 1)
+            this._mapWebSocketSubscription.set(channel, arrayId)
+          }
+        })
+        this._mapWebSocket.delete(id)
       })
+      this._mapWebSocket.set(id, ws)
     })
     this._websocketServer.on('error', (error) => {
       Logger.error(`${name} WebsocketServer error`).trace(error)
@@ -171,6 +194,48 @@ export class HttpServer {
     }
 
     process.exit(1)
+  }
+
+  /**
+   * @param id {number}
+   * @param json {string} JSON data
+   * @private
+   */
+  _processWebSocketData (id, json) {
+    let obj = {}
+    try {
+      obj = JSON.parse(json)
+    } catch (error) {
+      Logger.trace(`JSON parse error: ${error}`)
+      return
+    }
+    switch (obj.command || '') {
+      case '':
+        break
+      case 'subscribe':
+        if (obj.channel) {
+          if (!this._mapWebSocketSubscription.has(obj.channel)) {
+            this._mapWebSocketSubscription.set(obj.channel, [id])
+          } else if (this._mapWebSocketSubscription.get(obj.channel).indexOf(id) === -1) {
+            this._mapWebSocketSubscription.get(obj.channel).push(id)
+          }
+        }
+        break
+      case 'unsubscribe':
+        if (obj.channel) {
+          if (this._mapWebSocketSubscription.has(obj.channel)) {
+            const arrayId = this._mapWebSocketSubscription.get(obj.channel)
+            const k = arrayId.indexOf(id)
+            if (k > -1) {
+              arrayId.splice(k, 1)
+              this._mapWebSocketSubscription.set(obj.channel, arrayId)
+            }
+          }
+        }
+        break
+      default:
+        this._websocketApi.send(json)
+    }
   }
 }
 
