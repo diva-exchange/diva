@@ -5,10 +5,10 @@
  */
 'use strict'
 
-import { Db } from '../../db'
+import { Db } from '../db'
 import { Logger } from '@diva.exchange/diva-logger'
-import { hash } from '../../utils'
-import { Network } from '../../network'
+import { hash } from '../utils/utils'
+import { Network } from '../network'
 
 const WEBSOCKET_SEND_OPTIONS = { compress: true, binary: false, mask: true, fin: true }
 

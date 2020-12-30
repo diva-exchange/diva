@@ -19,7 +19,7 @@
 
 'use strict'
 
-import { Db } from './db'
+import { Db } from '../db'
 
 export class Config {
   /**

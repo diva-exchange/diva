@@ -6,15 +6,14 @@
 'use strict'
 
 import BigNumber from 'bignumber.js'
-import request from 'request-promise-native'
 import sodium from 'sodium-native'
 
-import { Config } from '../../config'
-import { Db } from '../../db'
-import { JOB_STATUS_OK } from '../../job'
-import { KeyStore } from '../../key-store'
+import { Config } from '../config/config'
+import { Db } from '../db'
+import { JOB_STATUS_OK } from '../utils/job'
+import { KeyStore } from '../auth/key-store'
 import { Logger } from '@diva.exchange/diva-logger'
-import { shuffleArray } from '../../utils'
+import { shuffleArray } from '../utils/utils'
 
 export class Order {
   /**

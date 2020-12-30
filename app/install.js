@@ -19,12 +19,12 @@
 
 'use strict'
 
-import { Config } from './src/config'
+import { Config } from './src/config/config'
 import { Db } from './src/db'
 import fs from 'fs'
 import get from 'simple-get'
 import path from 'path'
-import { User } from './src/diva/config/user'
+import { User } from './src/auth/user'
 
 (async () => {
   try {

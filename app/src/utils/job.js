@@ -19,7 +19,7 @@
 
 'use strict'
 
-import { Db } from './db'
+import { Db } from '../db'
 
 export const JOB_INTERFACE_UI = 'jiUI'
 export const JOB_INTERFACE_API = 'jiAPI'

@@ -19,10 +19,10 @@
 
 'use strict'
 
-import { Config } from './src/config'
+import { Config } from './src/config/config'
 import { HttpServer } from './src/http-server'
 import { Logger } from '@diva.exchange/diva-logger'
-import { SessionGarbage } from './src/session-garbage'
+import { SessionGarbage } from './src/view/session-garbage'
 
 (async () => {
   // Load Logger

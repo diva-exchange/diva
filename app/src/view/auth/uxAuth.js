@@ -6,11 +6,11 @@
 
 'use strict'
 
-import { Config } from '../config'
 import { Culture } from '../culture'
+import { Config } from '../../config/config'
 import { Logger } from '@diva.exchange/diva-logger'
-import { User } from './config/user'
-import { KeyStore } from '../key-store'
+import { User } from '../../auth/user'
+import { KeyStore } from '../../auth/key-store'
 
 export class UXAuth {
   /**

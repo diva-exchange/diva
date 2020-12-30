@@ -21,8 +21,8 @@
 
 import sodium from 'sodium-native'
 
-import { Db } from '../../db'
-import { KeyStore } from '../../key-store'
+import { Db } from '../db'
+import { KeyStore } from './key-store'
 
 const REGEX_IDENT_ACCOUNT = /^[a-z_0-9]{1,32}@([a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/
 const REGEX_PASSWORD = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[-+_,;£~$!%*#?&])[A-Za-z\d\-+_,;£~$!%*#?&]{10,32}$/

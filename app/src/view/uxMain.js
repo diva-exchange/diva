@@ -6,9 +6,9 @@
 
 'use strict'
 
-import { KeyStore } from '../key-store'
-import { UXAuth } from './uxAuth'
-import { Config } from '../config'
+import { KeyStore } from '../auth/key-store'
+import { UXAuth } from './auth/uxAuth'
+import { Config } from '../config/config'
 
 export class UXMain {
   /**

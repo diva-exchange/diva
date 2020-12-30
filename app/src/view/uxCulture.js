@@ -6,7 +6,7 @@
 
 'use strict'
 
-import { Culture } from '../culture'
+import { Culture } from './culture'
 
 export class UXCulture {
   /**

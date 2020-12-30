@@ -21,7 +21,7 @@
 
 import dateFormat from 'dateformat'
 
-import { Db } from './db'
+import { Db } from '../db'
 
 export const CULTURE_DEFAULT_LANGUAGE_IDENT = 'en'
 

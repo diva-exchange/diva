@@ -22,7 +22,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 
-import { KeyStore } from '../src/key-store'
+import { KeyStore } from '../auth/key-store'
 
 const SESSION_GARBAGE_REMOVE_FLAG = '.remove'
 
@@ -43,7 +43,7 @@ export class SessionGarbage {
    * @param flag {boolean}
    */
   static doDeleteFiles (flag) {
-    const pathRemoveFlagFile = path.join(__dirname, '../data/session/', SESSION_GARBAGE_REMOVE_FLAG)
+    const pathRemoveFlagFile = path.join(__dirname, '../../data/session/', SESSION_GARBAGE_REMOVE_FLAG)
     flag ? fs.outputFileSync(pathRemoveFlagFile, '') : fs.removeSync(pathRemoveFlagFile)
   }
 
@@ -52,7 +52,7 @@ export class SessionGarbage {
    * @private
    */
   static _collector (maxAge) {
-    const pathSession = path.join(__dirname, '../data/session/')
+    const pathSession = path.join(__dirname, '../../data/session/')
     const doRemove = fs.pathExistsSync(path.join(pathSession, SESSION_GARBAGE_REMOVE_FLAG))
     fs.readdir(pathSession, (err, arrayFiles) => {
       if (!err) {

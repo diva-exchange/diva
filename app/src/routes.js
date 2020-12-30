@@ -19,17 +19,17 @@
 
 'use strict'
 
-import { Network } from '../network'
-import { Router } from '../router'
+import { Network } from './network'
+import { Router } from './router'
 
-import { UXAuth } from './uxAuth'
-import { UXCulture } from './uxCulture'
-import { UXMain } from './uxMain'
-import { UXTrade } from './trade/uxTrade'
-import { UXNetwork } from './network/uxNetwork'
-import { UXSocial } from './social/uxSocial'
-import { UXAbout } from './about/uxAbout'
-import { UXConfig } from './config/uxConfig'
+import { UXAuth } from './view/auth/uxAuth'
+import { UXCulture } from './view/uxCulture'
+import { UXMain } from './view/uxMain'
+import { UXTrade } from './view/trade/uxTrade'
+import { UXNetwork } from './view/network/uxNetwork'
+import { UXSocial } from './view/social/uxSocial'
+import { UXAbout } from './view/about/uxAbout'
+import { UXConfig } from './view/config/uxConfig'
 
 export class Routes extends Router {
   /**

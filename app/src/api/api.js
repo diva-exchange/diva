@@ -11,10 +11,10 @@ import { customAlphabet } from 'nanoid'
 import path from 'path'
 
 import { Db } from '../db'
-import { Job, JOB_INTERFACE_API } from '../job'
+import { Job, JOB_INTERFACE_API } from '../utils/job'
 import { Iroha } from './iroha'
 import { Logger } from '@diva.exchange/diva-logger'
-import { Environment } from '../environment'
+import { Environment } from '../config/environment'
 
 const API_NAME = 'diva'
 const API_VERSION = '0.1.0'

@@ -20,9 +20,9 @@
 'use strict'
 
 import { ChatDb } from './chatDb'
-import { Config } from '../../config'
+import { Config } from '../config/config'
 import get from 'simple-get'
-import { KeyStore } from '../../key-store'
+import { KeyStore } from '../auth/key-store'
 import sodium from 'sodium-native'
 
 const ONE_HOUR = 60 * 60

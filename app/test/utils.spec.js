@@ -8,7 +8,7 @@
 import { assert } from 'chai'
 import { describe, it } from 'mocha'
 
-import { shuffleArray, hash } from '../src/utils'
+import { shuffleArray, hash } from '../src/utils/utils'
 
 /**
  * Project: diva

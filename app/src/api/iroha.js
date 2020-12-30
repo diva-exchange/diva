@@ -16,7 +16,7 @@ import { commands, queries } from 'iroha-helpers'
 import path from 'path'
 import sodium from 'sodium-native'
 
-import { Config } from '../config'
+import { Config } from '../config/config'
 import { IrohaDb, IROHA_ORDER_VERSION_CURRENT } from './iroha-db'
 
 const TIMEOUT_COMMAND = 5000

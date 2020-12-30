@@ -26,7 +26,7 @@ import path from 'path'
 module.exports = function (session) {
   const Store = session.Store
 
-  const SESSION_STORE_PATH_DEFAULT = path.join(__dirname, '../data/session/')
+  const SESSION_STORE_PATH_DEFAULT = path.join(__dirname, '../../data/session/')
   const ERROR_SESSION_STORE_PATH_INVALID = 'invalid path'
 
   class SessionStore extends Store {

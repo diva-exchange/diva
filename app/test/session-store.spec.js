@@ -13,7 +13,7 @@ import path from 'path'
 import session from 'express-session'
 
 // @TODO ES6 import
-const SessionStore = require('../src/session-store')(session)
+const SessionStore = require('../src/view/session-store')(session)
 
 /**
  * Project: diva

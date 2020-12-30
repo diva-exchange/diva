@@ -8,7 +8,7 @@
 import { assert } from 'chai'
 import { describe, it } from 'mocha'
 
-import { CULTURE_DEFAULT_LANGUAGE_IDENT, Culture } from '../src/culture'
+import { CULTURE_DEFAULT_LANGUAGE_IDENT, Culture } from '../src/view/culture'
 
 /**
  * Project: diva

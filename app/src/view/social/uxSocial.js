@@ -20,8 +20,8 @@
 'use strict'
 
 import { UXMain } from '../uxMain'
-import { ChatDb } from './chatDb'
-import { Messaging } from './messaging'
+import { ChatDb } from '../../social/chatDb'
+import { Messaging } from '../../social/messaging'
 
 export class UXSocial extends UXMain {
   /**

@@ -25,11 +25,11 @@ import express from 'express'
 import path from 'path'
 import session from 'express-session'
 
-import { Culture } from './culture'
+import { Culture } from './view/culture'
 import { Logger } from '@diva.exchange/diva-logger'
 
 // @TODO ES6 import
-const SessionStore = require('./session-store')(session)
+const SessionStore = require('./view/session-store')(session)
 
 const ROUTER_INVALID_SESSION_NAME = 'invalid session name'
 

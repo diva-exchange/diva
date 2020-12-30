@@ -19,10 +19,10 @@
 
 'use strict'
 
-import { Config } from './config'
+import { Config } from './config/config'
 import http from 'http'
 import { Logger } from '@diva.exchange/diva-logger'
-import { Routes as DivaRoutes } from './diva/routes'
+import { Routes as DivaRoutes } from './routes'
 import WebSocket from 'ws'
 
 export class HttpServer {

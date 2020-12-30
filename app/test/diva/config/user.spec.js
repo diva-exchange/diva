@@ -7,7 +7,7 @@
 'use strict'
 
 import { describe, it, before, after, beforeEach, afterEach } from 'mocha'
-import { User } from '../../../src/diva/config/user'
+import { User } from '../../../src/auth/user'
 
 var chai = require('chai')
 var chaiAsPromised = require('chai-as-promised')

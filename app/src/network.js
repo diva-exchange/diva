@@ -22,8 +22,8 @@
 import SocksProxyAgent from 'socks-proxy-agent'
 import WebSocket from 'ws'
 
-import { Config } from './config'
-import { shuffleArray } from './utils'
+import { Config } from './config/config'
+import { shuffleArray } from './utils/utils'
 
 const WEBSOCKET_CLIENT_OPTIONS = { followRedirects: false, perMessageDeflate: false }
 
