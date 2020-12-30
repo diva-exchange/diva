@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Copyright (C) 2020 diva.exchange
  *
@@ -20,13 +19,38 @@
 
 'use strict'
 
+import { Config } from './src/config'
+import { Db } from './src/db'
 import fs from 'fs'
+import get from 'simple-get'
 import path from 'path'
+import { User } from './src/diva/config/user'
 
-import { Db } from '../src/db'
+(async () => {
+  try {
+    fs.unlinkSync(path.normalize(path.join(__dirname, 'data/diva.sqlite')))
+  } catch (error) {}
 
-try {
-  fs.unlinkSync(path.normalize(path.join(__dirname, '/../data/diva.sqlite')))
-} catch (error) {}
+  Db.create('diva')
 
-Db.create('diva')
+  await setAccount(Config.make())
+})()
+
+/**
+ * @param config {Config}
+ * @returns {Promise<any>}
+ */
+function setAccount (config) {
+  return new Promise((resolve, reject) => {
+    const url = 'http://' + config.getValueByKey('api') + '/about'
+    get.concat(url, (error, _, data) => {
+      if (error) {
+        reject(error)
+      }
+      const result = JSON.parse(data)
+      config.set('iroha.account', result.creator)
+      User.create(result.creator)
+      resolve()
+    })
+  })
+}

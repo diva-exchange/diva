@@ -6,10 +6,9 @@
 
 'use strict'
 
-import { Logger } from '@diva.exchange/diva-logger'
-
 import { Config } from '../config'
 import { Culture } from '../culture'
+import { Logger } from '@diva.exchange/diva-logger'
 import { User } from './config/user'
 import { KeyStore } from '../key-store'
 
@@ -17,12 +16,12 @@ export class UXAuth {
   /**
    * Factory
    *
-   * @param server {HttpServer}
+   * @param httpServer {HttpServer}
    * @returns {UXAuth}
    * @public
    */
-  static make (server) {
-    return new UXAuth(server)
+  static make (httpServer) {
+    return new UXAuth(httpServer)
   }
 
   /**
@@ -42,7 +41,6 @@ export class UXAuth {
   execute (rq, rs, n) {
     const session = rq.session
     const account = Config.make().getValueByKey('iroha.account')
-    // const account = session.account || ''
     session.isAuthenticated = false
     KeyStore.make().delete(session.account + ':keyPrivate')
     session.account = Buffer.from(session.account || '').fill('0').toString()
@@ -52,25 +50,6 @@ export class UXAuth {
     }
 
     switch (rq.path) {
-      // post
-      /*
-      case '/register':
-        // @FIXME testnet is very wrong here
-        User.register(rq.body.password || '', 'testnet')
-          .then((user) => {
-            rs.json({
-              username: user.getUsername(),
-              domain: user.getDomain()
-            })
-          })
-          .catch((error) => {
-            n(error)
-          })
-        break
-      case '/login':
-        UXAuth._login(rq, rs)
-        break
-      */
       // get
       case '/logout':
         rs.redirect('/auth' + (account && account.replace(/0/g, '') ? '?account=' + account : ''))
@@ -78,16 +57,7 @@ export class UXAuth {
         break
       case '/auth':
         UXAuth._login(rq, rs)
-        // UXAuth._auth(rq, rs)
         break
-      /*
-      case '/newuser':
-        rs.render('diva/newuser', {
-          title: 'New User',
-          arrayUser: User.allAsArray()
-        })
-        break
-      */
       default:
         n()
     }
@@ -120,7 +90,6 @@ export class UXAuth {
   static _login (rq, rs) {
     const session = rq.session
     try {
-      Logger.trace(Config.make().getValueByKey('iroha.account'))
       const user = User.open(Config.make().getValueByKey('iroha.account'))
       // const user = User.open(rq.body.account || '', rq.body.password || '')
       session.isAuthenticated = true
@@ -135,13 +104,6 @@ export class UXAuth {
     } catch (error) {
       Logger.error(error)
     }
-
-    /*
-    rs.json({
-      isAuthenticated: session.isAuthenticated,
-      pathView: session.isAuthenticated ? session.stateView[session.account].pathView : '/'
-    })
-   */
   }
 }
 

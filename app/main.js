@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Copyright (C) 2020 diva.exchange
  *
@@ -20,10 +19,21 @@
 
 'use strict'
 
-import { HttpServer } from '../src/http-server'
-import { SessionGarbage } from '../src/session-garbage'
+import { Config } from './src/config'
+import { HttpServer } from './src/http-server'
+import { Logger } from '@diva.exchange/diva-logger'
+import { SessionGarbage } from './src/session-garbage'
 
-(() => {
+(async () => {
+  // Load Logger
+  const level = process.env.LOG_LEVEL ||
+    (process.env.NODE_ENV === 'production' ? /* istanbul ignore next */ 'info' : 'trace')
+  Logger.setOptions({ level: level })
+
+  // Load Config, populate Cache
+  Config.make()
+
+  // start http/websocket server
   const bind = process.env.BIND_IP || '127.0.0.1'
   const port = process.env.PORT || 3911
 

@@ -8,6 +8,7 @@
 
 import { KeyStore } from '../key-store'
 import { UXAuth } from './uxAuth'
+import { Config } from '../config'
 
 export class UXMain {
   /**
@@ -27,6 +28,7 @@ export class UXMain {
    */
   constructor (httpServer) {
     this.server = httpServer
+    this.config = Config.make()
 
     // attach websocket events here, if desired
   }

@@ -21,7 +21,6 @@
 
 import sodium from 'sodium-native'
 
-import { Config } from '../../config'
 import { Db } from '../../db'
 import { KeyStore } from '../../key-store'
 
@@ -73,7 +72,7 @@ export class User {
       throw new Error('Invalid account')
     }
 
-    return new User(password, identAccount)
+    return new User(password, identAccount)._fetch()
   }
 
   /**
@@ -109,18 +108,11 @@ export class User {
     }
 
     this._db = Db.connect()
-    this._config = Config.make()
 
     /** @type Buffer */
     this._bufferPassword = sodium.sodium_malloc(password.length)
     sodium.sodium_mlock(this._bufferPassword)
     this._bufferPassword.fill(password)
-
-    if (this._identAccount !== '') {
-      this._createKeyPairSign()
-      this._add()
-      this._fetch()
-    }
   }
 
   /**
@@ -291,16 +283,6 @@ export class User {
     KeyStore.make().set(this._identAccount + ':keyPrivate', bufferPrivateKey)
     sodium.sodium_munlock(bufferPrivateKey)
     sodium.sodium_munlock(bufferSecret)
-
-    /* create box keypair for chat encryption */
-    const pkForChat = sodium.sodium_malloc(sodium.crypto_box_PUBLICKEYBYTES)
-    const skForChat = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES)
-    sodium.crypto_box_keypair(pkForChat, skForChat)
-    KeyStore.make().set(':keyPublicForChat', pkForChat)
-    KeyStore.make().set(':keySecretForChat', skForChat)
-
-    const pk = KeyStore.make().get(':keyPublicForChat')
-    this._config.updatePKOnIroha(pk.toString('hex'))
 
     return this
   }

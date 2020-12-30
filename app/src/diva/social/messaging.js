@@ -1,17 +1,29 @@
 /**
- * diva Messaging
- * Copyright(c) 2020 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+ * Copyright (C) 2020 diva.exchange
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author/Maintainer: Jozef Soti <>
  */
 
 'use strict'
 
-import sodium from 'sodium-native'
-import get from 'simple-get'
-
-import { KeyStore } from '../../key-store'
 import { ChatDb } from './chatDb'
 import { Config } from '../../config'
+import get from 'simple-get'
+import { KeyStore } from '../../key-store'
+import sodium from 'sodium-native'
 
 const ONE_HOUR = 60 * 60
 
@@ -19,42 +31,84 @@ export class Messaging {
   /**
    * Factory
    *
-   * @param session
-   * @param onMessage {Function} Callback
    * @returns {Messaging}
    */
-  static make (session) {
-    return new Messaging(session)
+  static make () {
+    return new Messaging()
   }
 
   /**
-   * @param session
-   * @param onMessage {Function}
    * @private
    */
-  constructor (session) {
-    this._publicKey = KeyStore.make().get(':keyPublicForChat')
+  constructor () {
     this._chatDb = ChatDb.make()
-    this._config = Config.make()
-    this._irohaNodeLocal = this._config.getValueByKey('api')
+    this._keystore = KeyStore.make()
+
+    // @FIXME architecture issue
+    /* create box keypair for chat encryption */
+    const pkForChat = sodium.sodium_malloc(sodium.crypto_box_PUBLICKEYBYTES)
+    const skForChat = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES)
+    sodium.crypto_box_keypair(pkForChat, skForChat)
+    this._keystore.set('social:keyPublic', pkForChat)
+    this._keystore.set('social:keySecret', skForChat)
+
+    const pk = this._keystore.get('social:keyPublic')
+
+    const completeUrl = 'http://' + Config.make().getValueByKey('api') +
+      '/register-ux?key=' + pk.toString('hex') +
+      '&token=' + Config.make().getValueByKey('api.token')
+    get.concat(completeUrl, (error) => {
+      if (error) {
+        throw new Error(error)
+      }
+      // @FIXME architecture issue
+      this._reloadAccountsFromNode()
+    })
   }
 
-  encryptChatMessage (data, publicKeyRecipient) {
-    const bufferM = Buffer.from(data)
-    const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + data.length)
+  /**
+   * @param json {string}
+   * @returns {string}
+   */
+  encryptChatMessage (json) {
+    const obj = JSON.parse(json)
+    if (obj.command !== 'message') {
+      return json
+    }
+    const publicKeyRecipient = this._chatDb.getProfile(obj.recipient)[0].pub_key
+    const bufferM = Buffer.from(obj.message)
+    const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + obj.message.length)
     sodium.crypto_box_seal(ciphertext, bufferM, Buffer.from(publicKeyRecipient, 'hex'))
-    return ciphertext.toString('base64')
+    obj.message = ciphertext.toString('base64')
+    return JSON.stringify(obj)
   }
 
-  decryptChatMessage (data) {
-    const bufferC = Buffer.from(data, 'base64')
+  /**
+   * @param json {string}
+   * @returns {string}
+   */
+  decryptChatMessage (json) {
+    const obj = JSON.parse(json)
+    if (obj.command !== 'message') {
+      return json
+    }
+    const bufferC = Buffer.from(obj.message, 'base64')
     const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
-    const success = sodium.crypto_box_seal_open(decrypted, bufferC, this._publicKey, KeyStore.make().get(':keySecretForChat'))
-    return (success && decrypted.toString()) || 'Can not encrypt message.'
+    const success = sodium.crypto_box_seal_open(
+      decrypted,
+      bufferC,
+      this._keystore.get('social:keyPublic'),
+      this._keystore.get('social:keySecret')
+    )
+    obj.message = (success && decrypted.toString()) || 'Can not decrypt message.'
+    return JSON.stringify(obj)
   }
 
-  async reloadAccountsFromNode () {
-    const url = 'http://' + this._config.getValueByKey('api')
+  /**
+   * @returns {Promise<any>}
+   */
+  _reloadAccountsFromNode () {
+    const url = 'http://' + Config.make().getValueByKey('api')
     const path = '/accounts'
     return new Promise((resolve) => {
       get.concat(url + path, (err, res, data) => {

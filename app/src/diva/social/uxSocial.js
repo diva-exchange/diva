@@ -1,7 +1,20 @@
-/*!
- * diva uxSocial
- * Copyright(c) 2019 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+/**
+ * Copyright (C) 2020 diva.exchange
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author/Maintainer: Jozef Soti <>
  */
 
 'use strict'
@@ -28,7 +41,23 @@ export class UXSocial extends UXMain {
    */
   constructor (server) {
     super(server)
+
     this.chatDb = ChatDb.make()
+    this.messaging = Messaging.make()
+
+    this.server.setFilterWebsocketLocal('chat', (json) => {
+      // store the message in the database
+      const obj = JSON.parse(json)
+      this.chatDb.addMessage(obj.recipient, obj.message, 1)
+      return this.messaging.encryptChatMessage(json)
+    })
+    this.server.setFilterWebsocketApi('chat', (json) => {
+      json = this.messaging.decryptChatMessage(json)
+      const obj = JSON.parse(json)
+      // store the message in the database
+      this.chatDb.addMessage(obj.sender, obj.message, 2)
+      return json
+    })
   }
 
   /**
@@ -38,22 +67,24 @@ export class UXSocial extends UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    const session = rq.session
-    this.messaging = Messaging.make(session)
     if (!UXMain.isAuth(rq)) {
       return UXMain.redirectAuth(rs)
     }
-    if (typeof rq.body.sender !== 'undefined' || typeof rq.body.recipient !== 'undefined') {
-      session.chatIdent = rq.body.sender || rq.body.recipient
-    }
+
     switch (rq.path) {
-      case '/social/message': {
-        if (typeof rq.body.message !== 'undefined' && rq.body.message !== '') {
-          this.chatDb.addMessage(session.chatIdent, rq.body.message, rq.body.sent_received)
-        }
-        this.renderPage(rs, session.chatIdent)
+      case '/social':
+        rs.render('diva/social/social', {
+          title: 'Social',
+          arrayMessage: this.chatDb.getMessagesForUser(this.config.getValueByKey('iroha.account')),
+          arrayChatFriends: this.chatDb.getAllAccountsFromDB(),
+          activeAccount: this.chatDb.getProfile(this.config.getValueByKey('iroha.account'))[0]
+        })
         break
-      }
+      default:
+        n()
+    }
+    /*
+    switch (rq.path) {
       case '/social/updateAvatar': {
         if (rq.body.profileIdent !== null && rq.body.profileIdent !== '') {
           this.chatDb.updateAvatar(rq.body.profileIdent, rq.body.profileAvatar)
@@ -68,6 +99,7 @@ export class UXSocial extends UXMain {
       default:
         n()
     }
+    */
   }
 
   /**
@@ -75,6 +107,7 @@ export class UXSocial extends UXMain {
    * @param chatIdent {String}
    * @public
    */
+  /*
   renderPage (rs, chatIdent) {
     this.messaging.reloadAccountsFromNode().then(() => {
       rs.render('diva/social/social', {
@@ -85,6 +118,7 @@ export class UXSocial extends UXMain {
       })
     })
   }
+  */
 }
 
 module.exports = { UXSocial }

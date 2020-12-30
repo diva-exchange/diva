@@ -25,12 +25,11 @@ class UiChat {
       }))
     })
     // Listen for data
-    UiChat.websocket.addEventListener('message', async (event) => {
+    UiChat.websocket.addEventListener('message', (event) => {
       let objData
       try {
         objData = JSON.parse(event.data)
         UiChat._setHtmlMessages(objData, 'received')
-        UiChat._storeData(objData, 2)
       } catch (error) {
         console.error(error)
       }
@@ -40,14 +39,14 @@ class UiChat {
   }
 
   static _attachEvents () {
-    _u('#chat_message').handle('keyup', async e => {
+    _u('#chat_message').handle('keyup', (e) => {
       if (e.keyCode === 13) {
         const account = _u('ul.chat_accounts_ul li.current_chat').text().trim()
         const messageToSend = _u('#chat_message').first().value.trim()
         if (account && messageToSend) {
           UiChat.websocket.send(JSON.stringify({
-            command: 'message',
             channel: 'chat',
+            command: 'message',
             recipient: account,
             message: messageToSend
           }))
@@ -55,15 +54,11 @@ class UiChat {
             message: messageToSend
           }, 'send')
           _u('#chat_message').first().value = ''
-          UiChat._storeData({
-            recipient: account,
-            message: messageToSend
-          }, 1)
         }
       }
     })
 
-    _u('#updateProfile').on('click', async e => {
+    _u('#updateProfile').on('click', async () => {
       const account = _u('#profile_account_ident').text()
       const avatar = _u('#chatIdentAvatar').first().value
       if (account && avatar) {
@@ -83,15 +78,6 @@ class UiChat {
     }
     const chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
-  }
-
-  static _storeData (objData, direction) {
-    UiChat._postJson('/social/message', {
-      sender: objData.sender,
-      recipient: objData.recipient,
-      message: objData.message,
-      sent_received: direction
-    })
   }
 
   /**

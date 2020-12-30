@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'diva',
-      script: 'app/bin/diva',
+      script: 'app/main.js',
       node_args: '-r esm',
 
       env: {

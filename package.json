@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "eslint --fix app/src ; exit 0",
     "css-build": "node-sass --omit-source-map-url --output-style compressed app/static/sass/diva.scss app/static/css/diva.min.css",
-    "install": "node -r esm app/bin/install-db",
+    "install": "node -r esm app/install",
     "start": "pm2 start ecosystem.config.js",
     "stop": "pm2 stop ecosystem.config.js",
     "test": "rm -rf app/test/data/session ; nyc mocha"
@@ -40,6 +40,7 @@
     "pg": "^8.5.1",
     "pug": "^3.0.0",
     "request-promise-native": "^1.0.9",
+    "simple-get": "^4.0.0",
     "socks-proxy-agent": "^5.0.0",
     "sodium-native": "^3.2.0",
     "ws": "^7.4.1"
@@ -60,6 +61,7 @@
     "node-sass": "^5.0.0",
     "npm-check-updates": "^10.2.5",
     "nyc": "^15.1.0",
+    "pino-pretty": "^4.3.0",
     "umbrellajs": "^3.2.3"
   },
   "peerDependencies": {

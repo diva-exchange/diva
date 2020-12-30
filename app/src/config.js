@@ -20,10 +20,11 @@
 'use strict'
 
 import { Db } from './db'
-import get from 'simple-get'
 
 export class Config {
   /**
+   * Factory, Singleton
+   *
    * @returns {Config}
    * @public
    */
@@ -39,12 +40,10 @@ export class Config {
    */
   constructor () {
     this._db = Db.connect()
-    this._refresh()
-    this._setMyIrohaAccount()
+    this._loadCache()
   }
 
   /**
-   *
    * @param key {string}
    * @returns {(string|number|Object|Array|undefined)}
    * @public
@@ -65,38 +64,26 @@ export class Config {
   }
 
   /**
-   * @private
+   * @param key
+   * @param value
    */
-  _refresh () {
-    this._data = []
-    this._db.allAsArray('SELECT * FROM config').forEach((row) => {
-      this._data[row.key] = row.value
+  set (key, value) {
+    this._db.insert(`REPLACE INTO config (key, value)
+         VALUES (@key, @value)`,
+    {
+      key: key,
+      value: value
     })
+    this._loadCache()
   }
 
   /**
    * @private
    */
-  _setMyIrohaAccount () {
-    const url = 'http://' + this.getValueByKey('api') + '/about'
-    get.concat(url, (err, res, data) => {
-      if (err) throw err
-      const result = JSON.parse(data)
-      this._db.insert(`REPLACE INTO config (key, value)
-           VALUES (@key, @value)`,
-      {
-        key: 'iroha.account',
-        value: result.creator
-      })
-      this._refresh()
-    })
-  }
-
-  updatePKOnIroha (pk) {
-    const completeUrl = 'http://' + this.getValueByKey('api') +
-      '/register-ux?key=' + pk + '&token=' + this.getValueByKey('api.token')
-    get.concat(completeUrl, (err, res, data) => {
-      if (err) throw err
+  _loadCache () {
+    this._data = []
+    this._db.allAsArray('SELECT * FROM config').forEach((row) => {
+      this._data[row.key] = row.value
     })
   }
 }

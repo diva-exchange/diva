@@ -50,6 +50,8 @@ export class HttpServer {
     this._mapWebSocketSubscription = new Map()
     this._idWebSocket = 0
     this._mapWebSocket = new Map()
+    this._mapFilterWebsocketLocal = new Map()
+    this._mapFilterWebsocketApi = new Map()
 
     this.router = new DivaRoutes(this)
 
@@ -63,7 +65,7 @@ export class HttpServer {
     this._httpServer.on('close', () => {
       Logger.info(`${name} HttpServer closing on ${bindIP}:${this._port}`)
     })
-    this._httpServer.on('error', this.onError.bind(this))
+    this._httpServer.on('error', this._onError.bind(this))
 
     /** @type WebSocket */
     this._websocketApi = new WebSocket('ws://' + Config.make().getValueByKey('api'),
@@ -73,27 +75,35 @@ export class HttpServer {
         }
       }
     )
+
     this._websocketApi.on('open', () => {
-      Logger.trace(`${name} WebsocketApi connection established`)
+      Logger.info(`${name} WebsocketApi connection established`)
     })
-    this._websocketApi.on('message', (data) => {
-      Logger.trace('WebsocketApi incoming data').trace(data)
+
+    this._websocketApi.on('message', (json) => {
       let obj = {}
       try {
-        obj = JSON.parse(data)
+        obj = JSON.parse(json)
       } catch (error) {
         return
       }
       if (this._mapWebSocketSubscription.has(obj.channel || false)) {
+        const callback = this._mapFilterWebsocketApi.get(obj.channel)
+        json = typeof callback === 'function' ? callback(json) : json
+        if (!json) {
+          return
+        }
         this._mapWebSocketSubscription.get(obj.channel).forEach((id) => {
-          this._mapWebSocket.get(id).send(data)
+          this._mapWebSocket.get(id).send(json)
         })
       }
     })
+
     this._websocketApi.on('error', (error) => {
       Logger.error(`${name} WebsocketApi error`).trace(error)
-      this.onError(error)
+      this._onError(error)
     })
+
     this._websocketApi.on('close', (code, reason) => {
       Logger.warn(`${name} WebsocketApi closing ${code} ${reason}`)
     })
@@ -103,10 +113,11 @@ export class HttpServer {
     this._websocketServer.on('connection', (ws) => {
       this._idWebSocket++
       const id = this._idWebSocket
-      ws.on('message', async (data) => {
-        Logger.trace('WebsocketServer incoming data').trace(data)
-        this._processWebSocketData(id, data)
+
+      ws.on('message', (data) => {
+        this._processWebSocketLocal(id, data)
       })
+
       ws.on('close', (code, reason) => {
         Logger.info(`${name} Websocket closed ${code}, ${reason}`)
         this._mapWebSocketSubscription.forEach((arrayId, channel) => {
@@ -120,14 +131,17 @@ export class HttpServer {
       })
       this._mapWebSocket.set(id, ws)
     })
+
     this._websocketServer.on('error', (error) => {
       Logger.error(`${name} WebsocketServer error`).trace(error)
-      this.onError(error)
+      this._onError(error)
     })
+
     this._websocketServer.on('listening', () => {
       const wsa = this._websocketServer.address()
       Logger.info(`${name} WebsocketServer listening on ${wsa.address}:${wsa.port}`)
     })
+
     this._websocketServer.on('close', () => {
       Logger.info(`${name} WebsocketServer closed`)
     })
@@ -151,6 +165,22 @@ export class HttpServer {
   }
 
   /**
+   * @param channel {string}
+   * @param callback {function}
+   */
+  setFilterWebsocketLocal (channel, callback) {
+    this._mapFilterWebsocketLocal.set(channel, callback)
+  }
+
+  /**
+   * @param channel {string}
+   * @param callback {function}
+   */
+  setFilterWebsocketApi (channel, callback) {
+    this._mapFilterWebsocketApi.set(channel, callback)
+  }
+
+  /**
    * Normalize a port into a number, string, or false.
    */
   static normalizePort (val) {
@@ -170,38 +200,13 @@ export class HttpServer {
   }
 
   /**
-   * Event listener for HTTP server "error" event.
-   */
-  onError (error) {
-    if (error.syscall !== 'listen') {
-      throw error
-    }
-
-    const bind = typeof this._port === 'string'
-      ? 'Pipe ' + this._port
-      : 'Port ' + this._port
-
-    // handle specific listen errors with friendly messages
-    switch (error.code) {
-      case 'EACCES':
-        Logger.error(bind + ' requires elevated privileges')
-        break
-      case 'EADDRINUSE':
-        Logger.error(bind + ' is already in use')
-        break
-      default:
-        throw error
-    }
-
-    process.exit(1)
-  }
-
-  /**
+   * Incoming data from local client
+   *
    * @param id {number}
    * @param json {string} JSON data
    * @private
    */
-  _processWebSocketData (id, json) {
+  _processWebSocketLocal (id, json) {
     let obj = {}
     try {
       obj = JSON.parse(json)
@@ -209,6 +214,7 @@ export class HttpServer {
       Logger.trace(`JSON parse error: ${error}`)
       return
     }
+
     switch (obj.command || '') {
       case '':
         break
@@ -234,8 +240,43 @@ export class HttpServer {
         }
         break
       default:
+        if (obj.channel) {
+          const callback = this._mapFilterWebsocketLocal.get(obj.channel)
+          json = typeof callback === 'function' ? callback(json) : json
+          if (!json) {
+            return
+          }
+        }
         this._websocketApi.send(json)
     }
+  }
+
+  /**
+   * Event listener for HTTP server "error" event.
+   * @private
+   */
+  _onError (error) {
+    if (error.syscall !== 'listen') {
+      throw error
+    }
+
+    const bind = typeof this._port === 'string'
+      ? 'Pipe ' + this._port
+      : 'Port ' + this._port
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+      case 'EACCES':
+        Logger.error(bind + ' requires elevated privileges')
+        break
+      case 'EADDRINUSE':
+        Logger.error(bind + ' is already in use')
+        break
+      default:
+        throw error
+    }
+
+    process.exit(1)
   }
 }
 

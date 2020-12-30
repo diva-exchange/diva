@@ -33,7 +33,7 @@ class Ui {
     Ui.websocket.addEventListener('open', () => {
       Ui.websocket.send(JSON.stringify({
         command: 'subscribe',
-        resource: 'block'
+        channel: 'block'
       }))
     })
 
