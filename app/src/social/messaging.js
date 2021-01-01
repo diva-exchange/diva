@@ -54,10 +54,10 @@ export class Messaging {
 
     const pk = this._keystore.get('social:keyPublic')
 
-    const completeUrl = 'http://' + Config.make().getValueByKey('api') +
+    const url = 'http://' + Config.make().getValueByKey('api') +
       '/register-ux?key=' + pk.toString('hex') +
       '&token=' + Config.make().getValueByKey('api.token')
-    get.concat(completeUrl, (error) => {
+    get.concat(url, (error) => {
       if (error) {
         throw new Error(error)
       }
@@ -120,11 +120,11 @@ export class Messaging {
           if (typeof element.pk !== 'undefined' && (Math.floor(+new Date() / 1000) - element.ping) < ONE_HOUR) {
             activate = 1
           }
-          const accountCurrent = this._chatDb.getProfile(element.account_id)[0]
+          const accountCurrent = this._chatDb.getProfile(element.accountId)[0]
           if (typeof accountCurrent === 'undefined' && !accountCurrent) {
-            this._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', 'Avatar', activate)
+            this._chatDb.setProfile(element.accountId, element.i2p || '', element.pk || '', 'Avatar', activate)
           } else {
-            this._chatDb.setProfile(element.account_id, element.i2p || '', element.pk || '', accountCurrent.avatar, activate)
+            this._chatDb.setProfile(element.accountId, element.i2p || '', element.pk || '', accountCurrent.avatar, activate)
           }
           count += 1
           if (count === accounts.length) {

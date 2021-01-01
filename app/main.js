@@ -34,10 +34,7 @@ import { SessionGarbage } from './src/view/session-garbage'
   Config.make()
 
   // start http/websocket server
-  const bind = process.env.BIND_IP || '127.0.0.1'
-  const port = process.env.PORT || 3911
-
-  const h = HttpServer.make('diva', port, bind)
+  const h = new HttpServer(process.env.PORT || 3911, process.env.BIND_IP || '127.0.0.1')
   process.on('SIGINT', () => {
     h.shutdown().then(() => {
       process.exit(0)

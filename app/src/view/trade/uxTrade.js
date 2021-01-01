@@ -1,7 +1,20 @@
-/*!
- * diva UXTrade
- * Copyright(c) 2019-2020 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+/**
+ * Copyright (C) 2020 diva.exchange
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
  */
 
 'use strict'
@@ -31,6 +44,75 @@ export class UXTrade extends UXMain {
   constructor (server) {
     super(server)
     this._db = Db.connect()
+    this.identAccount = ''
+    this.identContract = ''
+
+    this.server.setFilterWebsocketLocal('trade:add:buy', (json) => { return this._add(json) })
+    this.server.setFilterWebsocketLocal('trade:add:sell', (json) => { return this._add(json) })
+    this.server.setFilterWebsocketLocal('trade:delete:buy', (json) => { return this._delete(json) })
+    this.server.setFilterWebsocketLocal('trade:delete:sell', (json) => { return this._delete(json) })
+    this.server.setFilterWebsocketApi('trade', (json) => { return this._filterApi(json) })
+  }
+
+  /**
+   * @param json {string}
+   * @returns {string}
+   * @throws {Error}
+   * @private
+   */
+  _add (json) {
+    const obj = JSON.parse(json)
+    if (!obj.type || !obj.price || !obj.amount) {
+      throw new Error('invalid trade:add object')
+    }
+    const order = obj.type === 'B'
+      ? Order.make(this.identAccount, this.identContract).addBid(obj.price, obj.amount)
+      : Order.make(this.identAccount, this.identContract).addAsk(obj.price, obj.amount)
+    return JSON.stringify({
+      channel: 'trade',
+      command: 'setorder',
+      contract: this.identContract,
+      type: obj.type,
+      accountId: this.identAccount,
+      key: 'ob' + this.identContract + 't' + obj.type,
+      value: order.commit()
+    })
+  }
+
+  /**
+   * @param json {string}
+   * @returns {string}
+   * @throws {Error}
+   * @private
+   */
+  _delete (json) {
+    const obj = JSON.parse(json)
+    if (!obj.type || !obj.msTimestamp) {
+      throw new Error('invalid trade:delete object')
+    }
+    const order = obj.type === 'B'
+      ? Order.make(this.identAccount, this.identContract).deleteBid(obj.msTimestamp)
+      : Order.make(this.identAccount, this.identContract).deleteAsk(obj.msTimestamp)
+    return JSON.stringify({
+      channel: 'trade',
+      command: 'setorder',
+      contract: this.identContract,
+      type: obj.type,
+      accountId: this.identAccount,
+      key: 'ob' + this.identContract + 't' + obj.type,
+      value: order.commit()
+    })
+  }
+
+  /**
+   * @param json {string}
+   * @returns {string}
+   * @private
+   */
+  _filterApi (json) {
+    const obj = JSON.parse(json)
+    Logger.trace(obj)
+    return json
   }
 
   /**
@@ -46,15 +128,17 @@ export class UXTrade extends UXMain {
 
     const session = rq.session
     const identContract = rq.body.identContract || session.stateView[session.account].tradeIdentContract || 'BTC_XMR'
-    if (identContract !== session.stateView[session.account].tradeIdentContract) {
-      session.stateView[session.account].tradeIdentContract = identContract
-    }
+    session.stateView[session.account].tradeIdentContract = identContract
+
+    this.identContract = identContract
+    this.identAccount = session.account
+
+    Logger.trace(session)
 
     let order
     switch (rq.path) {
       case '/trade/contract/set':
-        rs.end()
-        return
+        return rs.end()
       case '/trade/order/buy':
       case '/trade/order/sell':
       case '/trade/delete/buy':
@@ -65,11 +149,10 @@ export class UXTrade extends UXMain {
 
     switch (rq.path) {
       case '/trade':
-        rs.render('diva/trade/trade', {
+        return rs.render('diva/trade/trade', {
           identContract: identContract,
           arrayContract: this._getArrayContract()
         })
-        return
       case '/trade/order/buy':
         order.addBid(rq.body.price, rq.body.amount)
         break
@@ -83,8 +166,7 @@ export class UXTrade extends UXMain {
         order.deleteAsk(rq.body.msTimestamp)
         break
       default:
-        n()
-        return
+        return n()
     }
 
     order.commit()
@@ -92,8 +174,8 @@ export class UXTrade extends UXMain {
         rs.end()
       })
       .catch((error) => {
-        Logger.error(error)
-        rs.status(500).end(error.toString())
+        Logger.error('Order commit failed').trace(error)
+        rs.status(500).end(error)
       })
   }
 

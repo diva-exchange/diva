@@ -75,8 +75,6 @@ export class Routes extends Router {
         '/trade/*': controllerUXTrade
       }
     })
-
-    this.httpServer = httpServer
   }
 
   /**

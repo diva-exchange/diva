@@ -1,7 +1,20 @@
-/*!
- * Diva Trade related UI functions
- * Copyright(c) 2019-2020 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+/**
+ * Copyright (C) 2020 diva.exchange
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
  */
 
 'use strict'
@@ -9,17 +22,15 @@
 // Umbrella, @see https://umbrellajs.com
 var _u = u || false
 // Generic UI class, @see ./diva-ui.js
-var _Ui = Ui || false
+const _Ui = Ui || false
 // Generic UiCulture class, @see ./diva-ui.js
 var _UiCulture = UiCulture || false
 // WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 var _WebSocket = WebSocket || false
 // fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 var _fetch = fetch || false
-// Location API, @see https://developer.mozilla.org/en-US/docs/Web/API/Location
-var _Location = document.location || false
 
-if (!_u || !_Ui || !_UiCulture || !_WebSocket || !_fetch || !_Location) {
+if (!_u || !_Ui || !_UiCulture || !_WebSocket || !_fetch) {
   throw new Error('invalid state')
 }
 
@@ -38,29 +49,21 @@ class UiTrade {
     // Connection opened
     UiTrade.websocket.addEventListener('open', () => {
       UiTrade.websocket.send(JSON.stringify({
-        command: 'subscribe',
-        resource: 'orderbook',
-        contract: UiTrade.identContract,
-        group: true
-      }))
-      UiTrade.websocket.send(JSON.stringify({
-        command: 'subscribe',
-        resource: 'orderbook',
-        account: _Ui.getIdentAccount(),
-        contract: UiTrade.identContract,
-        group: false
+        channel: 'trade',
+        command: 'subscribe'
       }))
     })
 
     // Listen for data
     UiTrade.websocket.addEventListener('message', async (event) => {
-      let objData
+      let obj
       try {
-        objData = JSON.parse(event.data)
-        if (objData.identAccount) {
-          UiTrade._setHtmlOrderBook(objData)
-        } else if (objData.identContract) {
-          UiTrade._setHtmlMarket(objData)
+        obj = JSON.parse(event.data)
+        console.log(obj)
+        if (obj.accountId) {
+          UiTrade._setHtmlOrderBook(obj)
+        } else if (obj.contract) {
+          UiTrade._setHtmlMarket(obj)
         }
         await _UiCulture.translate()
       } catch (error) {
@@ -78,8 +81,9 @@ class UiTrade {
 
     // contract
     _u('#contract').off('change').handle('change', (e) => {
-      _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
+      // @FIXME
+      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
+      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u(e.target).parent().addClass('is-loading is-disabled')
       _u('#price').first().value = ''
       _u('#amount').first().value = ''
@@ -98,8 +102,9 @@ class UiTrade {
 
     // buy/sell action
     _u('#place-order').off('click').handle('click', async () => {
-      _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
+      // @FIXME
+      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
+      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u('#place-order').addClass('is-loading is-disabled')
       await UiTrade._order(_u('#order').data('type'))
       _u('#place-order').removeClass('is-loading is-disabled')
@@ -108,8 +113,9 @@ class UiTrade {
     // delete action
     _u('#orderbook button[name=delete]').off('click').handle('click', async (e) => {
       e.stopPropagation()
-      _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
+      // @FIXME
+      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
+      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u(e.currentTarget).addClass('is-loading is-disabled')
       await UiTrade._delete(_u(e.currentTarget).data('type'), _u(e.currentTarget).data('timestamp_ms'))
     })
@@ -117,8 +123,9 @@ class UiTrade {
     // delete-all action
     _u('#orderbook button[name=delete-all]').off('click').handle('click', async (e) => {
       e.stopPropagation()
-      _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
+      // @FIXME
+      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
+      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u(e.currentTarget).addClass('is-loading is-disabled')
       await UiTrade._delete(_u(e.currentTarget).data('type'), 0)
     })
@@ -131,8 +138,8 @@ class UiTrade {
    */
   static async _changeContract (identContract) {
     UiTrade.websocket.send(JSON.stringify({
-      command: 'unsubscribe',
-      resource: 'orderbook'
+      channel: 'trade',
+      command: 'unsubscribe'
     }))
     UiTrade.identContract = identContract
 
@@ -141,17 +148,8 @@ class UiTrade {
     })
 
     UiTrade.websocket.send(JSON.stringify({
-      command: 'subscribe',
-      resource: 'orderbook',
-      contract: UiTrade.identContract,
-      group: true
-    }))
-    UiTrade.websocket.send(JSON.stringify({
-      command: 'subscribe',
-      resource: 'orderbook',
-      account: _Ui.getIdentAccount(),
-      contract: UiTrade.identContract,
-      group: false
+      channel: 'trade',
+      command: 'subscribe'
     }))
 
     return UiTrade._handleResponse(response)
@@ -163,14 +161,15 @@ class UiTrade {
    * @private
    */
   static async _order (type) {
-    const response = await UiTrade._postJson('/trade/order/' + (type === 'B' ? 'buy' : 'sell'), {
-      identContract: _u('#contract').first().value,
+    const json = {
+      channel: 'trade',
+      command: type === 'B' ? 'add:buy' : 'add:sell',
       type: type,
       price: _u('#price').first().value,
       amount: _u('#amount').first().value
-    })
+    }
 
-    return UiTrade._handleResponse(response, type)
+    UiTrade.websocket.send(JSON.stringify(json))
   }
 
   /**
@@ -180,13 +179,14 @@ class UiTrade {
    * @private
    */
   static async _delete (type, msTimestamp) {
-    const response = await UiTrade._postJson('/trade/delete/' + (type === 'B' ? 'buy' : 'sell'), {
-      identContract: _u('#contract').first().value,
+    const json = {
+      channel: 'trade',
+      command: type === 'B' ? 'delete:buy' : 'delete:sell',
       type: type,
       msTimestamp: msTimestamp
-    })
+    }
 
-    return UiTrade._handleResponse(response, type)
+    UiTrade.websocket.send(JSON.stringify(json))
   }
 
   /**
@@ -196,9 +196,7 @@ class UiTrade {
    * @private
    */
   static async _handleResponse (res, type = undefined) {
-    if (res.redirected) {
-      window.location.replace('/logout')
-    } else if (!res.ok) {
+    if (!res.ok) {
       res.text().then((html) => _Ui.message('ERROR', html))
     }
   }

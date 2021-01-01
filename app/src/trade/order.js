@@ -1,19 +1,33 @@
-/*!
- * Diva Order
- * Copyright(c) 2019-2020 Konrad Baechler, https://diva.exchange
- * GPL3 Licensed
+/**
+ * Copyright (C) 2020 diva.exchange
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author/Maintainer: Konrad Bächler <konrad@diva.exchange>
  */
+
 'use strict'
 
 import BigNumber from 'bignumber.js'
-import sodium from 'sodium-native'
 
-import { Config } from '../config/config'
 import { Db } from '../db'
-import { JOB_STATUS_OK } from '../utils/job'
-import { KeyStore } from '../auth/key-store'
 import { Logger } from '@diva.exchange/diva-logger'
-import { shuffleArray } from '../utils/utils'
+import zlib from 'zlib'
+
+const ORDER_VERSION_2 = 2 // base64 encoded object data
+const ORDER_VERSION_3 = 3 // base64 encoded zlib-deflated object data
+const ORDER_VERSION_CURRENT = ORDER_VERSION_3
 
 export class Order {
   /**
@@ -44,7 +58,6 @@ export class Order {
     this.identContract = identContract
 
     this._db = Db.connect()
-    this._config = Config.make()
 
     const r = this._db.firstAsObject('SELECT * FROM contract WHERE contract_ident = @contract_ident', {
       contract_ident: this.identContract
@@ -127,15 +140,14 @@ export class Order {
   }
 
   /**
-   * @returns {Promise<void[]>}
-   * @public
+   * @returns {({}|{contract, arrayDelta, type, arrayCurrent})[]}
    */
-  async commit () {
+  commit () {
     // clone data
     const delta = { B: new Map(this.delta.B), A: new Map(this.delta.A) }
     this.delta = { B: new Map(), A: new Map() }
 
-    return Promise.all([
+    return Order.packOrder([
       this._setOrder('B', delta),
       this._setOrder('A', delta)
     ])
@@ -144,13 +156,12 @@ export class Order {
   /**
    * @param type {string}
    * @param delta {Object}
-   * @returns {Promise<void>}
    * @throws {Error}
    * @private
    */
-  async _setOrder (type, delta) {
+  _setOrder (type, delta) {
     if (!delta[type].size) {
-      return Promise.resolve()
+      return {}
     }
 
     // build order data
@@ -164,40 +175,10 @@ export class Order {
       }
     })
 
-    const objData = {
+    return {
       contract: this.identContract,
       type: type,
-      arrayCurrent: Array.from(mapCurrent),
-      arrayDelta: Array.from(delta[type]),
-      signatureState: this._sign(Buffer.from(JSON.stringify(Array.from(state))))
-    }
-
-    const peer = shuffleArray(this._config.getValueByKey('diva.api.uri'))[0]
-    const proxy = peer.match(/^.+\.i2p(:[\d]+)?$/) ? 'http://' + this._config.getValueByKey('i2p.http.proxy') : ''
-    let response = await request({
-      proxy: proxy,
-      url: 'http://' + peer + '/order/set',
-      method: 'POST',
-      body: {
-        account: this.identAccount,
-        data: JSON.stringify(objData),
-        signature: this._sign(Buffer.from(JSON.stringify(objData)))
-      },
-      json: true
-    })
-    if (!response.idJob) {
-      Logger.error('Order._setOrder(): failed to get Job Id')
-      throw new Error(JSON.stringify(response))
-    }
-
-    response = await request({
-      proxy: proxy,
-      url: 'http://' + peer + '/job?idJob=' + response.idJob,
-      json: true
-    })
-    if (!response.job_status_ident || response.job_status_ident !== JOB_STATUS_OK) {
-      Logger.error('Order._setOrder(): placement of Order failed')
-      throw new Error(JSON.stringify(response))
+      book: Array.from(mapCurrent)
     }
   }
 
@@ -223,15 +204,41 @@ export class Order {
   }
 
   /**
-   * @param data {Buffer}
-   * @returns {string} Base64 encoded signature
-   * @private
+   * @param data {string}
+   * @param version {number}
+   * @returns {Promise<Object>}
+   * @throws {Error}
+   * @public
    */
-  _sign (data) {
-    /** @type Buffer */
-    const bufferSignature = sodium.sodium_malloc(sodium.crypto_sign_BYTES)
-    sodium.crypto_sign_detached(bufferSignature, data, KeyStore.make().get(this.identAccount + ':keyPrivate'))
-    return bufferSignature.toString('base64')
+  static async unpackOrder (data, version = ORDER_VERSION_CURRENT) {
+    // versioned data
+    switch (version) {
+      case ORDER_VERSION_2:
+        return JSON.parse(Buffer.from(data, 'base64').toString())
+      case ORDER_VERSION_3:
+        return JSON.parse((zlib.inflateRawSync(Buffer.from(data, 'base64'))).toString())
+      default:
+        Logger.error('IrohaDb.unpackOrder()').error('unsupported order data version')
+    }
+  }
+
+  /**
+   * @param data {Object|Array}
+   * @param version {number}
+   * @returns {Promise<string>}
+   * @throws {Error}
+   * @public
+   */
+  static packOrder (data, version = ORDER_VERSION_CURRENT) {
+    // versioned data
+    switch (version) {
+      case ORDER_VERSION_2:
+        return version + ';' + Buffer.from(JSON.stringify(data)).toString('base64')
+      case ORDER_VERSION_3:
+        return version + ';' + (zlib.deflateRawSync(Buffer.from(JSON.stringify(data)))).toString('base64')
+      default:
+        Logger.error('IrohaDb.packOrder()').error('unsupported order data version')
+    }
   }
 }
 

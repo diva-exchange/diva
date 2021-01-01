@@ -27,26 +27,12 @@ import WebSocket from 'ws'
 
 export class HttpServer {
   /**
-   * Factory
-   *
-   * @param name
-   * @param port
-   * @param bindIP
-   * @returns {HttpServer}
-   * @public
-   */
-  static make (name, port = 3000, bindIP = '0.0.0.0') {
-    return new HttpServer(name, port, bindIP)
-  }
-
-  /**
-   * @param name {string}
    * @param port {number}
    * @param bindIP {string}
    * @throws {Error}
-   * @private
+   * @public
    */
-  constructor (name, port = 3000, bindIP = '0.0.0.0') {
+  constructor (port = 3000, bindIP = '0.0.0.0') {
     this._mapWebSocketSubscription = new Map()
     this._idWebSocket = 0
     this._mapWebSocket = new Map()
@@ -55,18 +41,30 @@ export class HttpServer {
 
     this.router = new DivaRoutes(this)
 
+    this._ip = bindIP
     this._port = HttpServer.normalizePort(port)
     this.router.getApp().set('port', this._port)
 
     this._httpServer = http.createServer(this.router.getApp())
     this._httpServer.on('listening', () => {
-      Logger.info(`${name} HttpServer listening on ${bindIP}:${this._port}`)
+      Logger.info(`HttpServer listening on ${this._ip}:${this._port}`)
     })
     this._httpServer.on('close', () => {
-      Logger.info(`${name} HttpServer closing on ${bindIP}:${this._port}`)
+      Logger.info(`HttpServer closed on ${this._ip}:${this._port}`)
     })
     this._httpServer.on('error', this._onError.bind(this))
 
+    this._attachWebSocketApi()
+    this._attachWebSocketServer()
+
+    this._httpServer.listen(this._port, this._ip)
+    this.router.init()
+  }
+
+  /**
+   * @private
+   */
+  _attachWebSocketApi () {
     /** @type WebSocket */
     this._websocketApi = new WebSocket('ws://' + Config.make().getValueByKey('api'),
       {
@@ -77,7 +75,7 @@ export class HttpServer {
     )
 
     this._websocketApi.on('open', () => {
-      Logger.info(`${name} WebsocketApi connection established`)
+      Logger.info(`WebsocketApi connection established to ${Config.make().getValueByKey('api')}`)
     })
 
     this._websocketApi.on('message', (json) => {
@@ -88,26 +86,32 @@ export class HttpServer {
         return
       }
       if (this._mapWebSocketSubscription.has(obj.channel || false)) {
-        const callback = this._mapFilterWebsocketApi.get(obj.channel)
+        let callback = this._mapFilterWebsocketApi.get(obj.channel + ':' + obj.command)
+        callback = callback || this._mapFilterWebsocketApi.get(obj.channel)
         json = typeof callback === 'function' ? callback(json) : json
-        if (!json) {
-          return
+        if (json) {
+          this._mapWebSocketSubscription.get(obj.channel).forEach((id) => {
+            this._mapWebSocket.get(id).send(json)
+          })
         }
-        this._mapWebSocketSubscription.get(obj.channel).forEach((id) => {
-          this._mapWebSocket.get(id).send(json)
-        })
       }
     })
 
     this._websocketApi.on('error', (error) => {
-      Logger.error(`${name} WebsocketApi error`).trace(error)
+      Logger.error('WebsocketApi error').trace(error)
       this._onError(error)
     })
 
     this._websocketApi.on('close', (code, reason) => {
-      Logger.warn(`${name} WebsocketApi closing ${code} ${reason}`)
+      const msg = reason ? `${code} - ${reason}` : code
+      Logger.warn(`WebsocketApi closed: ${msg}`)
     })
+  }
 
+  /**
+   * @private
+   */
+  _attachWebSocketServer () {
     /** @type WebSocket.Server */
     this._websocketServer = new WebSocket.Server({ server: this._httpServer })
     this._websocketServer.on('connection', (ws) => {
@@ -119,7 +123,9 @@ export class HttpServer {
       })
 
       ws.on('close', (code, reason) => {
-        Logger.info(`${name} Websocket closed ${code}, ${reason}`)
+        const msg = reason ? `${code} - ${reason}` : code
+        Logger.info(`Websocket closed: ${msg}`)
+
         this._mapWebSocketSubscription.forEach((arrayId, channel) => {
           const k = arrayId.indexOf(id)
           if (k > -1) {
@@ -133,21 +139,17 @@ export class HttpServer {
     })
 
     this._websocketServer.on('error', (error) => {
-      Logger.error(`${name} WebsocketServer error`).trace(error)
+      Logger.error('WebsocketServer error').trace(error)
       this._onError(error)
     })
 
     this._websocketServer.on('listening', () => {
-      const wsa = this._websocketServer.address()
-      Logger.info(`${name} WebsocketServer listening on ${wsa.address}:${wsa.port}`)
+      Logger.info(`WebsocketServer listening on ${this._ip}:${this._port}`)
     })
 
     this._websocketServer.on('close', () => {
-      Logger.info(`${name} WebsocketServer closed`)
+      Logger.info(`WebsocketServer closed on ${this._ip}:${this._port}`)
     })
-
-    this._httpServer.listen(this._port, bindIP)
-    this.router.init()
   }
 
   /**
@@ -165,19 +167,19 @@ export class HttpServer {
   }
 
   /**
-   * @param channel {string}
+   * @param ident {string}
    * @param callback {function}
    */
-  setFilterWebsocketLocal (channel, callback) {
-    this._mapFilterWebsocketLocal.set(channel, callback)
+  setFilterWebsocketLocal (ident, callback) {
+    this._mapFilterWebsocketLocal.set(ident, callback)
   }
 
   /**
-   * @param channel {string}
+   * @param ident {string}
    * @param callback {function}
    */
-  setFilterWebsocketApi (channel, callback) {
-    this._mapFilterWebsocketApi.set(channel, callback)
+  setFilterWebsocketApi (ident, callback) {
+    this._mapFilterWebsocketApi.set(ident, callback)
   }
 
   /**
@@ -215,9 +217,14 @@ export class HttpServer {
       return
     }
 
-    switch (obj.command || '') {
-      case '':
-        break
+    if (!obj.command || !obj.channel) {
+      return
+    }
+
+    let callback = this._mapFilterWebsocketLocal.get(obj.channel + ':' + obj.command)
+    callback = callback || this._mapFilterWebsocketLocal.get(obj.channel)
+
+    switch (obj.command) {
       case 'subscribe':
         if (obj.channel) {
           if (!this._mapWebSocketSubscription.has(obj.channel)) {
@@ -240,14 +247,13 @@ export class HttpServer {
         }
         break
       default:
-        if (obj.channel) {
-          const callback = this._mapFilterWebsocketLocal.get(obj.channel)
+        try {
           json = typeof callback === 'function' ? callback(json) : json
-          if (!json) {
-            return
-          }
+          this._websocketApi.send(json)
+        } catch (error) {
+          obj.error = error.toString()
+          this._mapWebSocket.get(id).send(JSON.stringify(obj))
         }
-        this._websocketApi.send(json)
     }
   }
 
