@@ -67,9 +67,7 @@ export class UXSocial extends UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    if (!UXMain.isAuth(rq)) {
-      return UXMain.redirectAuth(rs)
-    }
+    super.execute(rq, rs, n)
 
     switch (rq.path) {
       case '/social':

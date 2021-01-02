@@ -24,7 +24,8 @@ import { Router } from './router'
 
 import { UXAuth } from './view/auth/uxAuth'
 import { UXCulture } from './view/uxCulture'
-import { UXMain } from './view/uxMain'
+
+import { UXDashboard } from './view/dashboard/uxDashboard'
 import { UXTrade } from './view/trade/uxTrade'
 import { UXNetwork } from './view/network/uxNetwork'
 import { UXSocial } from './view/social/uxSocial'
@@ -40,7 +41,7 @@ export class Routes extends Router {
     const controllerUXAuth = UXAuth.make(httpServer)
     const controllerUXCulture = UXCulture.make(httpServer)
 
-    const controllerUXMain = UXMain.make(httpServer)
+    const controllerUXDashboard = UXDashboard.make(httpServer)
     const controllerUXTrade = UXTrade.make(httpServer)
     const controllerUXSocial = UXSocial.make(httpServer)
     const controllerUXNetwork = UXNetwork.make(httpServer)
@@ -59,7 +60,7 @@ export class Routes extends Router {
         '/newuser': controllerUXAuth,
         '/logout': controllerUXAuth,
 
-        '/': controllerUXMain,
+        '/': controllerUXDashboard,
         '/trade': controllerUXTrade,
         '/social': controllerUXSocial,
         '/network(/*)?': controllerUXNetwork,

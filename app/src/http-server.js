@@ -226,23 +226,19 @@ export class HttpServer {
 
     switch (obj.command) {
       case 'subscribe':
-        if (obj.channel) {
-          if (!this._mapWebSocketSubscription.has(obj.channel)) {
-            this._mapWebSocketSubscription.set(obj.channel, [id])
-          } else if (this._mapWebSocketSubscription.get(obj.channel).indexOf(id) === -1) {
-            this._mapWebSocketSubscription.get(obj.channel).push(id)
-          }
+        if (!this._mapWebSocketSubscription.has(obj.channel)) {
+          this._mapWebSocketSubscription.set(obj.channel, [id])
+        } else if (this._mapWebSocketSubscription.get(obj.channel).indexOf(id) === -1) {
+          this._mapWebSocketSubscription.get(obj.channel).push(id)
         }
         break
       case 'unsubscribe':
-        if (obj.channel) {
-          if (this._mapWebSocketSubscription.has(obj.channel)) {
-            const arrayId = this._mapWebSocketSubscription.get(obj.channel)
-            const k = arrayId.indexOf(id)
-            if (k > -1) {
-              arrayId.splice(k, 1)
-              this._mapWebSocketSubscription.set(obj.channel, arrayId)
-            }
+        if (this._mapWebSocketSubscription.has(obj.channel)) {
+          const arrayId = this._mapWebSocketSubscription.get(obj.channel)
+          const k = arrayId.indexOf(id)
+          if (k > -1) {
+            arrayId.splice(k, 1)
+            this._mapWebSocketSubscription.set(obj.channel, arrayId)
           }
         }
         break

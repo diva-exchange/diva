@@ -122,9 +122,7 @@ export class UXTrade extends UXMain {
    * @public
    */
   execute (rq, rs, n) {
-    if (!UXMain.isAuth(rq)) {
-      return UXMain.redirectAuth(rs)
-    }
+    super.execute(rq, rs, n)
 
     const session = rq.session
     const identContract = rq.body.identContract || session.stateView[session.account].tradeIdentContract || 'BTC_XMR'

@@ -19,52 +19,33 @@
 
 'use strict'
 
-import { Culture } from './culture'
+import { UXMain } from '../uxMain'
 
-export class UXCulture {
+export class UXDashboard extends UXMain {
   /**
    * Factory
    *
    * @param server {HttpServer}
-   * @returns {UXCulture}
+   * @returns {UXDashboard}
    * @public
    */
   static make (server) {
-    return new UXCulture(server)
+    return new UXDashboard(server)
   }
 
   /**
-   * @param httpServer {HttpServer}
-   * @private
-   */
-  constructor (httpServer) {
-    this.server = httpServer
-  }
-
-  /**
-   * @param rq {Object}
-   * @param rs {Object}
+   * @param rq {Object} Request
+   * @param rs {Object} Response
    * @param n {Function}
    * @public
    */
   execute (rq, rs, n) {
-    const session = rq.session
-    const objData = {}
+    super.execute(rq, rs, n)
+
     switch (rq.path) {
-      // post
-      case '/translate':
-        Culture.init(rq)
-        if (session.isAuthenticated && session.account && session.stateView[session.account]) {
-          session.stateView[session.account].uiLanguage = Culture.uiLanguage
-        } else {
-          session.uiLanguage = Culture.uiLanguage
-        }
-        for (const type in rq.body) {
-          if (Object.prototype.hasOwnProperty.call(rq.body, type) && Array.isArray(rq.body[type])) {
-            objData[type] = Array.from(Culture.translateArray(rq.body[type]))
-          }
-        }
-        rs.json(objData)
+      case '/':
+      case '/dashboard':
+        rs.render('diva/dashboard/dashboard', {})
         break
       default:
         n()
@@ -72,4 +53,4 @@ export class UXCulture {
   }
 }
 
-module.exports = { UXCulture }
+module.exports = { UXDashboard }
