@@ -37,7 +37,7 @@ import { User } from './src/auth/user'
 })()
 
 /**
- * @param config {Config}
+ * @param {Config} config
  * @returns {Promise<any>}
  */
 function setAccount (config) {

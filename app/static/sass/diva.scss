@@ -53,16 +53,6 @@ nav.navbar.top, .navbar-menu {
   }
 }
 
-div.data-loader {
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 40px calc(50% - 200px);
-  visibility: hidden;
-  z-index: 20;
-}
-div.data-loader .progress:indeterminate {
-  background-image: linear-gradient(to right, orange 30%, #ededed 30%)
-}
-
 section#app {
   margin: 20px 0;
 }

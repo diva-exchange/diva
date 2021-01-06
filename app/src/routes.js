@@ -34,7 +34,7 @@ import { UXConfig } from './view/config/uxConfig'
 
 export class Routes extends Router {
   /**
-   * @param httpServer {HttpServer}
+   * @param {HttpServer} httpServer
    * @public
    */
   constructor (httpServer) {
@@ -79,7 +79,7 @@ export class Routes extends Router {
   }
 
   /**
-   * @returns {Router}
+   * @return {Router}
    */
   init () {
     Network.make()

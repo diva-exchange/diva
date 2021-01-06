@@ -27,8 +27,8 @@ export const CULTURE_DEFAULT_LANGUAGE_IDENT = 'en'
 
 export class Culture {
   /**
-   * @param request {object}
-   * @returns {Culture}
+   * @param {Object} request
+   * @return {Culture}
    */
   static init (request) {
     Culture._make()
@@ -37,8 +37,8 @@ export class Culture {
   }
 
   /**
-   * @param request {object}
-   * @returns {string}
+   * @param {Object} request
+   * @return {string}
    * @public
    */
   static languageFromRequest (request) {
@@ -59,7 +59,7 @@ export class Culture {
   /**
    * Get list of available languages
    *
-   * @returns {Array}
+   * @return {Array}
    * @public
    */
   static getListIdentLanguages () {
@@ -70,7 +70,7 @@ export class Culture {
   /**
    * Reload the data in the cache from the database
    *
-   * @returns {Culture}
+   * @return {Culture}
    */
   static reload () {
     return Culture._make(true)
@@ -79,9 +79,9 @@ export class Culture {
   /**
    * Translate an ident
    *
-   * @param ident {string} Identifier to translate
-   * @param identLanguage {Array|string} Target languages to translate to
-   * @returns {string}
+   * @param {string} ident - Identifier to translate
+   * @param {Array|string} identLanguage - Target languages to translate to
+   * @return {string}
    * @throws {Error}
    * @public
    */
@@ -102,9 +102,9 @@ export class Culture {
   /**
    * Translate multiple idents
    *
-   * @param ident {Array} Identifiers to translate
-   * @param identLanguage {Array|string} Target languages to translate to
-   * @returns {Map}
+   * @param {Array} ident - Identifiers to translate
+   * @param {Array|string} identLanguage - Target languages to translate to
+   * @return {Map}
    * @throws {Error}
    * @public
    */
@@ -116,9 +116,9 @@ export class Culture {
   }
 
   /**
-   * @param timestamp {number}
-   * @param format {string}
-   * @returns {string}
+   * @param {number} timestamp
+   * @param {string} format
+   * @return {string}
    */
   static formatDateTime (timestamp, format = '') {
     if (format !== '') {
@@ -134,9 +134,9 @@ export class Culture {
   }
 
   /**
-   * @param ident {Array} Identifiers to translate
-   * @param identLanguage {Array|string} Target languages to translate to
-   * @returns {Map}
+   * @param {Array} ident - Identifiers to translate
+   * @param {Array|string} identLanguage - Target languages to translate to
+   * @return {Map}
    * @throws {Error}
    * @private
    */
@@ -171,7 +171,7 @@ export class Culture {
   }
 
   /**
-   * @returns {Culture}
+   * @return {Culture}
    * @private
    */
   static _make (force = false) {

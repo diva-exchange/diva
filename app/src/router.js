@@ -26,7 +26,6 @@ import path from 'path'
 import session from 'express-session'
 
 import { Culture } from './view/culture'
-import { Logger } from '@diva.exchange/diva-logger'
 
 // @TODO ES6 import
 const SessionStore = require('./view/session-store')(session)
@@ -35,7 +34,7 @@ const ROUTER_INVALID_SESSION_NAME = 'invalid session name'
 
 export class Router {
   /**
-   * @param routes {Object}
+   * @param {Object} routes
    * @throws {Error}
    * @protected
    */
@@ -80,9 +79,7 @@ export class Router {
       this._app.set('view engine', 'pug')
       this._app.use((req, res, next) => {
         res.locals.Culture = Culture.init(req)
-        if (req.session) {
-          res.locals.session = req.session
-        }
+        res.locals.session = req.session || null
         next()
       })
     }
@@ -126,14 +123,14 @@ export class Router {
   }
 
   /**
-   * @returns {Router}
+   * @return {Router}
    */
   init () {
     return this
   }
 
   /**
-   * @returns {Function}
+   * @return {Function}
    * @public
    */
   getApp () {
@@ -141,16 +138,14 @@ export class Router {
   }
 
   /**
-   * @param err
-   * @param req
-   * @param res
-   * @param next
+   * @param {Object} err
+   * @param {Object} req
+   * @param {Object} res
+   * @param {Function} next
    */
   static _errorHandler (err, req, res, next) {
-    Logger.trace(req.originalUrl).warn(err)
-
     res.locals.status = err.status
-    res.locals.message = err.message
+    res.locals.message = req.originalUrl + ' - ' + err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}
 
     res.status(err.status || 500)

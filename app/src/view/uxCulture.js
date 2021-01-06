@@ -25,16 +25,16 @@ export class UXCulture {
   /**
    * Factory
    *
-   * @param server {HttpServer}
-   * @returns {UXCulture}
+   * @param {HttpServer} httpServer
+   * @return {UXCulture}
    * @public
    */
-  static make (server) {
-    return new UXCulture(server)
+  static make (httpServer) {
+    return new UXCulture(httpServer)
   }
 
   /**
-   * @param httpServer {HttpServer}
+   * @param {HttpServer} httpServer
    * @private
    */
   constructor (httpServer) {
@@ -42,9 +42,9 @@ export class UXCulture {
   }
 
   /**
-   * @param rq {Object}
-   * @param rs {Object}
-   * @param n {Function}
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
+   * @param {Function} n
    * @public
    */
   execute (rq, rs, n) {

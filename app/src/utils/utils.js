@@ -23,7 +23,7 @@
  * Shuffle an array, using Durstenfeld shuffle
  * https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
  *
- * @param array {Array}
+ * @param {Array} array
  * @return {Array}
  */
 export function shuffleArray (array) {
@@ -39,8 +39,8 @@ export function shuffleArray (array) {
 /**
  * Hash a string to a 32bit Integer
  *
- * @param s {string}
- * @returns {number}
+ * @param {string} s
+ * @return {number}
  */
 export function hash (s) {
   let hash = 0

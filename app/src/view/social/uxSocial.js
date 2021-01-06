@@ -27,8 +27,8 @@ export class UXSocial extends UXMain {
   /**
    * Factory
    *
-   * @param server {HttpServer}
-   * @returns {UXSocial}
+   * @param {HttpServer} server
+   * @return {UXSocial}
    * @public
    */
   static make (server) {
@@ -36,7 +36,7 @@ export class UXSocial extends UXMain {
   }
 
   /**
-   * @param server {HttpServer}
+   * @param {HttpServer} server
    * @private
    */
   constructor (server) {
@@ -45,25 +45,23 @@ export class UXSocial extends UXMain {
     this.chatDb = ChatDb.make()
     this.messaging = Messaging.make()
 
-    this.server.setFilterWebsocketLocal('chat', (json) => {
+    this.server.setFilterWebsocketLocal('chat', (obj) => {
       // store the message in the database
-      const obj = JSON.parse(json)
       this.chatDb.addMessage(obj.recipient, obj.message, 1)
-      return this.messaging.encryptChatMessage(json)
+      return this.messaging.encryptChatMessage(obj)
     })
-    this.server.setFilterWebsocketApi('chat', (json) => {
-      json = this.messaging.decryptChatMessage(json)
-      const obj = JSON.parse(json)
+    this.server.setFilterWebsocketApi('chat', (obj) => {
+      obj = this.messaging.decryptChatMessage(obj)
       // store the message in the database
       this.chatDb.addMessage(obj.sender, obj.message, 2)
-      return json
+      return obj
     })
   }
 
   /**
-   * @param rq {Object} Request
-   * @param rs {Object} Response
-   * @param n {Function}
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
+   * @param {Function} n
    * @public
    */
   execute (rq, rs, n) {

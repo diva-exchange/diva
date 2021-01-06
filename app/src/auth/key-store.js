@@ -25,7 +25,7 @@ export class KeyStore {
   /**
    * Factory
    *
-   * @returns {KeyStore}
+   * @return {KeyStore}
    * @public
    */
   static make () {
@@ -43,8 +43,8 @@ export class KeyStore {
   }
 
   /**
-   * @param key {string}
-   * @param value {*}
+   * @param {string} key
+   * @param {*} value
    * @public
    */
   set (key, value) {
@@ -60,7 +60,7 @@ export class KeyStore {
   }
 
   /**
-   * @param key {string}
+   * @param {string} key
    * @return {Buffer}
    * @public
    */
@@ -69,7 +69,7 @@ export class KeyStore {
   }
 
   /**
-   * @param key {string}
+   * @param {string} key
    * @public
    */
   delete (key) {

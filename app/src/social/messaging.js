@@ -31,7 +31,7 @@ export class Messaging {
   /**
    * Factory
    *
-   * @returns {Messaging}
+   * @return {Messaging}
    */
   static make () {
     return new Messaging()
@@ -67,30 +67,28 @@ export class Messaging {
   }
 
   /**
-   * @param json {string}
-   * @returns {string}
+   * @param obj {Object}
+   * @return {Object}
    */
-  encryptChatMessage (json) {
-    const obj = JSON.parse(json)
+  encryptChatMessage (obj) {
     if (obj.command !== 'message') {
-      return json
+      return obj
     }
     const publicKeyRecipient = this._chatDb.getProfile(obj.recipient)[0].pub_key
     const bufferM = Buffer.from(obj.message)
     const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + obj.message.length)
     sodium.crypto_box_seal(ciphertext, bufferM, Buffer.from(publicKeyRecipient, 'hex'))
     obj.message = ciphertext.toString('base64')
-    return JSON.stringify(obj)
+    return obj
   }
 
   /**
-   * @param json {string}
-   * @returns {string}
+   * @param obj {Object}
+   * @return {Object}
    */
-  decryptChatMessage (json) {
-    const obj = JSON.parse(json)
+  decryptChatMessage (obj) {
     if (obj.command !== 'message') {
-      return json
+      return obj
     }
     const bufferC = Buffer.from(obj.message, 'base64')
     const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
@@ -101,11 +99,11 @@ export class Messaging {
       this._keystore.get('social:keySecret')
     )
     obj.message = (success && decrypted.toString()) || 'Can not decrypt message.'
-    return JSON.stringify(obj)
+    return obj
   }
 
   /**
-   * @returns {Promise<any>}
+   * @return {Promise<any>}
    */
   _reloadAccountsFromNode () {
     const url = 'http://' + Config.make().getValueByKey('api')

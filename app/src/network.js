@@ -29,7 +29,7 @@ const WEBSOCKET_CLIENT_OPTIONS = { followRedirects: false, perMessageDeflate: fa
 
 export class Network {
   /**
-   * @returns {Network}
+   * @return {Network}
    */
   static make () {
     if (!Network._instance) {
@@ -48,7 +48,7 @@ export class Network {
   }
 
   /**
-   * @returns {WebSocket}
+   * @return {WebSocket}
    * @throws {Error}
    */
   getWebsocket () {
@@ -61,7 +61,7 @@ export class Network {
   }
 
   /**
-   * @returns {WebSocket}
+   * @return {WebSocket}
    */
   getWebsocketToLocalNode () {
     const options = Object.assign({}, WEBSOCKET_CLIENT_OPTIONS)

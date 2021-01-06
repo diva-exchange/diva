@@ -40,31 +40,31 @@ class UiTrade {
    * @public
    */
   static make () {
+    UiTrade.CHANNEL_TRADE = 'trade'
+
     UiTrade._attachEvents()
 
     // connect to local websocket
-    UiTrade.websocket = new _WebSocket('ws://' + document.location.host)
+    UiTrade.websocket = new _WebSocket((document.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+      document.location.host)
     UiTrade.identContract = _u('select#contract').first().value
 
     // Connection opened
     UiTrade.websocket.addEventListener('open', () => {
       UiTrade.websocket.send(JSON.stringify({
-        channel: 'trade',
+        channel: UiTrade.CHANNEL_TRADE,
         command: 'subscribe'
+      }))
+
+      UiTrade.websocket.send(JSON.stringify({
+        channel: UiTrade.CHANNEL_TRADE,
+        command: 'getorderbook'
       }))
     })
 
     // Listen for data
     UiTrade.websocket.addEventListener('message', async (event) => {
-      let obj
       try {
-        obj = JSON.parse(event.data)
-        console.log(obj)
-        if (obj.accountId) {
-          UiTrade._setHtmlOrderBook(obj)
-        } else if (obj.contract) {
-          UiTrade._setHtmlMarket(obj)
-        }
         await _UiCulture.translate()
       } catch (error) {
         window.location.replace('/logout')
@@ -81,9 +81,6 @@ class UiTrade {
 
     // contract
     _u('#contract').off('change').handle('change', (e) => {
-      // @FIXME
-      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u(e.target).parent().addClass('is-loading is-disabled')
       _u('#price').first().value = ''
       _u('#amount').first().value = ''
@@ -101,33 +98,24 @@ class UiTrade {
     })
 
     // buy/sell action
-    _u('#place-order').off('click').handle('click', async () => {
-      // @FIXME
-      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
+    _u('#place-order').off('click').handle('click', () => {
       _u('#place-order').addClass('is-loading is-disabled')
-      await UiTrade._order(_u('#order').data('type'))
+      UiTrade._order(_u('#order').data('type'))
       _u('#place-order').removeClass('is-loading is-disabled')
     })
 
     // delete action
-    _u('#orderbook button[name=delete]').off('click').handle('click', async (e) => {
+    _u('#orderbook button[name=delete]').off('click').handle('click', (e) => {
       e.stopPropagation()
-      // @FIXME
-      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u(e.currentTarget).addClass('is-loading is-disabled')
-      await UiTrade._delete(_u(e.currentTarget).data('type'), _u(e.currentTarget).data('timestamp_ms'))
+      UiTrade._delete(_u(e.currentTarget).data('type'), _u(e.currentTarget).data('timestamp_ms'))
     })
 
     // delete-all action
-    _u('#orderbook button[name=delete-all]').off('click').handle('click', async (e) => {
+    _u('#orderbook button[name=delete-all]').off('click').handle('click', (e) => {
       e.stopPropagation()
-      // @FIXME
-      // _u('div.data-loader.orderbook').removeClass('fadeout').addClass('fadein')
-      // _u('div.data-loader.market').removeClass('fadeout').addClass('fadein')
       _u(e.currentTarget).addClass('is-loading is-disabled')
-      await UiTrade._delete(_u(e.currentTarget).data('type'), 0)
+      UiTrade._delete(_u(e.currentTarget).data('type'), 0)
     })
   }
 
@@ -137,33 +125,21 @@ class UiTrade {
    * @private
    */
   static async _changeContract (identContract) {
-    UiTrade.websocket.send(JSON.stringify({
-      channel: 'trade',
-      command: 'unsubscribe'
-    }))
-    UiTrade.identContract = identContract
-
     const response = await UiTrade._postJson('/trade/contract/set', {
       identContract: identContract
     })
-
-    UiTrade.websocket.send(JSON.stringify({
-      channel: 'trade',
-      command: 'subscribe'
-    }))
 
     return UiTrade._handleResponse(response)
   }
 
   /**
    * @param type {string}
-   * @returns {Promise<void>}
    * @private
    */
-  static async _order (type) {
+  static _order (type) {
     const json = {
-      channel: 'trade',
-      command: type === 'B' ? 'add:buy' : 'add:sell',
+      channel: UiTrade.CHANNEL_TRADE,
+      command: 'order:add',
       type: type,
       price: _u('#price').first().value,
       amount: _u('#amount').first().value
@@ -173,15 +149,14 @@ class UiTrade {
   }
 
   /**
-   * @param type {string}
    * @param msTimestamp {number}
-   * @returns {Promise<void>}
+   * @param type {string}
    * @private
    */
-  static async _delete (type, msTimestamp) {
+  static _delete (type, msTimestamp) {
     const json = {
-      channel: 'trade',
-      command: type === 'B' ? 'delete:buy' : 'delete:sell',
+      channel: UiTrade.CHANNEL_TRADE,
+      command: 'order:delete',
       type: type,
       msTimestamp: msTimestamp
     }
@@ -268,7 +243,6 @@ class UiTrade {
       }
     } while (rowBid || rowAsk)
     _u('#orderbook tbody').html(html)
-    _u('div.data-loader.orderbook').removeClass('fadein').addClass('fadeout')
 
     UiTrade._attachEvents()
   }
@@ -304,7 +278,6 @@ class UiTrade {
     } while (rowBid || rowAsk)
 
     _u('#market').html(html)
-    _u('div.data-loader.market').removeClass('fadein').addClass('fadeout')
   }
 }
 

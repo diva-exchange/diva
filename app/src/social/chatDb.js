@@ -24,7 +24,7 @@ import { Db } from '../db'
 export class ChatDb {
   /**
    * Factory
-   * @returns {ChatDb}
+   * @return {ChatDb}
    */
   static make () {
     return new ChatDb()
@@ -38,7 +38,7 @@ export class ChatDb {
   }
 
   /**
-   * @returns {Array}
+   * @return {Array}
    */
   getAllAccountsFromDB () {
     return this._db.allAsArray('SELECT account_ident FROM diva_chat_profiles WHERE active = 1')
@@ -61,7 +61,7 @@ export class ChatDb {
 
   /**
    * @param accountIdent
-   * @returns {Array}
+   * @return {Array}
    */
   getMessagesForUser (accountIdent) {
     return this._db.allAsArray('SELECT message, timestamp_ms, sent_received FROM diva_chat_messages WHERE account_ident = @account_ident',
@@ -72,7 +72,7 @@ export class ChatDb {
 
   /**
    * @param accountIdent
-   * @returns {Array}
+   * @return {Array}
    */
   getProfile (accountIdent) {
     return this._db.allAsArray('SELECT * FROM diva_chat_profiles WHERE account_ident = @account_ident',

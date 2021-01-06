@@ -29,8 +29,8 @@ const REGEX_PASSWORD = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[-+_,;£~$!%*#?&])[A-Za-z\d\
 
 export class User {
   /**
-   * @param identDomain {string} Omit or use an asterisk (*) to get all users of all domains
-   * @returns {Array} Array of records (a record is an object: {account_ident, domain_ident})
+   * @param {string} identDomain - Omit or use an asterisk (*) to get all users of all domains
+   * @return {Array} Array of records (a record is an object: {account_ident, domain_ident})
    */
   static allAsArray (identDomain = '*') {
     let sql = `SELECT account_ident, domain_ident FROM user
@@ -44,9 +44,9 @@ export class User {
   /**
    * Create a new User
    *
-   * @param identAccount {string}
-   * @param password {string}
-   * @returns {Promise<User>}
+   * @param {string} identAccount
+   * @param {string} password
+   * @return {Promise<User>}
    * @throws {Error} If creation fails
    * @public
    */
@@ -61,9 +61,9 @@ export class User {
   /**
    * Open an existing user
    *
-   * @param identAccount {string}
-   * @param password {string}
-   * @returns {User}
+   * @param {string} identAccount
+   * @param {string} password
+   * @return {User}
    * @throws {Error} If user is not accessible/available
    * @public
    */
@@ -78,8 +78,8 @@ export class User {
   /**
    * Delete an existing user
    *
-   * @param identAccount {string}
-   * @param password {string}
+   * @param {string} identAccount
+   * @param {string} password
    * @throws {Error} If deletion fails
    * @public
    */
@@ -91,8 +91,8 @@ export class User {
   }
 
   /**
-   * @param password {string}
-   * @param identAccount {string}
+   * @param {string} password
+   * @param {string} identAccount
    * @private
    */
   constructor (password = 'Password#123', identAccount) {
@@ -116,14 +116,14 @@ export class User {
   }
 
   /**
-   * @returns {string}
+   * @return {string}
    */
   getAccountIdent () {
     return this._identAccount
   }
 
   /**
-   * @returns {string} Public key, hex format
+   * @return {string} Public key, hex format
    */
   getPublicKey () {
     return this._bufferPublicKey.toString('hex')
@@ -180,7 +180,7 @@ export class User {
   /**
    * Add a new User
    *
-   * @returns {User}
+   * @return {User}
    * @throws {Error} On invalid crypto keys
    * @private
    */
@@ -203,7 +203,7 @@ export class User {
   /**
    * Delete a User
    *
-   * @returns {User}
+   * @return {User}
    * @throws {Error} If deletion fails
    * @private
    */
@@ -247,7 +247,7 @@ export class User {
   /**
    * Create a public/private key pair usable to create signatures
    *
-   * @returns {User}
+   * @return {User}
    * @private
    */
   _createKeyPairSign () {

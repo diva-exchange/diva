@@ -18,7 +18,7 @@ export class Updater {
   /**
    * Factory
    *
-   * @returns {Updater}
+   * @return {Updater}
    */
   static make () {
     return new Updater()

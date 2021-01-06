@@ -88,11 +88,13 @@ export class HttpServer {
       if (this._mapWebSocketSubscription.has(obj.channel || false)) {
         let callback = this._mapFilterWebsocketApi.get(obj.channel + ':' + obj.command)
         callback = callback || this._mapFilterWebsocketApi.get(obj.channel)
-        json = typeof callback === 'function' ? callback(json) : json
-        if (json) {
-          this._mapWebSocketSubscription.get(obj.channel).forEach((id) => {
-            this._mapWebSocket.get(id).send(json)
+        try {
+          obj = typeof callback === 'function' ? callback(obj) : obj
+          obj && this._mapWebSocketSubscription.get(obj.channel).forEach((id) => {
+            this._mapWebSocket.get(id).send(JSON.stringify(obj))
           })
+        } catch (error) {
+          Logger.error('WebsocketApi filter error').trace(error)
         }
       }
     })
@@ -153,7 +155,7 @@ export class HttpServer {
   }
 
   /**
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    */
   shutdown () {
     return new Promise((resolve) => {
@@ -244,8 +246,8 @@ export class HttpServer {
         break
       default:
         try {
-          json = typeof callback === 'function' ? callback(json) : json
-          this._websocketApi.send(json)
+          obj = typeof callback === 'function' ? callback(obj, this._mapWebSocket.get(id)) : obj
+          obj && this._websocketApi.send(JSON.stringify(obj))
         } catch (error) {
           obj.error = error.toString()
           this._mapWebSocket.get(id).send(JSON.stringify(obj))

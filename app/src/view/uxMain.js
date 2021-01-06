@@ -20,15 +20,15 @@
 'use strict'
 
 import { KeyStore } from '../auth/key-store'
-import { UXAuth } from './auth/uxAuth'
 import { Config } from '../config/config'
+import { UXAuth } from './auth/uxAuth'
 
 export class UXMain {
   /**
    * Factory
    *
    * @param server {HttpServer}
-   * @returns {UXMain}
+   * @return {UXMain}
    * @public
    */
   static make (server) {
@@ -45,39 +45,17 @@ export class UXMain {
   }
 
   /**
-   * @param rq {Object} Request
-   * @param rs {Object} Response
-   * @param n {Function}
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
+   * @param {Function} n
    * @public
    */
   execute (rq, rs, n) {
-    if (!UXMain.isAuth(rq)) {
-      // @FIXME
-      UXAuth._login(rq, rs)
-      // return UXMain.redirectAuth(rs)
-    }
-  }
-
-  /**
-   * @param rq {Object} Request
-   * @returns {boolean}
-   * @public
-   */
-  static isAuth (rq) {
     if (!rq.session || !rq.session.isAuthenticated) {
-      return false
+      // @FIXME does not support multiple users
+      UXAuth.login(rq, rs)
     }
-    return !!KeyStore.make().get(rq.session.account + ':keyPrivate')
-  }
-
-  /**
-   * @param rs {Object} Response
-   * @public
-   */
-  static redirectAuth (rs) {
-    // redirect to login
-    rs.redirect('/auth')
-    rs.end()
+    KeyStore.make().get(rq.session.account + ':keyPrivate')
   }
 }
 

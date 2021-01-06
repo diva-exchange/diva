@@ -46,7 +46,7 @@ export class Api {
    * Factory
    *
    * @param httpServer {HttpServer}
-   * @returns {Api}
+   * @return {Api}
    * @public
    */
   static make (httpServer) {
@@ -81,7 +81,7 @@ export class Api {
   }
 
   /**
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    * @private
    */
   async _initIroha () {
@@ -101,7 +101,7 @@ export class Api {
 
   /**
    * Attach a Websocket Server
-   * @returns {Api}
+   * @return {Api}
    */
   attachWebsocket () {
     // attach websocket events
@@ -289,7 +289,7 @@ export class Api {
    * @param array {Array}
    * @param limit {number}
    * @param precision {number}
-   * @returns {Array}
+   * @return {Array}
    * @private
    */
   static _group (array, limit, precision) {
@@ -390,7 +390,7 @@ export class Api {
   }
 
   /**
-   * @returns {Promise<Set>}
+   * @return {Promise<Set>}
    * @private
    */
   async _updateMarket () {
@@ -435,7 +435,7 @@ export class Api {
    * @param identContract {string}
    * @param identAccount {string}
    * @param limit {number}
-   * @returns {Object}
+   * @return {Object}
    * @private
    */
   _getMarket (identContract, identAccount = '', limit = 0) {
@@ -468,7 +468,7 @@ export class Api {
 
   /**
    * @param rq {Object} Request
-   * @returns {Promise<Job>}
+   * @return {Promise<Job>}
    * @private
    */
   async _postSetOrder (rq) {
@@ -487,7 +487,7 @@ export class Api {
    * @FIXME add Denial-of-Service protection
    *
    * @param rq {Object} Request
-   * @returns {Promise<number>} Job id
+   * @return {Promise<number>} Job id
    * @throws {Error}
    * @private
    */

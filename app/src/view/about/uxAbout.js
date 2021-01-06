@@ -26,7 +26,7 @@ export class UXAbout extends UXMain {
    * Factory
    *
    * @param server {HttpServer}
-   * @returns {UXAbout}
+   * @return {UXAbout}
    * @public
    */
   static make (server) {
@@ -34,9 +34,9 @@ export class UXAbout extends UXMain {
   }
 
   /**
-   * @param rq {Object} Request
-   * @param rs {Object} Response
-   * @param n {Function}
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
+   * @param {Function} n
    * @public
    */
   execute (rq, rs, n) {

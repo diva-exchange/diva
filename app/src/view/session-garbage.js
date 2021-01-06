@@ -30,8 +30,8 @@ export class SessionGarbage {
   /**
    * Factory
    *
-   * @param maxAge {number} Maximum age of session, defaults to 60 minutes
-   * @param interval {number} Running interval in milliseconds, defaults to 10 seconds
+   * @param {number} maxAge - Maximum age of session, defaults to 60 minutes
+   * @param {number} interval - Running interval in milliseconds, defaults to 10 seconds
    */
   static collect (maxAge = 60 * 60 * 1000, interval = 10000) {
     setInterval(() => { SessionGarbage._collector(maxAge) }, interval)
@@ -40,7 +40,7 @@ export class SessionGarbage {
   /**
    * Whether or not the garbage collector shall delete session files after they expire
    *
-   * @param flag {boolean}
+   * @param {boolean} flag
    */
   static doDeleteFiles (flag) {
     const pathRemoveFlagFile = path.join(__dirname, '../../data/session/', SESSION_GARBAGE_REMOVE_FLAG)
@@ -48,7 +48,7 @@ export class SessionGarbage {
   }
 
   /**
-   * @param maxAge {number}
+   * @param {number} maxAge
    * @private
    */
   static _collector (maxAge) {
@@ -71,8 +71,8 @@ export class SessionGarbage {
   /**
    * Overwrite sensitive data with '0' with the session file
    *
-   * @param pathSessionFile {string}
-   * @param doRemove {boolean}
+   * @param {string} pathSessionFile
+   * @param {boolean} doRemove
    * @private
    */
   static _zeroFile (pathSessionFile, doRemove) {

@@ -22,7 +22,7 @@ CREATE TABLE config (
 
 INSERT INTO config(key, value) VALUES
     ('api', '172.29.101.30:19012'),
-    ('api.token', '9c1c376e70bec696febe5916a1ca02e9ed850e36472721c44bbc16bbb2694177'),
+    ('api.token', '519698e27cbdb0f993dc362f7c2aa93f15f08d57b45e453170c46a8cf8c81af4'),
 
     ('i2p.webconsole.scraper.url', 'http://172.22.3.2:7070/?page=i2p_tunnels'),
     ('i2p.http.proxy.development', '172.22.3.2:4444'),
@@ -152,46 +152,6 @@ INSERT INTO culture (language_ident, ident, text) VALUES
     ('en', 'main.SuperHeroTitle', 'You Are a Bold Super Hero');
 
 
-
-DROP TABLE IF EXISTS job_status;
-CREATE TABLE job_status (
-    job_status_ident TEXT NOT NULL,
-    sort_order INTEGER,
-
-    PRIMARY KEY (job_status_ident),
-    FOREIGN KEY (job_status_ident) REFERENCES culture(ident)
-) WITHOUT ROWID;
-
-INSERT INTO job_status (job_status_ident, sort_order) VALUES
-    ('jsPENDING', 1),
-    ('jsOK', 2),
-    ('jsERROR', 3);
-
-DROP TABLE IF EXISTS job_interface;
-CREATE TABLE job_interface (
-    job_interface_ident TEXT NOT NULL,
-    sort_order INTEGER,
-
-    PRIMARY KEY (job_interface_ident),
-    FOREIGN KEY (job_interface_ident) REFERENCES culture(ident)
-) WITHOUT ROWID;
-
-INSERT INTO job_interface (job_interface_ident, sort_order) VALUES
-    ('jiUI', 1);
-
-DROP TABLE IF EXISTS job;
-CREATE TABLE job (
-    job_status_ident TEXT NOT NULL,
-    job_interface_ident TEXT NOT NULL,
-    request TEXT NOT NULL,
-    request_datetime_utc DATETIME NOT NULL DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')),
-    response TEXT,
-    response_datetime_utc DATETIME,
-
-    FOREIGN KEY (job_status_ident) REFERENCES job_status(job_status_ident),
-    FOREIGN KEY (job_interface_ident) REFERENCES job_interface(job_interface_ident)
-);
-
 DROP TABLE IF EXISTS contract;
 CREATE TABLE contract (
     contract_ident TEXT NOT NULL,
@@ -210,12 +170,13 @@ DROP TABLE IF EXISTS orderbook;
 CREATE TABLE orderbook (
     account_ident TEXT NOT NULL,
     contract_ident TEXT NOT NULL,
-    timestamp_ms INTEGER NOT NULL,
     type TEXT CHECK(type IN ('B', 'A')) NOT NULL,
+    timestamp_ms INTEGER NOT NULL,
     price TEXT NOT NULL,
     amount TEXT NOT NULL,
+    status TEXT CHECK(status IN ('PA', 'PD', 'C')) NOT NULL,
 
-    PRIMARY KEY (account_ident, contract_ident, timestamp_ms, type),
+    PRIMARY KEY (account_ident, contract_ident, type, timestamp_ms),
     FOREIGN KEY (account_ident) REFERENCES user(account_ident),
     FOREIGN KEY (contract_ident) REFERENCES contract(contract_ident)
 ) WITHOUT ROWID;
@@ -224,12 +185,12 @@ DROP TABLE IF EXISTS market;
 CREATE TABLE market (
     account_ident TEXT NOT NULL,
     contract_ident TEXT NOT NULL,
-    timestamp_ms INTEGER NOT NULL,
     type TEXT CHECK(type IN ('B', 'A')) NOT NULL,
+    timestamp_ms INTEGER NOT NULL,
     price TEXT NOT NULL,
     amount TEXT NOT NULL,
 
-    PRIMARY KEY (account_ident, contract_ident, timestamp_ms, type)
+    PRIMARY KEY (account_ident, contract_ident, type, timestamp_ms)
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS asset;

@@ -51,12 +51,12 @@ class Ui {
     })
 
     // Listen for data
-    Ui.websocket.addEventListener('message', async (event) => {
-      let objData
+    Ui.websocket.addEventListener('message', (event) => {
+      let block = {}
       try {
-        objData = JSON.parse(event.data)
-        _u('#blockheight').text(objData.blockV1.payload.height || '')
-        const datetime = objData.blockV1.payload.createdTime || ''
+        block = JSON.parse(event.data).block
+        _u('#blockheight').text(block.blockV1.payload.height || '')
+        const datetime = block.blockV1.payload.createdTime || ''
         _u('#blocktime').data('culture-datetime', datetime).text(datetime)
       } catch (error) {
         console.error(error)

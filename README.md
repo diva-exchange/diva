@@ -144,7 +144,7 @@ Use the i2pd web-console to explore the i2pd router running within the docker co
 
 I2P needs some time to get properly integrated in the network. Please be patient for at least 3 minutes.
 
-To access the I2P network just set the HTTP proxy of your favourite browser (Firefox, see: [https://support.mozilla.org/en-US/kb/connection-settings-firefox]()) to [localhost:4444](http://localshost:4444). Depending on your browser your mileage may vary.
+To access the I2P network just set the HTTP proxy of your favourite browser (Firefox, see: [https://support.mozilla.org/en-US/kb/connection-settings-firefox]()) to [localhost:4444](http://localhost:4444). Depending on your browser your mileage may vary.
 
 After changing the HTTP proxy, your chosen browser will be connected to the I2P network and you can navigate to http://diva.i2p or any other I2P site of your choice.
 

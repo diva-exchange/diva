@@ -24,7 +24,7 @@
     "test": "rm -rf app/test/data/session ; nyc mocha"
   },
   "dependencies": {
-    "@diva.exchange/diva-logger": "^1.0.0",
+    "@diva.exchange/diva-logger": "^1.0.1",
     "better-sqlite3": "^7.1.2",
     "bignumber.js": "^9.0.1",
     "compression": "^1.7.4",
@@ -33,23 +33,21 @@
     "express": "~4.17.1",
     "express-session": "^1.17.1",
     "fs-extra": "^9.0.1",
-    "grpc": "^1.24.4",
     "http-errors": "~1.8.0",
-    "iroha-helpers": "^0.9.1",
     "nanoid": "^3.1.20",
     "pg": "^8.5.1",
     "pug": "^3.0.0",
     "simple-get": "^4.0.0",
     "socks-proxy-agent": "^5.0.0",
     "sodium-native": "^3.2.0",
-    "ws": "^7.4.1"
+    "ws": "^7.4.2"
   },
   "devDependencies": {
     "acorn": ">=8.0.4",
     "bulma": "^0.9.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^7.16.0",
+    "eslint": "^7.17.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",

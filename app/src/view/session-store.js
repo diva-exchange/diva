@@ -38,8 +38,8 @@ module.exports = function (session) {
     }
 
     /**
-     * @param nameSession {string}
-     * @param pathKey {string}
+     * @param {string} nameSession
+     * @param {string} pathKey
      * @throws {Error} If the session key is not accessible (I/O error)
      * @return {string}
      */
@@ -68,7 +68,7 @@ module.exports = function (session) {
     }
 
     /**
-     * @param options {Object}
+     * @param {Object} options
      * @private
      */
     constructor (options) {
@@ -84,9 +84,9 @@ module.exports = function (session) {
     }
 
     /**
-     * @param sid {string}
-     * @param session {Object}
-     * @param callback {Function}
+     * @param {string} sid
+     * @param {Object} session
+     * @param {Function} callback
      * @public
      */
     set (sid, session, callback) {
@@ -109,8 +109,8 @@ module.exports = function (session) {
     }
 
     /**
-     * @param sid {string}
-     * @param callback {Function}
+     * @param {string} sid
+     * @param {Function} callback
      * @public
      */
     get (sid, callback) {
@@ -124,8 +124,8 @@ module.exports = function (session) {
     }
 
     /**
-     * @param sid {string}
-     * @param callback {Function}
+     * @param {string} sid
+     * @param {Function} callback
      * @public
      */
     destroy (sid, callback) {
@@ -135,11 +135,13 @@ module.exports = function (session) {
       } catch (err) {
         error = err
       }
-      callback(error)
+      if (typeof callback === 'function') {
+        callback(error)
+      }
     }
 
     /**
-     * @param callback {Function}
+     * @param {Function} callback
      * @public
      */
     length (callback) {
@@ -149,7 +151,7 @@ module.exports = function (session) {
     }
 
     /**
-     * @param callback {Function}
+     * @param {Function} callback
      * @public
      */
     clear (callback) {
@@ -165,9 +167,9 @@ module.exports = function (session) {
     }
 
     /**
-     * @param sid {string}
-     * @param session {Object}
-     * @param callback {Function}
+     * @param {string} sid
+     * @param {Object} session
+     * @param {Function} callback
      * @public
      */
     touch (sid, session, callback) {
@@ -175,7 +177,7 @@ module.exports = function (session) {
     }
 
     /**
-     * @param sid {string}
+     * @param {string} sid
      * @returns {string}
      * @private
      */

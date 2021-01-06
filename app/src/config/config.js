@@ -25,7 +25,7 @@ export class Config {
   /**
    * Factory, Singleton
    *
-   * @returns {Config}
+   * @return {Config}
    * @public
    */
   static make () {
@@ -44,8 +44,8 @@ export class Config {
   }
 
   /**
-   * @param key {string}
-   * @returns {(string|number|Object|Array|undefined)}
+   * @param {string} key
+   * @return {(string|number|Object|Array|undefined)}
    * @public
    */
   getValueByKey (key) {

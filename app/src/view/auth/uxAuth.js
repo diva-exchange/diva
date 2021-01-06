@@ -29,8 +29,8 @@ export class UXAuth {
   /**
    * Factory
    *
-   * @param httpServer {HttpServer}
-   * @returns {UXAuth}
+   * @param {HttpServer} httpServer
+   * @return {UXAuth}
    * @public
    */
   static make (httpServer) {
@@ -38,7 +38,7 @@ export class UXAuth {
   }
 
   /**
-   * @param httpServer {HttpServer}
+   * @param {HttpServer} httpServer
    * @private
    */
   constructor (httpServer) {
@@ -46,14 +46,14 @@ export class UXAuth {
   }
 
   /**
-   * @param rq {Object}
-   * @param rs {Object}
-   * @param n {Function}
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
+   * @param {Function} n
    * @public
    */
   execute (rq, rs, n) {
     const session = rq.session
-    const account = Config.make().getValueByKey('iroha.account')
+    const account = session.account
     session.isAuthenticated = false
     KeyStore.make().delete(session.account + ':keyPrivate')
     session.account = Buffer.from(session.account || '').fill('0').toString()
@@ -65,23 +65,19 @@ export class UXAuth {
     switch (rq.path) {
       // get
       case '/logout':
-        rs.redirect('/auth' + (account && account.replace(/0/g, '') ? '?account=' + account : ''))
-        rs.end()
-        break
+        return rs.redirect('/auth' + (account && account.replace(/0/g, '') ? '?account=' + account : ''))
       case '/auth':
-        UXAuth._login(rq, rs)
-        break
+        return UXAuth.auth(rq, rs)
       default:
         n()
     }
   }
 
   /**
-   * @param rq {Object} Request
-   * @param rs {Object} Response
-   * @private
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
    */
-  static _auth (rq, rs) {
+  static auth (rq, rs) {
     const arrayUser = User.allAsArray()
     if (arrayUser.length > 0) {
       rs.render('diva/auth', {
@@ -91,16 +87,14 @@ export class UXAuth {
       })
     } else {
       rs.redirect('/newuser')
-      rs.end()
     }
   }
 
   /**
-   * @param rq {Object} Request
-   * @param rs {Object} Response
-   * @private
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
    */
-  static _login (rq, rs) {
+  static login (rq, rs) {
     const session = rq.session
     try {
       const user = User.open(Config.make().getValueByKey('iroha.account'))
@@ -108,14 +102,17 @@ export class UXAuth {
       session.isAuthenticated = true
       session.account = user.getAccountIdent()
       session.keyPublic = user.getPublicKey()
-      if (typeof session.stateView !== 'undefined' && typeof session.stateView[session.account] === 'undefined') {
+      if (typeof session.stateView === 'undefined') {
+        session.stateView = {}
+      }
+      if (typeof session.stateView[session.account] === 'undefined') {
         session.stateView[session.account] = {
           pathView: '/',
           uiLanguage: Culture.languageFromRequest(rq)
         }
       }
     } catch (error) {
-      Logger.error(error)
+      Logger.trace(error)
     }
   }
 }

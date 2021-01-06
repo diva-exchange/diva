@@ -25,8 +25,8 @@ export class UXNetwork extends UXMain {
   /**
    * Factory
    *
-   * @param server {HttpServer}
-   * @returns {UXNetwork}
+   * @param {HttpServer} server
+   * @return {UXNetwork}
    * @public
    */
   static make (server) {
@@ -34,9 +34,9 @@ export class UXNetwork extends UXMain {
   }
 
   /**
-   * @param rq {Object} Request
-   * @param rs {Object} Response
-   * @param n {Function}
+   * @param {Object} rq - Request
+   * @param {Object} rs - Response
+   * @param {Function} n
    * @public
    */
   execute (rq, rs, n) {

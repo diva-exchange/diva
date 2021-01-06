@@ -41,7 +41,7 @@ export class Db {
    * Connect to an existing database
    *
    * @param {string} nameDatabase
-   * @returns {Db}
+   * @return {Db}
    * @public
    */
   static connect (nameDatabase = '') {
@@ -56,8 +56,8 @@ export class Db {
   }
 
   /**
-   * @param nameDatabase {string}
-   * @param mustExist {boolean}
+   * @param {string} nameDatabase
+   * @param {boolean} mustExist
    * @throws {Error}
    * @private
    */
@@ -79,7 +79,7 @@ export class Db {
   }
 
   /**
-   * @returns {Db}
+   * @return {Db}
    * @throws {Error}
    * @private
    */
@@ -96,8 +96,8 @@ export class Db {
   /**
    * Get current Date/Time, UTC
    *
-   * @param format {string} Defaults to %Y-%m-%d %H:%M:%f
-   * @returns {string}
+   * @param {string} format - Defaults to %Y-%m-%d %H:%M:%f
+   * @return {string}
    * @throws {Error}
    * @see https://www.sqlite.org/lang_datefunc.html
    */
@@ -111,10 +111,10 @@ export class Db {
   /**
    * Fetch all records as an array
    *
-   * @param sqlSelect {string}
-   * @param params {Object} Named bind params, like @firstname
-   * @param raw {boolean} Set to true to return each row as an array instead of an object, defaults to false
-   * @returns {Array}
+   * @param {string} sqlSelect
+   * @param {Object} params - Named bind params, like @firstname
+   * @param {boolean} raw - Set to true to return each row as an array instead of an object, defaults to false
+   * @return {Array}
    * @throws {Error}
    * @public
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#allbindparameters---array-of-rows
@@ -127,9 +127,9 @@ export class Db {
   /**
    * Fetch first record as an object
    *
-   * @param sqlSelect {string}
-   * @param params {Object} Named bind params, like @firstname
-   * @returns {Object|undefined} Returns undefined, if no data was found
+   * @param {string} sqlSelect
+   * @param {Object} params - Named bind params, like @firstname
+   * @return {Object|undefined} Returns undefined, if no data was found
    * @throws {Error}
    * @public
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#getbindparameters---row
@@ -169,22 +169,30 @@ export class Db {
   /**
    * Insert data, pass a valid INSERT SQL statement
    *
-   * @param sqlInsert {string} Valid INSERT SQL statement
-   * @param params {Object} Named bind params, like @firstname
-   * @returns {Object} Info object
+   * @param {string} sqlInsert - Valid INSERT SQL statement
+   * @param {Object|Array<Object>} params - Named bind params, like @firstname
+   * @return {Object} Info object
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#runbindparameters---object
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#binding-parameters
    */
   insert (sqlInsert, params = {}) {
+    if (Array.isArray(params)) {
+      let info = {}
+      const insert = this._database.prepare(sqlInsert)
+      params.forEach((p) => {
+        info = insert.run(p)
+      })
+      return info
+    }
     return this._prepareRun(sqlInsert, params)
   }
 
   /**
    * Update data, pass a valid UPDATE SQL statement
    *
-   * @param sqlUpdate {string} Valid UPDATE SQL statement
-   * @param params {Object} Named bind params, like @firstname
-   * @returns {Object} Info object
+   * @param {string} sqlUpdate - Valid UPDATE SQL statement
+   * @param {Object} params - Named bind params, like @firstname
+   * @return {Object} Info object
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#runbindparameters---object
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#binding-parameters
    */
@@ -195,9 +203,9 @@ export class Db {
   /**
    * Delete data, pass a valid DELETE SQL statement
    *
-   * @param sqlDelete {string} Valid DELETE SQL statement
-   * @param params {Object} Named bind params, like @firstname
-   * @returns {Object} Info object
+   * @param {string} sqlDelete - Valid DELETE SQL statement
+   * @param {Object} params - Named bind params, like @firstname
+   * @return {Object} Info object
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#runbindparameters---object
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/HEAD/docs/api.md#binding-parameters
    */
@@ -206,9 +214,9 @@ export class Db {
   }
 
   /**
-   * @param sql {string} Valid SQL statement
-   * @param params {Object} Named bind params, like @firstname
-   * @returns {Object} Info object
+   * @param {string} sql - Valid SQL statement
+   * @param {Object} params - Named bind params, like @firstname
+   * @return {Object} Info object
    * @private
    */
   _prepareRun (sql, params = {}) {
