@@ -22,7 +22,7 @@
 // Umbrella, @see https://umbrellajs.com
 var _u = u || false
 // Generic UI class, @see ./diva-ui.js
-const _Ui = Ui || false
+var _Ui = Ui || false
 // Generic UiCulture class, @see ./diva-ui.js
 var _UiCulture = UiCulture || false
 // WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
@@ -40,7 +40,7 @@ class UiTrade {
    * @public
    */
   static make () {
-    UiTrade.CHANNEL_TRADE = 'trade'
+    UiTrade.CHANNEL_ORDER = 'order'
 
     UiTrade._attachEvents()
 
@@ -52,18 +52,18 @@ class UiTrade {
     // Connection opened
     UiTrade.websocket.addEventListener('open', () => {
       UiTrade.websocket.send(JSON.stringify({
-        channel: UiTrade.CHANNEL_TRADE,
+        channel: UiTrade.CHANNEL_ORDER,
         command: 'subscribe'
       }))
 
       UiTrade.websocket.send(JSON.stringify({
-        channel: UiTrade.CHANNEL_TRADE,
-        command: 'getorderbook'
+        channel: UiTrade.CHANNEL_ORDER,
+        command: 'getBook'
       }))
     })
 
     // Listen for data
-    UiTrade.websocket.addEventListener('message', async (event) => {
+    UiTrade.websocket.addEventListener('message', async () => {
       try {
         await _UiCulture.translate()
       } catch (error) {
@@ -120,7 +120,7 @@ class UiTrade {
   }
 
   /**
-   * @param identContract {string}
+   * @param {string} identContract
    * @returns {Promise<void>}
    * @private
    */
@@ -133,13 +133,13 @@ class UiTrade {
   }
 
   /**
-   * @param type {string}
+   * @param {string} type
    * @private
    */
   static _order (type) {
     const json = {
-      channel: UiTrade.CHANNEL_TRADE,
-      command: 'order:add',
+      channel: UiTrade.CHANNEL_ORDER,
+      command: 'add',
       type: type,
       price: _u('#price').first().value,
       amount: _u('#amount').first().value
@@ -149,14 +149,14 @@ class UiTrade {
   }
 
   /**
-   * @param msTimestamp {number}
-   * @param type {string}
+   * @param {number} msTimestamp
+   * @param {string} type
    * @private
    */
   static _delete (type, msTimestamp) {
     const json = {
-      channel: UiTrade.CHANNEL_TRADE,
-      command: 'order:delete',
+      channel: UiTrade.CHANNEL_ORDER,
+      command: 'delete',
       type: type,
       msTimestamp: msTimestamp
     }
@@ -165,8 +165,8 @@ class UiTrade {
   }
 
   /**
-   * @param res {Object} Response
-   * @param type {string}
+   * @param {Object} res - Response
+   * @param {string} type
    * @returns {Promise<void>}
    * @private
    */
@@ -177,8 +177,8 @@ class UiTrade {
   }
 
   /**
-   * @param uri {string}
-   * @param objBody {Object}
+   * @param {string} uri
+   * @param {Object} objBody
    * @returns {Promise<Response>}
    * @private
    */
@@ -194,7 +194,7 @@ class UiTrade {
   }
 
   /**
-   * @param objData {Object}
+   * @param {Object} objData
    * @private
    */
   static _setHtmlOrderBook (objData) {
@@ -248,7 +248,7 @@ class UiTrade {
   }
 
   /**
-   * @param objData {Object}
+   * @param {Object} objData
    * @private
    */
   static _setHtmlMarket (objData) {

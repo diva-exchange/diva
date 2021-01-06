@@ -30,7 +30,16 @@ export class UXTrade extends UXMain {
    * @property {string} id
    * @property {string} channel
    * @property {string} command
-   * @property {Array<UXTrade.ApiResponseBook>} books
+   * @property {?Array<UXTrade.ApiResponseBook>} books
+   * @property {?string} error
+   */
+
+  /**
+   * @typedef {Object} UXTrade.ApiResponseSetOrder
+   * @property {string} id
+   * @property {string} channel
+   * @property {string} command
+   * @property {?string} error
    */
 
   /**
@@ -83,12 +92,12 @@ export class UXTrade extends UXMain {
     this.identContract = ''
     this._mapOrder = new Map()
 
-    this.server.setFilterWebsocketLocal('trade:getorderbook', (obj) => { return this._getOrderBook(obj) })
-    this.server.setFilterWebsocketLocal('trade:order:add', (obj) => { return this._add(obj) })
-    this.server.setFilterWebsocketLocal('trade:order:delete', (obj) => { return this._delete(obj) })
+    this.server.setFilterWebsocketLocal('order:getBook', (obj) => { return this._getOrderBook(obj) })
+    this.server.setFilterWebsocketLocal('order:add', (obj) => { return this._add(obj) })
+    this.server.setFilterWebsocketLocal('order:delete', (obj) => { return this._delete(obj) })
 
-    this.server.setFilterWebsocketApi('trade:getorderbook', (obj) => { return this._setOrderBook(obj) })
-    this.server.setFilterWebsocketApi('trade:setorder', (obj) => { return this._confirm(obj) })
+    this.server.setFilterWebsocketApi('order:getBook', (response) => { return this._setLocalOrderBook(response) })
+    this.server.setFilterWebsocketApi('order:set', (response) => { return this._confirm(response) })
   }
 
   /**
@@ -136,7 +145,7 @@ export class UXTrade extends UXMain {
    * @return {UXTrade.OrderBook}
    * @private
    */
-  _setOrderBook (response) {
+  _setLocalOrderBook (response) {
     const orderBook = {}
     response.books.forEach((o) => {
       if (o.account === this.identAccount && o.contract === this.identContract) {
@@ -165,8 +174,8 @@ export class UXTrade extends UXMain {
     this._mapOrder.set(orderBook.id, order)
 
     return {
-      channel: 'trade',
-      command: 'setorder',
+      channel: 'order',
+      command: 'set',
       id: orderBook.id,
       key: 'ob' + orderBook.contract + 't' + orderBook.type,
       value: orderBook.packedBook
@@ -189,8 +198,8 @@ export class UXTrade extends UXMain {
     this._mapOrder.set(orderBook.id, order)
 
     return {
-      channel: 'trade',
-      command: 'setorder',
+      channel: 'order',
+      command: 'set',
       id: orderBook.id,
       key: 'ob' + orderBook.contract + 't' + orderBook.type,
       value: orderBook.packedBook
@@ -198,18 +207,18 @@ export class UXTrade extends UXMain {
   }
 
   /**
-   * @param {Object} obj
+   * @param {Object} response
    * @return {Object|false}
    * @private
    */
-  _confirm (obj) {
-    const order = this._mapOrder.get(obj.response)
-    if (order && order.confirm(obj.response)) {
-      this._mapOrder.delete(obj.response)
+  _confirm (response) {
+    const order = this._mapOrder.get(response.id)
+    if (order && order.confirm(response.id)) {
+      this._mapOrder.delete(response.id)
       return {
-        channel: 'trade',
+        channel: 'order',
         command: 'confirm',
-        id: obj.response,
+        id: response.id,
         account: order.account,
         contract: order.contract,
         type: order.type
