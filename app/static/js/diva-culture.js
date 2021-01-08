@@ -19,12 +19,13 @@
 
 'use strict'
 
-// Umbrella, @see https://umbrellajs.com
-var _u = u || false
-// fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-var _fetch = fetch || false
+// @see https://umbrellajs.com
+/* global u */
 
-if (!_u || !_fetch) {
+// @see @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+/* global fetch */
+
+if (!u || !fetch) {
   throw new Error('invalid state')
 }
 
@@ -35,10 +36,10 @@ class UiCulture {
   static make () {
     UiCulture._cache = {}
 
-    _u('select[name="uiLanguage"]').off('change').handle('change', (e) => {
-      _u(e.target).parent().addClass('is-loading')
+    u('select[name="uiLanguage"]').off('change').handle('change', (e) => {
+      u(e.target).parent().addClass('is-loading')
       UiCulture.translate(true).then(() => {
-        setTimeout(() => { _u(e.target).parent().removeClass('is-loading') }, 200)
+        setTimeout(() => { u(e.target).parent().removeClass('is-loading') }, 200)
       })
     })
   }
@@ -49,7 +50,7 @@ class UiCulture {
    * @public
    */
   static async translate (changeUILanguage = false) {
-    const uiLanguage = _u('select[name="uiLanguage"]').first().value
+    const uiLanguage = u('select[name="uiLanguage"]').first().value
     if (!UiCulture._cache[uiLanguage]) {
       UiCulture._cache[uiLanguage] = {}
     }
@@ -66,15 +67,15 @@ class UiCulture {
     }
 
     if (changeUILanguage) {
-      _u('[data-culture-lang]').attr('lang', uiLanguage)
-      _u('[data-culture-lang]').attr('data-culture-lang', uiLanguage)
+      u('[data-culture-lang]').attr('lang', uiLanguage)
+      u('[data-culture-lang]').attr('data-culture-lang', uiLanguage)
     }
 
     for (const type in UiCulture._cache[uiLanguage]) {
       if (Object.prototype.hasOwnProperty.call(UiCulture._cache[uiLanguage], type)) {
         (new Map(UiCulture._cache[uiLanguage][type])).forEach((v, k) => {
           if (v) {
-            const _e = _u(`[data-culture-${type}="${k}"]`)
+            const _e = u(`[data-culture-${type}="${k}"]`)
             switch (type) {
               case 'text':
               case 'datetime':
@@ -100,7 +101,7 @@ class UiCulture {
     const translate = {}
     for (const type of ['text', 'title', 'placeholder', 'datetime']) {
       scope[type] = Array.from(
-        new Set(_u('[data-culture-' + type + ']').array(node => [_u(node).data('culture-' + type)]))
+        new Set(u('[data-culture-' + type + ']').array(node => [u(node).data('culture-' + type)]))
       ).filter(v => v)
 
       if (!UiCulture._cache[uiLanguage][type]) {
@@ -123,7 +124,7 @@ class UiCulture {
    * @private
    */
   static async _postToTranslate (objBody) {
-    return (await _fetch('/translate', {
+    return (await fetch('/translate', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

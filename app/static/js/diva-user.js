@@ -19,22 +19,16 @@
 
 'use strict'
 
-// Umbrella, @see https://umbrellajs.com
-var u = u || false
-// fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-var fetch = fetch || false
+// @see https://umbrellajs.com
+/* global u */
 
+// @see @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+/* global fetch */
 if (!u || !fetch) {
   throw new Error('invalid state')
 }
 
 class UiUser {
-  /**
-   * @public
-   */
-  static make () {
-  }
-
   /**
    * @public
    */

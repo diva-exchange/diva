@@ -6,8 +6,8 @@
 #
 set -e
 
-# install database
-su node -c "cd /home/node/ && node -r esm ./app/bin/install-db"
+# install
+su node -c "cd /home/node/ && npm run install"
 
 # start applications
-su node -c "cd /home/node/ && pm2-runtime start ecosystem.config.js --env production"
+su node -c "cd /home/node/ && npm start"

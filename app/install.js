@@ -21,7 +21,7 @@
 
 import { Config } from './src/config/config'
 import { Db } from './src/db'
-import fs from 'fs'
+import fs from 'fs-extra'
 import get from 'simple-get'
 import path from 'path'
 import { User } from './src/auth/user'
@@ -29,16 +29,19 @@ import { User } from './src/auth/user'
 (async () => {
   try {
     fs.unlinkSync(path.normalize(path.join(__dirname, 'data/diva.sqlite')))
+    fs.unlinkSync(path.normalize(path.join(__dirname, 'static/js/vendor/umbrella.min.js')))
   } catch (error) {}
 
-  Db.create('diva')
+  fs.copyFileSync(path.normalize(path.join(__dirname, '../node_modules/umbrellajs/umbrella.min.js')),
+    path.normalize(path.join(__dirname, 'static/vendor/umbrella.min.js')))
 
+  Db.create('diva')
   await setAccount(Config.make())
 })()
 
 /**
  * @param {Config} config
- * @returns {Promise<any>}
+ * @returns {Promise<*>}
  */
 function setAccount (config) {
   return new Promise((resolve, reject) => {

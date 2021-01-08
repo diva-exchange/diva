@@ -19,10 +19,14 @@
 
 'use strict'
 
+import BigNumber from 'bignumber.js'
 import { Db } from '../../db'
 import { UXMain } from '../uxMain'
 import { Culture } from '../culture'
-import { Order } from '../../trade/order'
+import { Order, ORDER_TYPE_BID, ORDER_TYPE_ASK } from '../../trade/order'
+import { Logger } from '@diva.exchange/diva-logger'
+
+const CHANNEL_ORDER = 'order'
 
 export class UXTrade extends UXMain {
   /**
@@ -87,14 +91,18 @@ export class UXTrade extends UXMain {
    */
   constructor (server) {
     super(server)
+
     this._db = Db.connect()
+
     this.identAccount = ''
     this.identContract = ''
+    this.precision = 0
+
     this._mapOrder = new Map()
 
     this.server.setFilterWebsocketLocal('order:getBook', (obj) => { return this._getOrderBook(obj) })
-    this.server.setFilterWebsocketLocal('order:add', (obj) => { return this._add(obj) })
-    this.server.setFilterWebsocketLocal('order:delete', (obj) => { return this._delete(obj) })
+    this.server.setFilterWebsocketLocal('order:add', (request, ws) => { return this._add(request, ws) })
+    this.server.setFilterWebsocketLocal('order:delete', (request, ws) => { return this._delete(request, ws) })
 
     this.server.setFilterWebsocketApi('order:getBook', (response) => { return this._setLocalOrderBook(response) })
     this.server.setFilterWebsocketApi('order:set', (response) => { return this._confirm(response) })
@@ -116,6 +124,14 @@ export class UXTrade extends UXMain {
     this.identContract = identContract
     this.identAccount = session.account
 
+    const r = this._db.firstAsObject('SELECT * FROM contract WHERE contract_ident = @contract_ident', {
+      contract_ident: this.identContract
+    })
+    if (!r) {
+      throw new Error('contract not found')
+    }
+    this.precision = r.precision
+
     switch (rq.path) {
       case '/trade':
         return rs.render('diva/trade/trade', {
@@ -130,23 +146,35 @@ export class UXTrade extends UXMain {
   }
 
   /**
-   * @param {Object} obj
+   * @param {Object} request
    * @return {Object}
    * @private
    */
-  _getOrderBook (obj) {
-    obj.contract = this.identContract
-    obj.account = this.identAccount
-    return obj
+  _getOrderBook (request) {
+    request.contract = this.identContract
+    request.account = this.identAccount
+    return request
   }
 
   /**
    * @param {UXTrade.ApiResponseGetOrderBook} response
-   * @return {UXTrade.OrderBook}
+   * @return {UXTrade.OrderBook|boolean}
    * @private
    */
   _setLocalOrderBook (response) {
+    if (response.error) {
+      Logger.warn('_setLocalOrderBook error').trace(response.error)
+      return false
+    }
     const orderBook = {}
+    orderBook.id = response.id
+    orderBook.channel = response.channel
+    orderBook.command = response.command
+    orderBook.account = this.identAccount
+    orderBook.contract = this.identContract
+    orderBook.books = {}
+    orderBook.books[ORDER_TYPE_BID] = orderBook.books[ORDER_TYPE_ASK] = []
+
     response.books.forEach((o) => {
       if (o.account === this.identAccount && o.contract === this.identContract) {
         const order = Order.make(o.account, o.contract, o.type)
@@ -154,27 +182,32 @@ export class UXTrade extends UXMain {
         orderBook.books[o.type] = order.getBook()
       }
     })
-    orderBook.contract = this.identContract
-    orderBook.account = this.identAccount
     return orderBook
   }
 
   /**
-   * @param {Object} obj
+   * @param {Object} request
+   * @param {WebSocket} ws
    * @return {Object}
    * @throws {Error}
    * @private
    */
-  _add (obj) {
-    if (!obj.type || !obj.price || !obj.amount || obj.price <= 0 || obj.amount <= 0) {
-      throw new Error('invalid trade:order:add object')
+  _add (request, ws) {
+    request.id = Number(request.id || 0)
+    request.price = (new BigNumber(request.price || 0)).toFixed(this.precision)
+    request.amount = (new BigNumber(request.amount || 0)).toFixed(this.precision)
+    if (!request.type || !request.price || !request.amount || request.price <= 0 || request.amount <= 0) {
+      throw new Error('invalid order:add request')
     }
-    const order = Order.make(this.identAccount, this.identContract, obj.type)
-    const orderBook = order.add(obj.price, obj.amount)
+    // echo
+    ws.send(JSON.stringify(request))
+
+    const order = Order.make(this.identAccount, this.identContract, request.type)
+    const orderBook = order.add(request.id, request.price, request.amount)
     this._mapOrder.set(orderBook.id, order)
 
     return {
-      channel: 'order',
+      channel: CHANNEL_ORDER,
       command: 'set',
       id: orderBook.id,
       key: 'ob' + orderBook.contract + 't' + orderBook.type,
@@ -183,22 +216,26 @@ export class UXTrade extends UXMain {
   }
 
   /**
-   * @param {Object} obj
+   * @param {Object} request
+   * @param {WebSocket} ws
    * @return {Object}
    * @throws {Error}
    * @private
    */
-  _delete (obj) {
-    if (!obj.type || !obj.msTimestamp) {
-      throw new Error('invalid trade:delete object')
+  _delete (request, ws) {
+    request.id = Number(request.id || 0)
+    if (!request.type || !request.id) {
+      throw new Error('invalid order:delete request')
     }
+    // echo
+    ws.send(JSON.stringify(request))
 
-    const order = Order.make(this.identAccount, this.identContract, obj.type)
-    const orderBook = order.delete(obj.msTimestamp)
+    const order = Order.make(this.identAccount, this.identContract, request.type)
+    const orderBook = order.delete(request.id)
     this._mapOrder.set(orderBook.id, order)
 
     return {
-      channel: 'order',
+      channel: CHANNEL_ORDER,
       command: 'set',
       id: orderBook.id,
       key: 'ob' + orderBook.contract + 't' + orderBook.type,
@@ -212,13 +249,14 @@ export class UXTrade extends UXMain {
    * @private
    */
   _confirm (response) {
-    const order = this._mapOrder.get(response.id)
-    if (order && order.confirm(response.id)) {
-      this._mapOrder.delete(response.id)
+    const id = Number(response.id)
+    const order = this._mapOrder.get(id)
+    if (order && order.confirm(id)) {
+      this._mapOrder.delete(id)
       return {
-        channel: 'order',
+        channel: CHANNEL_ORDER,
         command: 'confirm',
-        id: response.id,
+        id: id,
         account: order.account,
         contract: order.contract,
         type: order.type

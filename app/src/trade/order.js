@@ -19,8 +19,6 @@
 
 'use strict'
 
-import BigNumber from 'bignumber.js'
-
 import { Db } from '../db'
 import { Logger } from '@diva.exchange/diva-logger'
 import zlib from 'zlib'
@@ -85,14 +83,6 @@ export class Order {
 
     this._db = Db.connect()
 
-    const r = this._db.firstAsObject('SELECT * FROM contract WHERE contract_ident = @contract_ident', {
-      contract_ident: this.contract
-    })
-    if (!r) {
-      throw new Error('contract not found')
-    }
-    this.precision = r.precision
-
     this._arrayOrderAdd = []
     this._arrayOrderDelete = []
   }
@@ -146,15 +136,13 @@ export class Order {
   }
 
   /**
+   * @param {number} msTimestamp
    * @param {string} price
    * @param {string} amount
    * @return {Order.Book}
    * @private
    */
-  add (price, amount) {
-    const msTimestamp = Date.now()
-    price = (new BigNumber(price)).toFixed(this.precision)
-    amount = (new BigNumber(amount)).toFixed(this.precision)
+  add (msTimestamp, price, amount) {
     this._db.insert(
       `INSERT INTO orderbook (account_ident, contract_ident, timestamp_ms, status, type, price, amount)
        VALUES (@a, @c, @ts, @s, @t, @pr, @am)`, {
@@ -314,5 +302,8 @@ export class Order {
 module.exports = {
   Order,
   ORDER_TYPE_BID,
-  ORDER_TYPE_ASK
+  ORDER_TYPE_ASK,
+  ORDER_STATUS_PENDING_ADDITION,
+  ORDER_STATUS_PENDING_DELETION,
+  ORDER_STATUS_CONFIRMED
 }

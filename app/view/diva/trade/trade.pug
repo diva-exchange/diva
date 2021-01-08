@@ -58,11 +58,6 @@ block content
                       title=Culture.t('place')
                       data-culture-title=Culture.t('place'))
 
-          div(class='panel-block is-relative')
-            table(id='orderbook' class='table is-fullwidth orderbook')
-              thead
-                tr
-                  th
                     button(class='button is-small'
                       name='delete-all'
                       data-type='B'
@@ -70,26 +65,26 @@ block content
                       data-culture-title=Culture.t('delete-all'))
                       span(class='icon')
                         i(class='fas fa-trash')
-                  th(class='has-text-right' data-culture-text='Amount')= Culture.t('Amount')
-                  th(class='has-text-success has-text-right' data-culture-text='Price')= Culture.t('Price')
-                  th(class='has-text-danger' data-culture-text='Price')= Culture.t('Price')
-                  th(data-culture-text='Amount')= Culture.t('Amount')
-                  th
-                    button(class='button is-small'
-                      name='delete-all'
-                      data-type='A'
-                      title=Culture.t('delete-all')
-                      data-culture-title=Culture.t('delete-all'))
-                      span(class='icon')
-                        i(class='fas fa-trash')
-              tbody
-                tr
-                  td
-                  td
-                  td
-                  td
-                  td
-                  td
+
+          div(class='panel-block is-relative orderbook')
+            div(class='columns is-flex is-flex-grow-1')
+              div(class='column is-half orderbook-bid')
+                div(class='columns is-mobile')
+                  div(class='column amount')
+                    p(data-culture-text='Amount')= Culture.t('Amount')
+                  div(class='column price')
+                    p(data-culture-text='Price')= Culture.t('Price')
+                div(class='columns is-mobile')
+                  div(class='column is-full' id='orderbook-bid')
+
+              div(class='column is-half orderbook-ask')
+                div(class='columns is-mobile')
+                  div(class='column price')
+                    p(data-culture-text='Price')= Culture.t('Price')
+                  div(class='column amount')
+                    p(data-culture-text='Amount')= Culture.t('Amount')
+                div(class='columns is-mobile')
+                  div(class='column is-full' id='orderbook-ask')
 
       div(class='column')
         article(class='panel')

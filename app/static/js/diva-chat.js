@@ -19,23 +19,27 @@
 
 'use strict'
 
+// @see https://umbrellajs.com
+/* global u */
 
-// Umbrella, @see https://umbrellajs.com
-var _u = u || false
-// fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-var _fetch = fetch || false
-// WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
-var _WebSocket = WebSocket || false
+// @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+/* global WebSocket */
 
-if (!_u || !_fetch || !_WebSocket) {
+// @see @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+/* global fetch */
+
+if (!u || !fetch || !WebSocket) {
   throw new Error('invalid state')
 }
 
 class UiChat {
+  /**
+   *
+   */
   static make () {
     UiChat._attachEvents()
     // connect to local websocket
-    UiChat.websocket = new _WebSocket('ws://' + document.location.host)
+    UiChat.websocket = new WebSocket('ws://' + document.location.host)
     // Connection opened
     UiChat.websocket.addEventListener('open', () => {
       UiChat.websocket.send(JSON.stringify({
@@ -58,10 +62,10 @@ class UiChat {
   }
 
   static _attachEvents () {
-    _u('#chat_message').handle('keyup', (e) => {
+    u('#chat_message').handle('keyup', (e) => {
       if (e.keyCode === 13) {
-        const account = _u('ul.chat_accounts_ul li.current_chat').text().trim()
-        const messageToSend = _u('#chat_message').first().value.trim()
+        const account = u('ul.chat_accounts_ul li.current_chat').text().trim()
+        const messageToSend = u('#chat_message').first().value.trim()
         if (account && messageToSend) {
           UiChat.websocket.send(JSON.stringify({
             channel: 'chat',
@@ -72,14 +76,14 @@ class UiChat {
           UiChat._setHtmlMessages({
             message: messageToSend
           }, 'send')
-          _u('#chat_message').first().value = ''
+          u('#chat_message').first().value = ''
         }
       }
     })
 
-    _u('#updateProfile').on('click', async () => {
-      const account = _u('#profile_account_ident').text()
-      const avatar = _u('#chatIdentAvatar').first().value
+    u('#updateProfile').on('click', async () => {
+      const account = u('#profile_account_ident').text()
+      const avatar = u('#chatIdentAvatar').first().value
       if (account && avatar) {
         await UiChat._postJson('/social/updateAvatar', {
           profileIdent: account.trim(),
@@ -91,9 +95,9 @@ class UiChat {
 
   static _setHtmlMessages (objData, direction) {
     if (direction === 'send') {
-      _u('#chat_messages ul').append(`<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`)
+      u('#chat_messages ul').append(`<li class="my_message_li"><div class="my_message_div">${objData.message}</div></li>`)
     } else {
-      _u('#chat_messages ul').append(`<li class="incoming_message_li"><div class="my_message_div incoming_message_div">${objData.message}</div></li>`)
+      u('#chat_messages ul').append(`<li class="incoming_message_li"><div class="my_message_div incoming_message_div">${objData.message}</div></li>`)
     }
     const chatMessages = document.getElementById('chat_messages')
     chatMessages.scrollTop = chatMessages.scrollHeight
@@ -106,7 +110,7 @@ class UiChat {
     * @private
     */
   static _postJson (uri, objBody) {
-    return _fetch(uri, {
+    return fetch(uri, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

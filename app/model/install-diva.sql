@@ -22,7 +22,7 @@ CREATE TABLE config (
 
 INSERT INTO config(key, value) VALUES
     ('api', '172.29.101.30:19012'),
-    ('api.token', '519698e27cbdb0f993dc362f7c2aa93f15f08d57b45e453170c46a8cf8c81af4'),
+    ('api.token', '02078b8991497509ed9aaad0b7d83bd8e7d93ecdc504a73f6b43e60ce8048766'),
 
     ('i2p.webconsole.scraper.url', 'http://172.22.3.2:7070/?page=i2p_tunnels'),
     ('i2p.http.proxy.development', '172.22.3.2:4444'),

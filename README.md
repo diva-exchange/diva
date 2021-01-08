@@ -102,21 +102,8 @@ divax/i2p:latest          "/home/i2pd/entrypoi…"   24 seconds ago      Up 23 s
 
 ```
 
-Take a close look at your running NodeJS processes using the process manager pm2:
-
-```
-diva $ pm2 status
-┌─────┬─────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
-│ id  │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
-├─────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0   │ diva        │ default     │ 0.1.0   │ fork    │ 7717     │ 15m    │ 0    │ online    │ 0.9%     │ 85.3mb   │ diva     │ disabled │
-│ 1   │ diva.api    │ default     │ 0.1.0   │ fork    │ 7724     │ 15m    │ 0    │ online    │ 0.5%     │ 86.0mb   │ diva     │ disabled │
-└─────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
-```
-
-Hence there should be two services available locally: the application DIVA and the API.
-- DIVA application now runs on on [http://localhost:3911](). Open in up in a browser and create your *local* account. Remember: using this setup, nothing related to DIVA will ever leave your local box.
-- The API is boring but super important. You can access it using your browser, http://localhost:3912.
+DIVA is available locally:
+running on on [http://localhost:3911](). Open in up in a browser and create your *local* account. Remember: using this setup, nothing related to DIVA will ever leave your local box.
 
 Also, test I2PD it with your browser: [http://localhost:7070]() - you should see the I2Pd webconsole. I2P is up and running.
 

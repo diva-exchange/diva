@@ -42,6 +42,3 @@ if command_exists docker; then
 else
   error "Install Docker and Docker Compose before you install diva."
 fi
-
-running "PM2 process manager is required, installing"
-(! command_exists pm2) && sudo npm i -g pm2

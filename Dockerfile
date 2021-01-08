@@ -30,7 +30,6 @@ RUN rm -R /home/node/app/test \
     python3 \
   && cd /home/node/ \
   && npm install node-gyp -g \
-  && npm install pm2 -g \
   && apk --no-cache add \
     sqlite \
 # install the application

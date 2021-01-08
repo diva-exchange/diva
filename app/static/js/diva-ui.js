@@ -19,12 +19,13 @@
 
 'use strict'
 
-// Umbrella, @see https://umbrellajs.com
-var _u = u || false
-// WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
-var _WebSocket = WebSocket || false
+// @see https://umbrellajs.com
+/* global u */
 
-if (!_u || !_WebSocket) {
+// @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+/* global WebSocket */
+
+if (!u || !WebSocket) {
   throw new Error('invalid state')
 }
 
@@ -35,12 +36,12 @@ class Ui {
   static make () {
     Ui._attachEvents()
 
-    _u('#modal-notification').removeClass('is-active')
-    _u('#modal-notification .message-header p').text('')
-    _u('#modal-notification .message-body p').text('')
+    u('#modal-notification').removeClass('is-active')
+    u('#modal-notification .message-header p').text('')
+    u('#modal-notification .message-body p').text('')
 
     // connect to local websocket
-    Ui.websocket = new _WebSocket('ws://' + document.location.host)
+    Ui.websocket = new WebSocket('ws://' + document.location.host)
 
     // Connection opened
     Ui.websocket.addEventListener('open', () => {
@@ -55,9 +56,9 @@ class Ui {
       let block = {}
       try {
         block = JSON.parse(event.data).block
-        _u('#blockheight').text(block.blockV1.payload.height || '')
+        u('#blockheight').text(block.blockV1.payload.height || '')
         const datetime = block.blockV1.payload.createdTime || ''
-        _u('#blocktime').data('culture-datetime', datetime).text(datetime)
+        u('#blocktime').data('culture-datetime', datetime).text(datetime)
       } catch (error) {
         console.error(error)
       }
@@ -101,7 +102,7 @@ class Ui {
     }
     element.async = true
     element.src = urlScript
-    _u('body').append(element)
+    u('body').append(element)
   }
 
   /**
@@ -124,20 +125,20 @@ class Ui {
    * @param body {string}
    */
   static message (header, body) {
-    _u('#modal-notification .message-header p').text(header)
-    _u('#modal-notification .message-body p').text(body)
-    _u('#modal-notification').addClass('is-active')
+    u('#modal-notification .message-header p').text(header)
+    u('#modal-notification .message-body p').text(body)
+    u('#modal-notification').addClass('is-active')
   }
 
   /**
    * @private
    */
   static _attachEvents () {
-    _u('#modal-notification .modal-background, #modal-notification button.delete').off('click')
+    u('#modal-notification .modal-background, #modal-notification button.delete').off('click')
       .handle('click', () => {
-        _u('#modal-notification').removeClass('is-active')
-        _u('#modal-notification .message-header p').text('')
-        _u('#modal-notification .message-body p').text('')
+        u('#modal-notification').removeClass('is-active')
+        u('#modal-notification .message-header p').text('')
+        u('#modal-notification .message-body p').text('')
       })
   }
 }

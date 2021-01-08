@@ -85,7 +85,7 @@ section#app {
   background-color: lightpink;
 }
 
-#orderbook button[name="delete-all"] .icon {
+button[name="delete-all"] .icon {
   color: red;
 }
 
@@ -93,25 +93,48 @@ button.is-loading .icon {
   visibility: hidden;
 }
 
-#orderbook th,
-#orderbook td {
+.orderbook {
+  .pending-addition {
+    background-color: lightsteelblue;
+
+    button {
+      visibility: hidden;
+    }
+  }
+  .pending-deletion {
+    background-color: lightyellow;
+
+    button {
+      visibility: hidden;
+    }
+  }
+}
+
+.orderbook-bid .columns,
+.orderbook-ask .columns {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.orderbook-bid .column,
+.orderbook-ask .column {
   overflow: hidden;
-}
-
-#orderbook th:nth-of-type(1),
-#orderbook th:nth-of-type(6),
-#orderbook td:nth-of-type(1),
-#orderbook td:nth-of-type(6) {
-  width: 38px;
-}
-
-#orderbook td,
-table.market td {
-  border: 0;
+  padding-top: 0;
   padding-bottom: 0;
 }
 
-#orderbook tr.timestamp td,
+.orderbook-bid .column {
+  @extend .has-text-right;
+}
+
+.orderbook-ask .column {
+  @extend .has-text-left;
+}
+
+#orderbook-ask .columns {
+  @extend .is-flex-direction-row-reverse;
+}
+
 table.market tr.timestamp td {
   border-bottom: 1px solid #dbdbdb;
   color: #7a7a7a;

@@ -19,18 +19,22 @@
 
 'use strict'
 
-// Umbrella, @see https://umbrellajs.com
-var _u = u || false
-// Generic UI class, @see ./diva-ui.js
-var _Ui = Ui || false
-// Generic UiCulture class, @see ./diva-ui.js
-var _UiCulture = UiCulture || false
-// WebSocket client API, @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
-var _WebSocket = WebSocket || false
-// fetch API, @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-var _fetch = fetch || false
+// @see https://umbrellajs.com
+/* global u */
 
-if (!_u || !_Ui || !_UiCulture || !_WebSocket || !_fetch) {
+// @see ./diva-ui.js
+/* global Ui */
+
+// @see ./diva-culture.js
+/* global UiCulture */
+
+// @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+/* global WebSocket */
+
+// @see @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+/* global fetch */
+
+if (!u || !Ui || !UiCulture || !WebSocket || !fetch) {
   throw new Error('invalid state')
 }
 
@@ -40,82 +44,159 @@ class UiTrade {
    * @public
    */
   static make () {
+    UiTrade.TYPE_BID = 'B'
+    UiTrade.TYPE_ASK = 'A'
+
     UiTrade.CHANNEL_ORDER = 'order'
+    UiTrade.COMMAND_SUBSCRIBE = 'subscribe'
+    UiTrade.COMMAND_GETBOOK = 'getBook'
+    UiTrade.COMMAND_ADD = 'add'
+    UiTrade.COMMAND_DELETE = 'delete'
+    UiTrade.COMMAND_CONFIRM = 'confirm'
+
+    UiTrade.CLASS_PENDING_ADDITION = 'pending-addition'
+    UiTrade.CLASS_PENDING_DELETION = 'pending-deletion'
+
+    UiTrade.bid = []
+    UiTrade.ask = []
 
     UiTrade._attachEvents()
 
     // connect to local websocket
-    UiTrade.websocket = new _WebSocket((document.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+    UiTrade.websocket = new WebSocket((document.location.protocol === 'https:' ? 'wss://' : 'ws://') +
       document.location.host)
-    UiTrade.identContract = _u('select#contract').first().value
+    UiTrade.identContract = u('select#contract').first().value
 
     // Connection opened
     UiTrade.websocket.addEventListener('open', () => {
       UiTrade.websocket.send(JSON.stringify({
         channel: UiTrade.CHANNEL_ORDER,
-        command: 'subscribe'
+        command: UiTrade.COMMAND_SUBSCRIBE
       }))
 
       UiTrade.websocket.send(JSON.stringify({
         channel: UiTrade.CHANNEL_ORDER,
-        command: 'getBook'
+        command: UiTrade.COMMAND_GETBOOK
       }))
     })
 
     // Listen for data
-    UiTrade.websocket.addEventListener('message', async () => {
+    UiTrade.websocket.addEventListener('message', async (event) => {
       try {
-        await _UiCulture.translate()
+        const response = JSON.parse(event.data)
+        if (response.error) {
+          return console.error(response.error)
+        }
+
+        await UiTrade._processResponse (response)
+
       } catch (error) {
-        window.location.replace('/logout')
+        console.error(error)
       }
     })
+  }
+
+  /**
+   * @param {Object} response
+   * @returns {Promise<void>}
+   * @private
+   */
+  static async _processResponse (response) {
+    let book
+    let i
+    const ident = (response.channel || '') + ':' + (response.command || '')
+
+    switch (ident) {
+      case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_GETBOOK:
+        UiTrade.bid = response.books.B
+        UiTrade.bid.length && UiTrade._setHtmlBook(UiTrade.TYPE_BID)
+
+        UiTrade.ask = response.books.A
+        UiTrade.ask.length && UiTrade._setHtmlBook(UiTrade.TYPE_ASK)
+        break
+      case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_ADD:
+        book = response.type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
+        book.push({
+          timestamp_ms: response.id,
+          price: response.price,
+          amount: response.amount,
+          statusUX: UiTrade.CLASS_PENDING_ADDITION
+        })
+        book.sort((a, b) => response.type === UiTrade.TYPE_BID ? b.price - a.price : a.price - b.price)
+
+        UiTrade._setHtmlBook(response.type)
+        await UiCulture.translate()
+        break
+      case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_DELETE:
+        book = response.type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
+        i = book.findIndex((o) => o.timestamp_ms === response.id)
+        i > -1 && (book[i].statusUX = UiTrade.CLASS_PENDING_DELETION )
+        UiTrade._setHtmlBook(response.type)
+        break
+      case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_CONFIRM:
+        book = response.type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
+        i = book.findIndex((o) => o.timestamp_ms === response.id)
+        console.log(i)
+        console.log(book)
+        if (i < 0) {
+          return
+        }
+        if (u(`#${response.type}${response.id}`).hasClass(UiTrade.CLASS_PENDING_ADDITION)) {
+          delete book[i].statusUX
+        } else if (u(`#${response.type}${response.id}`).hasClass(UiTrade.CLASS_PENDING_DELETION)) {
+          book.splice(i, 1)
+        }
+        UiTrade._setHtmlBook(response.type)
+        break
+    }
+
+    await UiCulture.translate()
   }
 
   /**
    * @private
    */
   static _attachEvents () {
-    _u('#place-order').text(_u('#order .tabs li.is-active a').text())
-    _u('#order button, #orderbook button').removeClass('is-loading is-disabled')
+    u('#place-order').text(u('#order .tabs li.is-active a').text())
+    u('#order button, #orderbook button').removeClass('is-loading is-disabled')
 
     // contract
-    _u('#contract').off('change').handle('change', (e) => {
-      _u(e.target).parent().addClass('is-loading is-disabled')
-      _u('#price').first().value = ''
-      _u('#amount').first().value = ''
+    u('#contract').off('change').handle('change', (e) => {
+      u(e.target).parent().addClass('is-loading is-disabled')
+      u('#price').first().value = ''
+      u('#amount').first().value = ''
       UiTrade._changeContract(e.target.value).then(() => {
-        setTimeout(() => { _u(e.target).parent().removeClass('is-loading is-disabled') }, 200)
+        setTimeout(() => { u(e.target).parent().removeClass('is-loading is-disabled') }, 200)
       })
     })
 
-    // order action
-    _u('#order .tabs li').off('click').handle('click', (e) => {
-      _u(e.currentTarget).siblings().removeClass('is-active')
-      _u(e.currentTarget).addClass('is-active')
-      _u('#order').data('type', _u(e.currentTarget).data('type'))
-      _u('#place-order').text(_u('#order .tabs li.is-active a').text())
+    // order type action (tabs)
+    u('#order .tabs li').off('click').handle('click', (e) => {
+      u(e.currentTarget).siblings().removeClass('is-active')
+      u(e.currentTarget).addClass('is-active')
+      u('#order').data('type', u(e.currentTarget).data('type'))
+      u('#place-order').text(u('#order .tabs li.is-active a').text())
     })
 
-    // buy/sell action
-    _u('#place-order').off('click').handle('click', () => {
-      _u('#place-order').addClass('is-loading is-disabled')
-      UiTrade._order(_u('#order').data('type'))
-      _u('#place-order').removeClass('is-loading is-disabled')
+    // buy/sell action (button)
+    u('#place-order').off('click').handle('click', () => {
+      u('#place-order').addClass('is-loading is-disabled')
+      UiTrade._order(u('#order').data('type'))
+      setTimeout(() => u('#place-order').removeClass('is-loading is-disabled'), 200)
     })
 
-    // delete action
-    _u('#orderbook button[name=delete]').off('click').handle('click', (e) => {
+    // delete action (button)
+    u('.orderbook button[name=delete]').off('click').handle('click', (e) => {
       e.stopPropagation()
-      _u(e.currentTarget).addClass('is-loading is-disabled')
-      UiTrade._delete(_u(e.currentTarget).data('type'), _u(e.currentTarget).data('timestamp_ms'))
+      u(e.currentTarget).addClass('is-loading is-disabled')
+      UiTrade._delete(u(e.currentTarget).data('type'), u(e.currentTarget).data('timestamp_ms'))
     })
 
-    // delete-all action
-    _u('#orderbook button[name=delete-all]').off('click').handle('click', (e) => {
+    // delete-all action (button)
+    u('.orderbook button[name=delete-all]').off('click').handle('click', (e) => {
       e.stopPropagation()
-      _u(e.currentTarget).addClass('is-loading is-disabled')
-      UiTrade._delete(_u(e.currentTarget).data('type'), 0)
+      u(e.currentTarget).addClass('is-loading is-disabled')
+      UiTrade._delete(u(e.currentTarget).data('type'), 0)
     })
   }
 
@@ -137,28 +218,36 @@ class UiTrade {
    * @private
    */
   static _order (type) {
+    const timestamp_ms = Date.now()
+    const price = u('#price').first().value
+    const amount = u('#amount').first().value
+    if (Number(price) <= 0 || Number(amount) <= 0) {
+      return
+    }
+
     const json = {
+      id: timestamp_ms,
       channel: UiTrade.CHANNEL_ORDER,
-      command: 'add',
+      command: UiTrade.COMMAND_ADD,
       type: type,
-      price: _u('#price').first().value,
-      amount: _u('#amount').first().value
+      price: price,
+      amount: amount
     }
 
     UiTrade.websocket.send(JSON.stringify(json))
   }
 
   /**
-   * @param {number} msTimestamp
+   * @param {number} id
    * @param {string} type
    * @private
    */
-  static _delete (type, msTimestamp) {
+  static _delete (type, id) {
     const json = {
+      id: id,
       channel: UiTrade.CHANNEL_ORDER,
-      command: 'delete',
-      type: type,
-      msTimestamp: msTimestamp
+      command: UiTrade.COMMAND_DELETE,
+      type: type
     }
 
     UiTrade.websocket.send(JSON.stringify(json))
@@ -172,7 +261,7 @@ class UiTrade {
    */
   static async _handleResponse (res, type = undefined) {
     if (!res.ok) {
-      res.text().then((html) => _Ui.message('ERROR', html))
+      res.text().then((html) => Ui.message('ERROR', html))
     }
   }
 
@@ -183,7 +272,7 @@ class UiTrade {
    * @private
    */
   static _postJson (uri, objBody) {
-    return _fetch(uri, {
+    return fetch(uri, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -194,55 +283,37 @@ class UiTrade {
   }
 
   /**
-   * @param {Object} objData
+   * @param {string} type - B (Bid) or A (Ask)
    * @private
    */
-  static _setHtmlOrderBook (objData) {
+  static _setHtmlBook (type) {
     let html = ''
-    let rowBid = []
-    let rowAsk = []
-    do {
-      rowBid = objData.bid.shift()
-      rowAsk = objData.ask.shift()
-      if (rowBid || rowAsk) {
-        let buttonDeleteBid = ''
-        if (rowBid) {
-          buttonDeleteBid = `
-            <button class="button is-small"
-              name="delete" data-timestamp_ms="${rowBid[2]}" data-type="B">
-              <span class="icon is-medium"><i class="fas fa-lg fa-times"></i></span>
-            </button>`
-        }
-        let buttonDeleteAsk = ''
-        if (rowAsk) {
-          buttonDeleteAsk = `
-            <button class="button is-small"
-              name="delete" data-timestamp_ms="${rowAsk[2]}" data-type="A">
-              <span class="icon is-medium"><i class="fas fa-lg fa-times"></i></span>
-            </button>`
-        }
-        html += `
-          <tr>
-            <td>${buttonDeleteBid}</td>
-            <td class="has-text-right amount">${rowBid ? rowBid[1] : ''}</td>
-            <td class="has-text-right price">${rowBid ? rowBid[0] : ''}</td>
-            <td class="price">${rowAsk ? rowAsk[0] : ''}</td>
-            <td class="amount">${rowAsk ? rowAsk[1] : ''}</td>
-            <td>${buttonDeleteAsk}</td>
-          </tr>
-          <tr class="timestamp">
-            <td></td>
-            <td colspan="2" class="has-text-right" data-culture-datetime="${rowBid ? rowBid[2] : ''}">
-                ${rowBid ? rowBid[2] : ''}
-            </td>
-            <td colspan="2" data-culture-datetime="${rowAsk ? rowAsk[2] : ''}">
-                ${rowAsk ? rowAsk[2] : ''}
-            </td>
-            <td></td>
-          </tr>`
-      }
-    } while (rowBid || rowAsk)
-    _u('#orderbook tbody').html(html)
+
+    const a = type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
+
+    a.forEach((row) => {
+      html += `
+        <div id="${type}${row.timestamp_ms}" class="columns is-mobile ${row.statusUX || ''}">
+          <div class="column amount">
+            <p>${row.amount}</p>
+          </div>
+          <div class="column price">
+            <p>${row.price}</p>
+          </div>
+        </div>
+        <div id="ts${type}${row.timestamp_ms}" class="columns is-mobile ${row.statusUX || ''}">
+          <div class="column is-narrow">
+            <button class="delete is-small"
+              name="delete" data-timestamp_ms="${row.timestamp_ms}" data-type="${type}">
+            </button>
+          </div>
+          <div class="column timestamp" data-culture-datetime="${row.timestamp_ms}">
+            <p>${row.timestamp_ms}</p>              
+          </div>
+        </div>`
+    })
+
+    u(`#orderbook-${type === UiTrade.TYPE_BID ? 'bid' : 'ask'}`).html(html)
 
     UiTrade._attachEvents()
   }
@@ -277,7 +348,7 @@ class UiTrade {
       }
     } while (rowBid || rowAsk)
 
-    _u('#market').html(html)
+    u('#market').html(html)
   }
 }
 
