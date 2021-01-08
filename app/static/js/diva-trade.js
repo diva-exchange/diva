@@ -301,7 +301,7 @@ class UiTrade {
 
     a.forEach((row) => {
       html += `
-        <div id="${type}${row.timestamp_ms}" class="columns is-mobile ${row.statusUX || ''}">
+        <div id="${type}${row.timestamp_ms}" class="columns price amount is-mobile ${row.statusUX || ''}">
           <div class="column amount">
             <p>${row.amount}</p>
           </div>
@@ -309,7 +309,7 @@ class UiTrade {
             <p>${row.price}</p>
           </div>
         </div>
-        <div id="ts${type}${row.timestamp_ms}" class="columns is-mobile ${row.statusUX || ''}">
+        <div id="ts${type}${row.timestamp_ms}" class="columns timestamp is-mobile ${row.statusUX || ''}">
           <div class="column is-narrow">
             <button class="delete is-small"
               name="delete" data-timestamp_ms="${row.timestamp_ms}" data-type="${type}">

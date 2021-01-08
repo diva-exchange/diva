@@ -94,6 +94,10 @@ button.is-loading .icon {
 }
 
 .orderbook {
+  .columns.head {
+    font-weight: bold;
+  }
+
   .pending-addition {
     background-color: lightsteelblue;
 
@@ -107,6 +111,13 @@ button.is-loading .icon {
     button {
       visibility: hidden;
     }
+  }
+
+  .columns.timestamp {
+    border-bottom: 1px solid lightgrey;
+    color: darkgrey;
+    font-size: small;
+    margin-bottom: 0.3rem;
   }
 }
 
@@ -126,9 +137,15 @@ button.is-loading .icon {
 .orderbook-bid .column {
   @extend .has-text-right;
 }
+.orderbook-bid .column.price {
+  color: green;
+}
 
 .orderbook-ask .column {
   @extend .has-text-left;
+}
+.orderbook-ask .column.price {
+  color: deeppink;
 }
 
 #orderbook-ask .columns {
