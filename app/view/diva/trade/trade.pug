@@ -31,7 +31,7 @@ block content
               div(class='order-form')
                 div(class='field has-addons')
                   p(class='control')
-                    button(class='button is-static' data-culture-text='Amount')= Culture.t('Amount')
+                    a(class='button is-static' data-culture-text='Amount')= Culture.t('Amount')
                   div(class='control')
                     input(id='amount'
                       class='input'
@@ -42,7 +42,7 @@ block content
 
                 div(class='field has-addons')
                   p(class='control')
-                    button(class='button is-static' data-culture-text='Price')= Culture.t('Price')
+                    a(class='button is-static' data-culture-text='Price')= Culture.t('Price')
                   div(class='control')
                     input(id='price'
                       class='input'
@@ -58,9 +58,8 @@ block content
                       title=Culture.t('place')
                       data-culture-title=Culture.t('place'))
 
-                    button(class='button is-small'
-                      name='delete-all'
-                      data-type='B'
+                    button(id='delete-all-order'
+                      class='button is-pulled-right'
                       title=Culture.t('delete-all')
                       data-culture-title=Culture.t('delete-all'))
                       span(class='icon')

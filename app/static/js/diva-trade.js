@@ -136,8 +136,6 @@ class UiTrade {
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_CONFIRM:
         book = response.type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
         i = book.findIndex((o) => o.timestamp_ms === response.id)
-        console.log(i)
-        console.log(book)
         if (i < 0) {
           return
         }
@@ -179,10 +177,10 @@ class UiTrade {
     })
 
     // buy/sell action (button)
-    u('#place-order').off('click').handle('click', () => {
-      u('#place-order').addClass('is-loading is-disabled')
+    u('button#place-order').off('click').handle('click', (e) => {
+      u(e.currentTarget).addClass('is-loading is-disabled')
       UiTrade._order(u('#order').data('type'))
-      setTimeout(() => u('#place-order').removeClass('is-loading is-disabled'), 200)
+      setTimeout(() => u(e.currentTarget).removeClass('is-loading is-disabled'), 200)
     })
 
     // delete action (button)
@@ -193,10 +191,11 @@ class UiTrade {
     })
 
     // delete-all action (button)
-    u('.orderbook button[name=delete-all]').off('click').handle('click', (e) => {
+    u('button#delete-all-order').off('click').handle('click', (e) => {
       e.stopPropagation()
       u(e.currentTarget).addClass('is-loading is-disabled')
-      UiTrade._delete(u(e.currentTarget).data('type'), 0)
+      UiTrade._deleteAll(u('#order').data('type'))
+      setTimeout(() => u(e.currentTarget).removeClass('is-loading is-disabled'), 200)
     })
   }
 
@@ -251,6 +250,15 @@ class UiTrade {
     }
 
     UiTrade.websocket.send(JSON.stringify(json))
+  }
+
+  /**
+   * @param {string} type
+   * @private
+   */
+  static _deleteAll (type) {
+    const book = type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
+    book.forEach(o => { !o.statusUX && UiTrade._delete(type, o.timestamp_ms) })
   }
 
   /**
