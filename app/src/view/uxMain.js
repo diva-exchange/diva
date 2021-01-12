@@ -19,8 +19,9 @@
 
 'use strict'
 
-import { KeyStore } from '../auth/key-store'
 import { Config } from '../config/config'
+import { KeyStore } from '../auth/key-store'
+import { Logger } from '@diva.exchange/diva-logger'
 import { UXAuth } from './auth/uxAuth'
 
 export class UXMain {
@@ -42,6 +43,8 @@ export class UXMain {
   constructor (httpServer) {
     this.server = httpServer
     this.config = Config.make()
+
+    this.server.setFilterWebsocketApi('block:new', (response) => { return UXMain._onBlock(response) })
   }
 
   /**
@@ -56,6 +59,20 @@ export class UXMain {
       UXAuth.login(rq, rs)
     }
     KeyStore.make().get(rq.session.account + ':keyPrivate')
+  }
+
+  /**
+   * @param {Object} response
+   * @return {Object|false}
+   * @private
+   */
+  static _onBlock (response) {
+    try {
+      return response
+    } catch (error) {
+      Logger.warn('_onBlock error').trace(error)
+      return false
+    }
   }
 }
 

@@ -19,12 +19,12 @@
 
 'use strict'
 
-import BigNumber from 'bignumber.js'
+import Big from 'big.js'
 import { Db } from '../../db'
-import { UXMain } from '../uxMain'
 import { Culture } from '../culture'
-import { Order, ORDER_TYPE_BID, ORDER_TYPE_ASK } from '../../trade/order'
 import { Logger } from '@diva.exchange/diva-logger'
+import { Order, ORDER_TYPE_BID, ORDER_TYPE_ASK } from '../../trade/order'
+import { UXMain } from '../uxMain'
 
 const CHANNEL_ORDER = 'order'
 
@@ -34,15 +34,7 @@ export class UXTrade extends UXMain {
    * @property {string} id
    * @property {string} channel
    * @property {string} command
-   * @property {?Array<UXTrade.ApiResponseBook>} books
-   * @property {?string} error
-   */
-
-  /**
-   * @typedef {Object} UXTrade.ApiResponseSetOrder
-   * @property {string} id
-   * @property {string} channel
-   * @property {string} command
+   * @property {?Array<UXTrade.ApiResponseBook>} book
    * @property {?string} error
    */
 
@@ -50,28 +42,8 @@ export class UXTrade extends UXMain {
    * @typedef {Object} UXTrade.ApiResponseBook
    * @property {string} account
    * @property {string} contract
-   * @property {string} type - B (Bid) or A (Ask)
-   * @property {string} packedBook
-   */
-
-  /**
-   * @typedef {Object} UXTrade.OrderBook
-   * @property {string} account
-   * @property {string} contract
-   * @property {UXTrade.OrderBookEntry} books
-   */
-
-  /**
-   * @typedef {Object} UXTrade.OrderBookEntry
-   * @property {Array<UXTrade.Entry>} A - Ask
-   * @property {Array<UXTrade.Entry>} B - Bid
-   */
-
-  /**
-   * @typedef {Object} UXTrade.Entry
-   * @property {number} timestamp_ms
-   * @property {string} price
-   * @property {string} amount
+   * @property {Array<Order.Entry>} B - Bid
+   * @property {Array<Order.Entry>} A - Ask
    */
 
   /**
@@ -158,7 +130,7 @@ export class UXTrade extends UXMain {
 
   /**
    * @param {UXTrade.ApiResponseGetOrderBook} response
-   * @return {UXTrade.OrderBook|boolean}
+   * @return {UXTrade.ApiResponseGetOrderBook|boolean}
    * @private
    */
   _setLocalOrderBook (response) {
@@ -166,23 +138,12 @@ export class UXTrade extends UXMain {
       Logger.warn('_setLocalOrderBook error').trace(response.error)
       return false
     }
-    const orderBook = {}
-    orderBook.id = response.id
-    orderBook.channel = response.channel
-    orderBook.command = response.command
-    orderBook.account = this.identAccount
-    orderBook.contract = this.identContract
-    orderBook.books = {}
-    orderBook.books[ORDER_TYPE_BID] = orderBook.books[ORDER_TYPE_ASK] = []
+    if (response.book.account === this.identAccount && response.book.contract === this.identContract) {
+      Order.make(response.book.account, response.book.contract, ORDER_TYPE_BID).setBook(response.book[ORDER_TYPE_BID])
+      Order.make(response.book.account, response.book.contract, ORDER_TYPE_ASK).setBook(response.book[ORDER_TYPE_ASK])
+    }
 
-    response.books.forEach((o) => {
-      if (o.account === this.identAccount && o.contract === this.identContract) {
-        const order = Order.make(o.account, o.contract, o.type)
-        order.setBook(Order.unpackOrder(o.packedBook))
-        orderBook.books[o.type] = order.getBook()
-      }
-    })
-    return orderBook
+    return response
   }
 
   /**
@@ -194,8 +155,8 @@ export class UXTrade extends UXMain {
    */
   _add (request, ws) {
     request.id = Number(request.id || 0)
-    request.price = (new BigNumber(request.price || 0)).toFixed(this.precision)
-    request.amount = (new BigNumber(request.amount || 0)).toFixed(this.precision)
+    request.price = (new Big(request.price || 0)).toFixed(this.precision)
+    request.amount = (new Big(request.amount || 0)).toFixed(this.precision)
     if (!request.type || !request.price || !request.amount || request.price <= 0 || request.amount <= 0) {
       throw new Error('invalid order:add request')
     }
@@ -210,8 +171,9 @@ export class UXTrade extends UXMain {
       channel: CHANNEL_ORDER,
       command: 'set',
       id: orderBook.id,
-      key: 'ob' + orderBook.contract + 't' + orderBook.type,
-      value: orderBook.packedBook
+      contract: orderBook.contract,
+      type: orderBook.type,
+      book: orderBook.book
     }
   }
 
@@ -238,8 +200,9 @@ export class UXTrade extends UXMain {
       channel: CHANNEL_ORDER,
       command: 'set',
       id: orderBook.id,
-      key: 'ob' + orderBook.contract + 't' + orderBook.type,
-      value: orderBook.packedBook
+      contract: orderBook.contract,
+      type: orderBook.type,
+      book: orderBook.book
     }
   }
 
@@ -249,20 +212,22 @@ export class UXTrade extends UXMain {
    * @private
    */
   _confirm (response) {
+    response.command = 'confirm'
+    if (response.error) {
+      return response
+    }
+
     const id = Number(response.id)
     const order = this._mapOrder.get(id)
     if (order && order.confirm(id)) {
       this._mapOrder.delete(id)
-      return {
-        channel: CHANNEL_ORDER,
-        command: 'confirm',
-        id: id,
-        account: order.account,
-        contract: order.contract,
-        type: order.type
-      }
+      response.account = order.account
+      response.contract = order.contract
+      response.type = order.type
+    } else {
+      response.error = 'confirm failed'
     }
-    return false
+    return response
   }
 
   /**

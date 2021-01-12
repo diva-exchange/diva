@@ -22,7 +22,7 @@ CREATE TABLE config (
 
 INSERT INTO config(key, value) VALUES
     ('api', '172.29.101.30:19012'),
-    ('api.token', '02078b8991497509ed9aaad0b7d83bd8e7d93ecdc504a73f6b43e60ce8048766'),
+    ('api.token', 'c83c7949d70fb40685599b25f3c1028acdcb8b594fd030df72eec61537b5280c'),
 
     ('i2p.webconsole.scraper.url', 'http://172.22.3.2:7070/?page=i2p_tunnels'),
     ('i2p.http.proxy.development', '172.22.3.2:4444'),
@@ -183,14 +183,12 @@ CREATE TABLE orderbook (
 
 DROP TABLE IF EXISTS market;
 CREATE TABLE market (
-    account_ident TEXT NOT NULL,
     contract_ident TEXT NOT NULL,
     type TEXT CHECK(type IN ('B', 'A')) NOT NULL,
-    timestamp_ms INTEGER NOT NULL,
     price TEXT NOT NULL,
     amount TEXT NOT NULL,
 
-    PRIMARY KEY (account_ident, contract_ident, type, timestamp_ms)
+    PRIMARY KEY (contract_ident, type)
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS asset;

@@ -20,19 +20,13 @@
 'use strict'
 
 import { Db } from '../db'
-import { Logger } from '@diva.exchange/diva-logger'
-import zlib from 'zlib'
-
-const ORDER_VERSION_2 = 2 // base64 encoded object data
-const ORDER_VERSION_3 = 3 // base64 encoded zlib-deflated object data
-const ORDER_VERSION_CURRENT = ORDER_VERSION_3
 
 export const ORDER_TYPE_BID = 'B'
 export const ORDER_TYPE_ASK = 'A'
 
-const ORDER_STATUS_PENDING_ADDITION = 'PA'
-const ORDER_STATUS_PENDING_DELETION = 'PD'
-const ORDER_STATUS_CONFIRMED = 'C'
+export const ORDER_STATUS_PENDING_ADDITION = 'PA'
+export const ORDER_STATUS_PENDING_DELETION = 'PD'
+export const ORDER_STATUS_CONFIRMED = 'C'
 
 export class Order {
   /**
@@ -48,7 +42,7 @@ export class Order {
    * @property {string} account
    * @property {string} contract
    * @property {string} type B (Bid) or A (Ask)
-   * @property {string} packedBook Packed array of Order.Entry
+   * @property {Array<Order.Entry>} book
    */
 
   /**
@@ -161,7 +155,7 @@ export class Order {
       account: this.account,
       contract: this.contract,
       type: this.type,
-      packedBook: Order.packOrder(this._getLocalBook())
+      book: this._getLocalBook()
     }
   }
 
@@ -190,7 +184,7 @@ export class Order {
       account: this.account,
       contract: this.contract,
       type: this.type,
-      packedBook: Order.packOrder(this._getLocalBook())
+      book: this._getLocalBook()
     }
   }
 
@@ -251,51 +245,6 @@ export class Order {
       c: this.contract,
       t: this.type
     })
-  }
-
-  /**
-   * Unpack data
-   *
-   * @param {string} data
-   * @param {number} version
-   * @return {Object}
-   * @throws {Error}
-   * @public
-   */
-  static unpackOrder (data, version = ORDER_VERSION_CURRENT) {
-    const m = data.match(/^([0-9]+);(.+)$/)
-    if (m && m.length > 2) {
-      version = Number(m[1])
-      data = m[2]
-    }
-    switch (version) {
-      case ORDER_VERSION_2:
-        return JSON.parse(Buffer.from(data, 'base64').toString())
-      case ORDER_VERSION_3:
-        return JSON.parse((zlib.inflateRawSync(Buffer.from(data, 'base64'))).toString())
-      default:
-        Logger.warn('IrohaDb.unpackOrder(): unsupported order data version')
-    }
-  }
-
-  /**
-   * Pack data
-   *
-   * @param {Object|Array} data
-   * @param {number} version
-   * @return {string}
-   * @throws {Error}
-   * @public
-   */
-  static packOrder (data, version = ORDER_VERSION_CURRENT) {
-    switch (version) {
-      case ORDER_VERSION_2:
-        return version + ';' + Buffer.from(JSON.stringify(data)).toString('base64')
-      case ORDER_VERSION_3:
-        return version + ';' + (zlib.deflateRawSync(Buffer.from(JSON.stringify(data)))).toString('base64')
-      default:
-        Logger.warn('IrohaDb.packOrder(): unsupported order data version')
-    }
   }
 }
 

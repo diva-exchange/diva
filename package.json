@@ -26,7 +26,7 @@
   "dependencies": {
     "@diva.exchange/diva-logger": "^1.0.1",
     "better-sqlite3": "^7.1.2",
-    "bignumber.js": "^9.0.1",
+    "big.js": "^6.0.3",
     "compression": "^1.7.4",
     "dateformat": "^4.4.1",
     "esm": "^3.2.25",

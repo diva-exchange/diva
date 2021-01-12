@@ -108,10 +108,10 @@ class UiTrade {
 
     switch (ident) {
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_GETBOOK:
-        UiTrade.bid = response.books.B
+        UiTrade.bid = response.book.B
         UiTrade.bid.length && UiTrade._setHtmlBook(UiTrade.TYPE_BID)
 
-        UiTrade.ask = response.books.A
+        UiTrade.ask = response.book.A
         UiTrade.ask.length && UiTrade._setHtmlBook(UiTrade.TYPE_ASK)
         break
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_ADD:
