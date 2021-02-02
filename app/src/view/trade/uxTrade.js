@@ -78,6 +78,10 @@ export class UXTrade extends UXMain {
 
     this.server.setFilterWebsocketApi('order:getBook', (response) => { return this._setLocalOrderBook(response) })
     this.server.setFilterWebsocketApi('order:set', (response) => { return this._confirm(response) })
+
+    this.server.setFilterWebsocketLocal('market:getBook', (obj) => { return this._getMarket(obj) })
+
+    this.server.setFilterWebsocketApi('market:getBook', (response) => { return this._setLocalMarket(response) })
   }
 
   /**
@@ -115,6 +119,26 @@ export class UXTrade extends UXMain {
       default:
         return n()
     }
+  }
+
+  /**
+   * @param {Object} request
+   * @return {Object}
+   * @private
+   */
+  _getMarket (request) {
+    request.contract = this.identContract
+    return request
+  }
+
+  _setLocalMarket (response) {
+    if (response.error) {
+      Logger.warn('_setLocalMarket error').trace(response.error)
+      return false
+    }
+    Logger.trace(response)
+
+    return response
   }
 
   /**

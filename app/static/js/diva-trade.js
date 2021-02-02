@@ -54,11 +54,15 @@ class UiTrade {
     UiTrade.COMMAND_DELETE = 'delete'
     UiTrade.COMMAND_CONFIRM = 'confirm'
 
+    UiTrade.CHANNEL_MARKET = 'market'
+
     UiTrade.CLASS_PENDING_ADDITION = 'pending-addition'
     UiTrade.CLASS_PENDING_DELETION = 'pending-deletion'
 
     UiTrade.bid = []
     UiTrade.ask = []
+    UiTrade.marketBid = []
+    UiTrade.marketAsk = []
 
     UiTrade._attachEvents()
 
@@ -75,8 +79,19 @@ class UiTrade {
       }))
 
       UiTrade.websocket.send(JSON.stringify({
+        channel: UiTrade.CHANNEL_MARKET,
+        command: UiTrade.COMMAND_SUBSCRIBE
+      }))
+
+      UiTrade.websocket.send(JSON.stringify({
         channel: UiTrade.CHANNEL_ORDER,
         command: UiTrade.COMMAND_GETBOOK
+      }))
+
+      UiTrade.websocket.send(JSON.stringify({
+        channel: UiTrade.CHANNEL_MARKET,
+        command: UiTrade.COMMAND_GETBOOK,
+        contract: UiTrade.identContract
       }))
     })
 
@@ -106,13 +121,24 @@ class UiTrade {
     let i
     const ident = (response.channel || '') + ':' + (response.command || '')
 
+    if (response.contract && UiTrade.identContract !== response.contract) {
+      return
+    }
+
     switch (ident) {
+      case UiTrade.CHANNEL_MARKET + ':' + UiTrade.COMMAND_GETBOOK:
+        UiTrade.marketBid = response.market.B
+        UiTrade._setHtmlMarket(UiTrade.TYPE_BID)
+
+        UiTrade.marketAsk = response.market.A
+        UiTrade._setHtmlMarket(UiTrade.TYPE_ASK)
+        break
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_GETBOOK:
         UiTrade.bid = response.book.B
-        UiTrade.bid.length && UiTrade._setHtmlBook(UiTrade.TYPE_BID)
+        UiTrade._setHtmlBook(UiTrade.TYPE_BID)
 
         UiTrade.ask = response.book.A
-        UiTrade.ask.length && UiTrade._setHtmlBook(UiTrade.TYPE_ASK)
+        UiTrade._setHtmlBook(UiTrade.TYPE_ASK)
         break
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_ADD:
         book = response.type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
@@ -139,6 +165,12 @@ class UiTrade {
         if (i < 0) {
           return
         }
+        UiTrade.websocket.send(JSON.stringify({
+          channel: UiTrade.CHANNEL_MARKET,
+          command: UiTrade.COMMAND_GETBOOK,
+          contract: UiTrade.identContract
+        }))
+
         if (u(`#${response.type}${response.id}`).hasClass(UiTrade.CLASS_PENDING_ADDITION)) {
           delete book[i].statusUX
         } else if (u(`#${response.type}${response.id}`).hasClass(UiTrade.CLASS_PENDING_DELETION)) {
@@ -160,12 +192,9 @@ class UiTrade {
 
     // contract
     u('#contract').off('change').handle('change', (e) => {
-      u(e.target).parent().addClass('is-loading is-disabled')
       u('#price').first().value = ''
       u('#amount').first().value = ''
-      UiTrade._changeContract(e.target.value).then(() => {
-        setTimeout(() => { u(e.target).parent().removeClass('is-loading is-disabled') }, 200)
-      })
+      UiTrade._changeContract(e.target.value)
     })
 
     // order type action (tabs)
@@ -201,15 +230,14 @@ class UiTrade {
 
   /**
    * @param {string} identContract
-   * @returns {Promise<void>}
    * @private
    */
-  static async _changeContract (identContract) {
-    const response = await UiTrade._postJson('/trade/contract/set', {
-      identContract: identContract
-    })
-
-    return UiTrade._handleResponse(response)
+  static _changeContract (identContract) {
+    UiTrade.identContract = identContract
+    UiTrade.bid = []
+    UiTrade.ask = []
+    UiTrade.marketBid = []
+    UiTrade.marketAsk = []
   }
 
   /**
@@ -262,35 +290,6 @@ class UiTrade {
   }
 
   /**
-   * @param {Object} res - Response
-   * @param {string} type
-   * @returns {Promise<void>}
-   * @private
-   */
-  static async _handleResponse (res, type = undefined) {
-    if (!res.ok) {
-      res.text().then((html) => Ui.message('ERROR', html))
-    }
-  }
-
-  /**
-   * @param {string} uri
-   * @param {Object} objBody
-   * @returns {Promise<Response>}
-   * @private
-   */
-  static _postJson (uri, objBody) {
-    return fetch(uri, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(objBody)
-    })
-  }
-
-  /**
    * @param {string} type - B (Bid) or A (Ask)
    * @private
    */
@@ -327,36 +326,30 @@ class UiTrade {
   }
 
   /**
-   * @param {Object} objData
+   * @param {string} type - B (Bid) or A (Ask)
    * @private
    */
-  static _setHtmlMarket (objData) {
+  static _setHtmlMarket (type) {
     let html = ''
-    let rowBid = []
-    let rowAsk = []
-    do {
-      rowBid = objData.bid.shift()
-      rowAsk = objData.ask.shift()
-      if (rowBid || rowAsk) {
-        html += `
-          <tr>
-            <td class="has-text-right">${rowBid ? rowBid[1] : ''}</td>
-            <td class="has-text-right">${rowBid ? rowBid[0] : ''}</td>
-            <td class="">${rowAsk ? rowAsk[0] : ''}</td>
-            <td class="">${rowAsk ? rowAsk[1] : ''}</td>
-          </tr>
-          <tr class="timestamp">
-            <td colspan="2" class="has-text-right" data-culture-datetime="${rowBid ? rowBid[2] : ''}">
-                ${rowBid ? rowBid[2] : ''}
-            </td>
-            <td colspan="2" data-culture-datetime="${rowAsk ? rowAsk[2] : ''}">
-                ${rowAsk ? rowAsk[2] : ''}
-            </td>
-          </tr>`
-      }
-    } while (rowBid || rowAsk)
 
-    u('#market').html(html)
+    const a = type === UiTrade.TYPE_BID ? UiTrade.marketBid : UiTrade.marketAsk
+
+    a.forEach((row) => {
+      html += `
+        <div class="columns price amount count is-mobile">
+          <div class="column count">
+            <p>${row.count}</p>
+          </div>
+          <div class="column amount">
+            <p>${row.amount}</p>
+          </div>
+          <div class="column price">
+            <p>${row.price}</p>
+          </div>
+        </div>`
+    })
+
+    u(`#market-${type === UiTrade.TYPE_BID ? 'bid' : 'ask'}`).html(html)
   }
 }
 

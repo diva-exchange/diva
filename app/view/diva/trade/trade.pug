@@ -119,24 +119,31 @@ block content
 
     article(class='panel')
       p(class='panel-heading' data-culture-text='Market')= Culture.t('Market')
-      div(class='panel-block')
-        div(class='columns')
-          div(class='column is-two-thirds is-relative')
-            table(class='table is-fullwidth market')
-              thead
-                tr
-                  th(class='has-text-right' data-culture-text='Amount')= Culture.t('Amount')
-                  th(class='has-text-right has-text-success' data-culture-text='Price')= Culture.t('Price')
-                  th(class='has-text-danger' data-culture-text='Price')= Culture.t('Price')
-                  th(data-culture-text='Amount')= Culture.t('Amount')
-              tbody(id='market')
-                tr
-                  td
-                  td
-                  td
-                  td
+      div(class='panel-block is-relative market')
+        div(class='columns is-flex is-flex-grow-1')
+          div(class='column is-third market-bid')
+            div(class='columns head is-mobile')
+              div(class='column count')
+                p(data-culture-text='Count')= Culture.t('Count')
+              div(class='column amount')
+                p(data-culture-text='Amount')= Culture.t('Amount')
+              div(class='column price')
+                p(data-culture-text='Price')= Culture.t('Price')
+            div(class='columns is-mobile')
+              div(class='column is-full' id='market-bid')
 
-          div(class='column')
+          div(class='column is-third market-ask')
+            div(class='columns head is-mobile')
+              div(class='column price')
+                p(data-culture-text='Price')= Culture.t('Price')
+              div(class='column amount')
+                p(data-culture-text='Amount')= Culture.t('Amount')
+              div(class='column count')
+                p(data-culture-text='Count')= Culture.t('Count')
+            div(class='columns is-mobile')
+              div(class='column is-full' id='market-ask')
+
+          div(class='column is-third')
             table(class='table is-striped is-fullwidth')
               thead
                 tr
