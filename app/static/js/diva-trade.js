@@ -90,8 +90,7 @@ class UiTrade {
 
       UiTrade.websocket.send(JSON.stringify({
         channel: UiTrade.CHANNEL_MARKET,
-        command: UiTrade.COMMAND_GETBOOK,
-        contract: UiTrade.identContract
+        command: UiTrade.COMMAND_GETBOOK
       }))
     })
 
@@ -103,8 +102,7 @@ class UiTrade {
           return console.error(response.error)
         }
 
-        await UiTrade._processResponse (response)
-
+        await UiTrade._processResponse(response)
       } catch (error) {
         console.error(error)
       }
@@ -156,7 +154,7 @@ class UiTrade {
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_DELETE:
         book = response.type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
         i = book.findIndex((o) => o.timestamp_ms === response.id)
-        i > -1 && (book[i].statusUX = UiTrade.CLASS_PENDING_DELETION )
+        i > -1 && (book[i].statusUX = UiTrade.CLASS_PENDING_DELETION)
         UiTrade._setHtmlBook(response.type)
         break
       case UiTrade.CHANNEL_ORDER + ':' + UiTrade.COMMAND_CONFIRM:
@@ -167,8 +165,7 @@ class UiTrade {
         }
         UiTrade.websocket.send(JSON.stringify({
           channel: UiTrade.CHANNEL_MARKET,
-          command: UiTrade.COMMAND_GETBOOK,
-          contract: UiTrade.identContract
+          command: UiTrade.COMMAND_GETBOOK
         }))
 
         if (u(`#${response.type}${response.id}`).hasClass(UiTrade.CLASS_PENDING_ADDITION)) {
@@ -194,7 +191,9 @@ class UiTrade {
     u('#contract').off('change').handle('change', (e) => {
       u('#price').first().value = ''
       u('#amount').first().value = ''
-      UiTrade._changeContract(e.target.value)
+      UiTrade._changeContract(e.target.value).then(() => {
+        setTimeout(() => { u(e.target).parent().removeClass('is-loading is-disabled') }, 200)
+      })
     })
 
     // order type action (tabs)
@@ -232,12 +231,28 @@ class UiTrade {
    * @param {string} identContract
    * @private
    */
-  static _changeContract (identContract) {
+  static async _changeContract (identContract) {
     UiTrade.identContract = identContract
     UiTrade.bid = []
     UiTrade.ask = []
     UiTrade.marketBid = []
     UiTrade.marketAsk = []
+
+    const response = await UiTrade._postJson('/trade/contract/set', {
+      identContract: UiTrade.identContract
+    })
+
+    UiTrade.websocket.send(JSON.stringify({
+      channel: UiTrade.CHANNEL_ORDER,
+      command: UiTrade.COMMAND_GETBOOK
+    }))
+
+    UiTrade.websocket.send(JSON.stringify({
+      channel: UiTrade.CHANNEL_MARKET,
+      command: UiTrade.COMMAND_GETBOOK
+    }))
+
+    return UiTrade._handleResponse(response)
   }
 
   /**
@@ -287,6 +302,35 @@ class UiTrade {
   static _deleteAll (type) {
     const book = type === UiTrade.TYPE_BID ? UiTrade.bid : UiTrade.ask
     book.forEach(o => { !o.statusUX && UiTrade._delete(type, o.timestamp_ms) })
+  }
+
+  /**
+   * @param {Object} res - Response
+   * @param {string} type
+   * @returns {Promise<void>}
+   * @private
+   */
+  static async _handleResponse (res, type = undefined) {
+    if (!res.ok) {
+      res.text().then((html) => Ui.message('ERROR', html))
+    }
+  }
+
+  /**
+   * @param {string} uri
+   * @param {Object} objBody
+   * @returns {Promise<Response>}
+   * @private
+   */
+  static _postJson (uri, objBody) {
+    return fetch(uri, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(objBody)
+    })
   }
 
   /**

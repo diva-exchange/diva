@@ -22,10 +22,13 @@
 // @see https://umbrellajs.com
 /* global u */
 
+// @see ./diva-culture.js
+/* global UiCulture */
+
 // @see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 /* global WebSocket */
 
-if (!u || !WebSocket) {
+if (!u || !WebSocket || !UiCulture) {
   throw new Error('invalid state')
 }
 
