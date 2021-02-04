@@ -49,5 +49,7 @@ to the project. Any intent to deviate the project from its original purpose
 of existence will constitute grounds for remedial action which may include
 expulsion from the project.
 
+We support everyone and encourage everyone to contribute. However, if you are a shitbird to other contributors during your work on the project, or if you're found to be inciting violence with your work, then you'll be kicked out of the project.
+
 This document is adapted from the Code of Merit, version 1.0.
 See: https://codeofmerit.org/.
