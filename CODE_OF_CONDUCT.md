@@ -1,5 +1,7 @@
 # Code of Merit
 
+> *"A meritocratic approach to project management and discussions. This document outlines guidelines geared towards increasing the technical value of diva.exchange based on the pursuit of technical merit."*
+
 1. The project creators, lead developers, core team, constitute
 the managing members of the project and have final say in every decision
 of the project, technical or otherwise, including overruling previous decisions.
