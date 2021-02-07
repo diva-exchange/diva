@@ -45,7 +45,7 @@
 .orderbook-bid,
 .market-bid {
   .column {
-    @extend .has-text-right;
+    @extend .has-text-right !optional;
   }
 
   .column.price {
@@ -56,11 +56,11 @@
 .orderbook-ask,
 .market-ask {
   .columns {
-    @extend .is-flex-direction-row-reverse;
+    @extend .is-flex-direction-row-reverse !optional;
   }
 
   .column {
-    @extend .has-text-left;
+    @extend .has-text-left !optional;
   }
 
   .column.price {
