@@ -1,0 +1,45 @@
+/* Colour settings */
+$diva-order-tab-a-primary: lightpink;
+$diva-order-tab-a-accent: deeppink;
+$diva-order-tab-b-primary: lightgreen;
+$diva-order-tab-b-accent: green;
+
+#order .tabs {
+  margin-bottom: 0;
+  border-width: 0;
+}
+#order .tabs a {
+  color: white;
+  font-weight: bold;
+  border-width: 0;
+}
+
+#order .tabs li[data-type="B"] a {
+  background-color: $diva-order-tab-b-accent !important;
+}
+
+#order .tabs li[data-type="A"] a {
+  background-color: $diva-order-tab-a-accent !important;
+}
+
+#order[data-type="A"],
+#order[data-type="B"] {
+  div.order-form {
+    padding: 1em 1em 1em 1em;
+    border: 3px solid;
+  }
+}
+
+#order[data-type="A"] {
+  div.order-form {
+    border-color: $diva-order-tab-a-accent;
+    background-color: $diva-order-tab-a-primary;
+  }
+}
+
+#order[data-type="B"] {
+  div.order-form {
+    border-color: $diva-order-tab-b-accent;
+    background-color: $diva-order-tab-b-primary;
+  }
+}

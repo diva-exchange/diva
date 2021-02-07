@@ -1,0 +1,75 @@
+.orderbook {
+  .columns.head {
+    font-weight: bold;
+  }
+
+  .pending-addition {
+    background-color: lightsteelblue;
+
+    button {
+      visibility: hidden;
+    }
+  }
+  .pending-deletion {
+    background-color: lightyellow;
+
+    button {
+      visibility: hidden;
+    }
+  }
+
+  .columns.timestamp {
+    border-bottom: 1px solid lightgrey;
+    color: darkgrey;
+    font-size: small;
+    margin-bottom: 0.3rem;
+  }
+}
+
+.orderbook-bid,
+.orderbook-ask,
+.market-bid,
+.market-ask {
+  .columns {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .column {
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.orderbook-bid,
+.market-bid {
+  .column {
+    @extend .has-text-right;
+  }
+
+  .column.price {
+    color: green;
+  }
+}
+
+.orderbook-ask,
+.market-ask {
+  .columns {
+    @extend .is-flex-direction-row-reverse;
+  }
+
+  .column {
+    @extend .has-text-left;
+  }
+
+  .column.price {
+    color: deeppink;
+  }
+}
+
+.market {
+  .columns.head {
+    font-weight: bold;
+  }
+}
