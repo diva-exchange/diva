@@ -1,0 +1,23 @@
+nav.navbar.top, .navbar-menu {
+  background-color: $diva-primary;
+  min-height: 70px;
+
+  .navbar-item img {
+    max-height: none;
+    margin-right: 30px;
+  }
+
+  .navbar-item, .navbar-burger {
+    color: #ffffff;
+  }
+
+  .navbar-item.is-tab.is-active {
+    border-bottom-color: $diva-accent;
+    color: $diva-accent;
+  }
+
+  .navbar-item.is-tab:focus, .navbar-item.is-tab:hover {
+    border-bottom-color: $diva-accent;
+    color: $diva-accent;
+  }
+}
