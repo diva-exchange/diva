@@ -41,9 +41,10 @@ if command_exists docker; then
 
   running "Fetching API access token from local filesystem..."
   sudo rm .api-token
-  while [[ ! `sudo docker cp api.testnet.diva.local:/home/node/data/token .api-token` ]]
+  while [[ ! -f .api-token ]]
   do
     sleep 10
+    sudo docker cp api.testnet.diva.local:/home/node/data/token .api-token
   done
 
   API_TOKEN=$(<.api-token)

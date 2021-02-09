@@ -91,7 +91,7 @@ Then, from the project folder and using your terminal:
 2. Then start it by running: `./bin/start.sh`. During the start-up process, you will be asked for for the password of the privileged user, since `sudo` gets used to access docker.
 
 
-Test it: `sudo docker ps -a` should show quite some running container, seomthing like:
+Test it: `sudo docker ps -a` should show quite some running container, something like:
 
 ```
 diva $ sudo docker ps
@@ -115,15 +115,19 @@ divax/iroha:latest            "/entrypoint.sh"         n3.testnet.diva.local
 ```
 
 DIVA is available locally:
-running on on [http://localhost:3911](). Open in up in a browser and create your *local* account. Remember: using this setup, nothing related to DIVA will ever leave your local box.
+running on on [http://localhost:3911](). Open in up in a browser and you'll see the application. Remember: using this setup, nothing related to DIVA will ever leave your local box.
 
-Also, test the Blockchain explorer it with your browser: [http://172.29.101.100:3920/]() - you should see the DIVA Blockchain explorer.
+Test the DIVA Blockchain Explorer: [http://172.29.101.100:3920/]().
 
 > ⚠️ Please note: your using a development branch. There might be dragons.
 
 ### How to Stop and Remove DIVA
 
-Press Ctrl-C within the console where you have executed `bin/start.sh`.
+To stop DIVA, press Ctrl-C within the console where `bin/start.sh` is running.
+
+Stop the testnet: `sudo docker-compose -f docker-compose/local-testnet.yml down`
+
+To stop the testnet and remove all local testnet data (purge the docker volumes): `sudo docker-compose -f docker-compose/local-testnet.yml down --volumes`
 
 ### How to Build the Docker Images
 
@@ -136,6 +140,8 @@ tbd.
 tbd.
 
 ### First Glance at I2P
+
+@TODO THIS IS WORK IN PROGRESS. Out-of-date on the development branch. 
 
 Use the i2pd web-console to explore the i2pd router running within the docker container i2pd. To access the webconsole, open your browser and navigate to http://localhost:7070. 
 
