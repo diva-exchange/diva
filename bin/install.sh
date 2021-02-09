@@ -43,6 +43,7 @@ if command_exists docker; then
   sudo docker-compose -f docker-compose/local-testnet.yml up -d
 
   running "Installing application and database..."
+  sudo rm -rf ${PROJECT_PATH}node_modules
   npm ci
   # @TODO more elegance, please - it needs to wait for the API to be ready (a GET request to the API must deliver JSON)
   sleep 30
