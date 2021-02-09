@@ -20,7 +20,8 @@
 
 set -e
 
-PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd ${PROJECT_PATH}/../
+PROJECT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"/../
+cd ${PROJECT_PATH}
+PROJECT_PATH=`pwd`/
 
 docker build -f Dockerfile --no-cache --force-rm -t divax/diva:latest .

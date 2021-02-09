@@ -88,8 +88,7 @@ export class Db {
     if (!fs.existsSync(pathModel)) {
       throw new Error('Database model not found: ' + pathModel)
     }
-    const sql = fs.readFileSync(pathModel, 'utf8')
-    this._database.exec(sql)
+    this._database.exec(fs.readFileSync(pathModel, 'utf8'))
     return this
   }
 

@@ -31,21 +31,25 @@ source "${PROJECT_PATH}bin/helpers.sh"
 
 ############################################################################
 
-bot "Installing DIVA"
+bot "Starting DIVA"
 
 if command_exists docker; then
   info "Docker requires root access"
-  running "Purging existing testnet..."
-  sudo docker-compose -f docker-compose/local-testnet.yml down --volumes
-
   running "Starting the local testnet..."
   sudo docker-compose -f docker-compose/local-testnet.yml pull
   sudo docker-compose -f docker-compose/local-testnet.yml up -d
 
-  running "Installing application and database..."
-  # @TODO more elegance, please - it needs to wait for the API to be ready (a GET request to the API must deliver JSON)
-  sleep 30
-  node -r esm ${PROJECT_PATH}app/install
+  running "Fetching API access token from local filesystem..."
+  sudo rm .api-token
+  while [[ ! `sudo docker cp api.testnet.diva.local:/home/node/data/token .api-token` ]]
+  do
+    sleep 10
+  done
+
+  API_TOKEN=$(<.api-token)
+  sudo rm .api-token
+
+  NODE_ENV=development API_TOKEN=${API_TOKEN} node -r esm ${PROJECT_PATH}app/main
 else
-  error "Install Docker and Docker Compose. See README."
+  error "Docker required. See README."
 fi

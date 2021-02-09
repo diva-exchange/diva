@@ -69,11 +69,11 @@ Have you installed Docker? If not, please do so first (see above).
 
 Now get the diva repository via clone _or_ download:
 
-* clone the diva repository: `git clone https://codeberg.org/diva.exchange/diva.git ~/diva.exchange/diva`
+* clone the diva repository: `git clone --branch develop https://codeberg.org/diva.exchange/diva.git ~/diva.exchange/diva`
 
 _or_
 
-* [download](https://codeberg.org/diva.exchange/diva/archive/master.zip) and unpack the code repository to your local device. 
+* [download](https://codeberg.org/diva.exchange/diva/archive/develop.zip) and unpack the code repository to your local device. 
 
    We assume that you store the downloaded repository within your User folder, which is usually located here:
 
@@ -85,35 +85,45 @@ _or_
 
 Then, from the project folder and using your terminal:
 
+> ⚠️ Please note: Installation will purge your existing local testnet.
+
 1. Install the project by running: `./bin/install.sh`. During the installation process, you will be asked for for the password of the privileged user, since `sudo` gets used to access docker.
 2. Then start it by running: `./bin/start.sh`. During the start-up process, you will be asked for for the password of the privileged user, since `sudo` gets used to access docker.
 
 
-Test it, as privileged user: `docker ps -a` should show a running **i2pd** container, three **iroha** containers (that's the so called DIVA testnet) and a iroha-node container, like this:
+Test it: `sudo docker ps -a` should show quite some running container, seomthing like:
 
 ```
 diva $ sudo docker ps
-IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                                                                  NAMES
-divax/iroha-node:latest   "/entrypoint.sh"         21 seconds ago      Up 19 seconds                                                                                              iroha-node
-divax/iroha:latest        "/entrypoint.sh"         21 seconds ago      Up 21 seconds       127.19.3.1:10032->5432/tcp, 127.19.3.1:10011->10001/tcp, 127.19.3.1:10051->50051/tcp   iroha3
-divax/iroha:latest        "/entrypoint.sh"         22 seconds ago      Up 21 seconds       127.19.2.1:10032->5432/tcp, 127.19.2.1:10011->10001/tcp, 127.19.2.1:10051->50051/tcp   iroha2
-divax/iroha:latest        "/entrypoint.sh"         23 seconds ago      Up 22 seconds       127.19.1.1:10032->5432/tcp, 127.19.1.1:10011->10001/tcp, 127.19.1.1:10051->50051/tcp   iroha1
-divax/i2p:latest          "/home/i2pd/entrypoi…"   24 seconds ago      Up 23 seconds       0.0.0.0:4444-4445->4444-4445/tcp, 0.0.0.0:7070->7070/tcp                               i2pd
-
+IMAGE                         COMMAND                  NAMES
+divax/iroha-explorer:latest   "/entrypoint.sh"         explorer.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n4.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n3.db.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n1.db.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n5.db.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n6.db.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n2.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n5.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n1.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n6.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n7.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n2.db.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n7.db.testnet.diva.local
+divax/diva-api:latest         "/entrypoint.sh"         api.testnet.diva.local
+postgres:10-alpine            "docker-entrypoint.s…"   n4.db.testnet.diva.local
+divax/iroha:latest            "/entrypoint.sh"         n3.testnet.diva.local
 ```
 
 DIVA is available locally:
 running on on [http://localhost:3911](). Open in up in a browser and create your *local* account. Remember: using this setup, nothing related to DIVA will ever leave your local box.
 
-Also, test I2PD it with your browser: [http://localhost:7070]() - you should see the I2Pd webconsole. I2P is up and running.
+Also, test the Blockchain explorer it with your browser: [http://172.29.101.100:3920/]() - you should see the DIVA Blockchain explorer.
 
 > ⚠️ Please note: your using a development branch. There might be dragons.
 
 ### How to Stop and Remove DIVA
 
-To stop and remove DIVA from your local box:
-
-`./bin/stop.sh`
+Press Ctrl-C within the console where you have executed `bin/start.sh`.
 
 ### How to Build the Docker Images
 
