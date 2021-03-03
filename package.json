@@ -35,7 +35,7 @@
     "http-errors": "~1.8.0",
     "nanoid": "^3.1.20",
     "pg": "^8.5.1",
-    "pug": "^3.0.0",
+    "pug": "^3.0.1",
     "simple-get": "^4.0.0",
     "socks-proxy-agent": "^5.0.0",
     "sodium-native": "^3.2.1",
