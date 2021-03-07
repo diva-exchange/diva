@@ -117,7 +117,7 @@ divax/iroha:latest            "/entrypoint.sh"         n3.testnet.diva.local
 DIVA is available locally:
 running on on [http://localhost:3911](). Open in up in a browser and you'll see the application. Remember: using this setup, nothing related to DIVA will ever leave your local box.
 
-Test the DIVA Blockchain Explorer: [http://172.29.101.100:3920/]().
+Test the local DIVA Blockchain Explorer: [http://172.29.101.100:3920/]().
 
 > ⚠️ Please note: your using a development branch. There might be dragons.
 

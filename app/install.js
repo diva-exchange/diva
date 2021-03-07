@@ -36,7 +36,14 @@ import { User } from './src/auth/user'
     path.normalize(path.join(__dirname, 'static/vendor/umbrella.min.js')))
 
   Db.create('diva')
-  await setAccount(Config.make())
+  const config = Config.make()
+  process.env.API && config.set('api', process.env.API)
+  process.env.API_TOKEN && config.set('api.token', process.env.API_TOKEN)
+  process.env.I2P_SCRAPER_URL && config.set('i2p.webconsole.scraper.url', process.env.I2P_SCRAPER_URL)
+  process.env.I2P_HTTP_PROXY && config.set('i2p.http.proxy', process.env.I2P_HTTP_PROXY)
+  process.env.I2P_SOCKS_PROXY && config.set('i2p.socks.proxy', process.env.I2P_SOCKS_PROXY)
+
+  await setAccount(config)
 })()
 
 /**

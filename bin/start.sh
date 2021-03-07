@@ -35,11 +35,11 @@ bot "Starting DIVA"
 
 if command_exists docker; then
   info "Docker requires root access"
-  running "Starting the local testnet..."
+  running "Starting the local testnet"
   sudo docker-compose -f docker-compose/local-testnet.yml pull
   sudo docker-compose -f docker-compose/local-testnet.yml up -d
 
-  running "Fetching API access token from local filesystem..."
+  running "Fetching API access token from local filesystem"
   sudo rm .api-token
   while [[ ! -f .api-token ]]
   do

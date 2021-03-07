@@ -35,18 +35,21 @@ bot "Installing DIVA"
 
 if command_exists docker; then
   info "Docker requires root access"
-  running "Purging existing testnet..."
+  running "Purging existing testnet"
   sudo docker-compose -f docker-compose/local-testnet.yml down --volumes
 
-  running "Starting the local testnet..."
+  running "Starting local testnet"
   sudo docker-compose -f docker-compose/local-testnet.yml pull
   sudo docker-compose -f docker-compose/local-testnet.yml up -d
 
-  running "Installing application and database..."
+  running "Installing application and database"
+  sudo rm -rf ${PROJECT_PATH}package-lock.json
   sudo rm -rf ${PROJECT_PATH}node_modules
-  npm ci
+  npm i
   # @TODO more elegance, please - it needs to wait for the API to be ready (a GET request to the API must deliver JSON)
   sleep 30
+  export API=172.29.101.30:19012
+  running "Executing installer"
   node -r esm ${PROJECT_PATH}app/install
 else
   error "Install Docker and Docker Compose. See README."

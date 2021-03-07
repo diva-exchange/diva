@@ -32,7 +32,7 @@ import { SessionGarbage } from './src/view/session-garbage'
 
   // Load Config, populate Cache
   const config = Config.make()
-  config.set('api.token', process.env.API_TOKEN || '')
+  process.env.API_TOKEN && config.set('api.token', process.env.API_TOKEN)
 
   // start http/websocket server
   const h = new HttpServer(process.env.PORT || 3911, process.env.BIND_IP || '127.0.0.1')

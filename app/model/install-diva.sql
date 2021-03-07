@@ -21,7 +21,7 @@ CREATE TABLE config (
 ) WITHOUT ROWID;
 
 INSERT INTO config(key, value) VALUES
-    ('api', '172.29.101.30:19012'),
+    ('api', ''),
     ('api.token', ''),
 
     ('i2p.webconsole.scraper.url', 'http://172.22.1.2:7070/?page=i2p_tunnels'),
