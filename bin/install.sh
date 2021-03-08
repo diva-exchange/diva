@@ -46,10 +46,14 @@ if command_exists docker; then
   sudo rm -rf ${PROJECT_PATH}package-lock.json
   sudo rm -rf ${PROJECT_PATH}node_modules
   npm i
+
+  running "Waiting for API"
   # @TODO more elegance, please - it needs to wait for the API to be ready (a GET request to the API must deliver JSON)
   sleep 30
-  export API=172.29.101.30:19012
+
   running "Executing installer"
+  # Default value: see docker-composer/local-testnet.yml
+  export API=${API:-172.29.101.30:19012}
   node -r esm ${PROJECT_PATH}app/install
 else
   error "Install Docker and Docker Compose. See README."
