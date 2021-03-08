@@ -56,7 +56,7 @@
     "node-sass": "^5.0.0",
     "npm-check-updates": "^11.2.0",
     "nyc": "^15.1.0",
-    "pino-pretty": "^4.7.0",
+    "pino-pretty": "^4.7.1",
     "umbrellajs": "^3.2.3"
   },
   "mocha": {
