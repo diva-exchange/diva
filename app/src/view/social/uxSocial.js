@@ -76,45 +76,15 @@ export class UXSocial extends UXMain {
           activeAccount: this.chatDb.getProfile(this.config.getValueByKey('iroha.account'))[0]
         })
         break
-      default:
-        n()
-    }
-    /*
-    switch (rq.path) {
-      case '/social/updateAvatar': {
+      case '/social/updateAvatar':
         if (rq.body.profileIdent !== null && rq.body.profileIdent !== '') {
           this.chatDb.updateAvatar(rq.body.profileIdent, rq.body.profileAvatar)
         }
-        this.renderPage(rs, session.chatIdent)
         break
-      }
-      case '/social': {
-        this.renderPage(rs, session.chatIdent)
-        break
-      }
       default:
         n()
     }
-    */
   }
-
-  /**
-   * @param rs {Object} Response
-   * @param chatIdent {String}
-   * @public
-   */
-  /*
-  renderPage (rs, chatIdent) {
-    this.messaging.reloadAccountsFromNode().then(() => {
-      rs.render('diva/social/social', {
-        title: 'Social',
-        arrayMessage: this.chatDb.getMessagesForUser(chatIdent),
-        arrayChatFriends: this.chatDb.getAllAccountsFromDB(),
-        activeAccount: this.chatDb.getProfile(chatIdent)[0]
-      })
-    })
-  }
-  */
 }
 
 module.exports = { UXSocial }

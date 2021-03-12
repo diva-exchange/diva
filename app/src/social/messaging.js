@@ -71,14 +71,13 @@ export class Messaging {
    * @return {Object}
    */
   encryptChatMessage (obj) {
-    if (obj.command !== 'message') {
-      return obj
+    if (obj.command === 'message') {
+      const publicKeyRecipient = this._chatDb.getProfile(obj.recipient)[0].pub_key
+      const bufferM = Buffer.from(obj.message)
+      const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + obj.message.length)
+      sodium.crypto_box_seal(ciphertext, bufferM, Buffer.from(publicKeyRecipient, 'hex'))
+      obj.message = ciphertext.toString('base64')
     }
-    const publicKeyRecipient = this._chatDb.getProfile(obj.recipient)[0].pub_key
-    const bufferM = Buffer.from(obj.message)
-    const ciphertext = sodium.sodium_malloc(sodium.crypto_box_SEALBYTES + obj.message.length)
-    sodium.crypto_box_seal(ciphertext, bufferM, Buffer.from(publicKeyRecipient, 'hex'))
-    obj.message = ciphertext.toString('base64')
     return obj
   }
 
@@ -87,18 +86,17 @@ export class Messaging {
    * @return {Object}
    */
   decryptChatMessage (obj) {
-    if (obj.command !== 'message') {
-      return obj
+    if (obj.command === 'message') {
+      const bufferC = Buffer.from(obj.message, 'base64')
+      const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
+      const success = sodium.crypto_box_seal_open(
+        decrypted,
+        bufferC,
+        this._keystore.get('social:keyPublic'),
+        this._keystore.get('social:keySecret')
+      )
+      obj.message = (success && decrypted.toString()) || 'Can not decrypt message.'
     }
-    const bufferC = Buffer.from(obj.message, 'base64')
-    const decrypted = sodium.sodium_malloc(bufferC.length - sodium.crypto_box_SEALBYTES)
-    const success = sodium.crypto_box_seal_open(
-      decrypted,
-      bufferC,
-      this._keystore.get('social:keyPublic'),
-      this._keystore.get('social:keySecret')
-    )
-    obj.message = (success && decrypted.toString()) || 'Can not decrypt message.'
     return obj
   }
 
