@@ -39,7 +39,7 @@
     "simple-get": "^4.0.0",
     "socks-proxy-agent": "^5.0.0",
     "sodium-native": "^3.2.1",
-    "ws": "^7.4.4"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "acorn": ">=8.0.5",
